@@ -266,8 +266,6 @@ export default function CustomerCard() {
               total_points: (customerData as any).total_points || 0, 
               total_spent: (customerData as any).total_spent || 0 
             }
-              .eq('loyalty_program_id', program.id)
-              .maybeSingle()
 
             if (program.type === 'visit_based') {
               current = ((progressRow as any)?.visit_count || 0) % (program.required_visits || 5)
