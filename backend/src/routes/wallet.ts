@@ -1,5 +1,5 @@
 import express from 'express'
-import { supabase } from '../config/supabase'
+import { supabaseAdmin as supabase } from '../config/supabase'
 import googleWalletService from '../services/googleWallet'
 
 const router = express.Router()
@@ -49,11 +49,11 @@ router.get('/google/:customerId', async (req, res) => {
       customerData: customerWalletData
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Google Wallet error:', error)
     res.status(500).json({ 
       error: 'Failed to generate wallet pass',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
     })
   }
 })
@@ -75,7 +75,7 @@ router.post('/class/:businessSlug', async (req, res) => {
     }
 
     // Create loyalty class in Google Wallet
-    const result = await googleWalletService.createLoyaltyClass(business)
+    const result: any = await googleWalletService.createLoyaltyClass(business)
     
     res.json({ 
       success: true, 
@@ -83,11 +83,11 @@ router.post('/class/:businessSlug', async (req, res) => {
       business: business.name 
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create loyalty class error:', error)
     res.status(500).json({ 
       error: 'Failed to create loyalty class',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
     })
   }
 })
@@ -136,11 +136,11 @@ router.patch('/update/:customerId', async (req, res) => {
       error: result.error
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Update wallet pass error:', error)
     res.status(500).json({ 
       error: 'Failed to update wallet pass',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
     })
   }
 })
