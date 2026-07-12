@@ -1,26 +1,37 @@
--- Check if RLS is enabled on businesses table
-SELECT tablename, rowsecurity 
-FROM pg_tables 
-WHERE schemaname = 'public' AND tablename = 'businesses';
+-- ============================================================
+-- Fix RLS Policies for customer_program_progress - Run on Supabase SQL Editor
+-- ============================================================
 
--- Check existing policies on businesses table
-SELECT * FROM pg_policies WHERE tablename = 'businesses';
+-- Enable RLS on customer_program_progress table
+ALTER TABLE customer_program_progress ENABLE ROW LEVEL SECURITY;
 
--- DISABLE RLS temporarily to test (CAUTION: Only for testing!)
--- ALTER TABLE businesses DISABLE ROW LEVEL SECURITY;
+-- Policy 1: Allow service_role full access (for API operations)
+CREATE POLICY "Service role can manage all customer progress" ON customer_program_progress
+    FOR ALL USING (auth.role() = 'service_role');
 
--- OR create a policy to allow public SELECT on active businesses
-DROP POLICY IF EXISTS "Public businesses are viewable by everyone" ON businesses;
+-- Policy 2: Allow authenticated users to view progress for their business
+CREATE POLICY "Business users can view customer progress" ON customer_program_progress
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM customers c
+            JOIN profiles p ON p.business_id = c.business_id
+            WHERE c.id = customer_program_progress.customer_id
+            AND p.id = auth.uid()
+        )
+    );
 
-CREATE POLICY "Public businesses are viewable by everyone"
-ON businesses FOR SELECT
-USING (is_active = true);
+-- Policy 3: Allow staff to update progress (through triggers)
+CREATE POLICY "Staff can update customer progress" ON customer_program_progress
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM customers c
+            JOIN profiles p ON p.business_id = c.business_id
+            WHERE c.id = customer_program_progress.customer_id
+            AND p.id = auth.uid()
+            AND p.role IN ('business_admin', 'staff', 'super_admin')
+        )
+    );
 
--- Enable RLS if not already enabled
-ALTER TABLE businesses ENABLE ROW LEVEL SECURITY;
-
--- Verify policies
-SELECT * FROM pg_policies WHERE tablename = 'businesses';
-
--- Test the query that should work now
-SELECT * FROM businesses WHERE slug = 'C1' AND is_active = true;
+-- Grant necessary permissions
+GRANT ALL ON customer_program_progress TO authenticated;
+GRANT ALL ON customer_program_progress TO service_role;
