@@ -117,8 +117,6 @@ export default function CustomerLookup() {
         (progs as any[]).map(async (prog: any) => {
           // Use total_visits from customer record instead of customer_program_progress
           const progress = { visit_count: selectedCustomer.total_visits || 0, total_rewards_earned: 0 }
-            .eq('loyalty_program_id', prog.id)
-            .single()
 
           if (!progress) {
             const { count } = await supabase
