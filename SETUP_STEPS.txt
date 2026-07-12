@@ -1,0 +1,120 @@
+==========================================
+QUICK SETUP STEPS
+==========================================
+
+STEP 1: GET SUPABASE SERVICE ROLE KEY
+==========================================
+1. Go to: https://supabase.com/dashboard
+2. Select your project: uflzxfewtemiysygfwun
+3. Click: Settings (left sidebar)
+4. Click: API
+5. Scroll down to "Project API keys"
+6. Find the "service_role" key (NOT anon key!)
+7. Copy it (starts with eyJhbGci... and is LONG)
+
+STEP 2: GENERATE API SECRET KEY
+==========================================
+Run this command in terminal:
+
+Windows (PowerShell):
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+Mac/Linux (bash):
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+Copy the output (64 character random string)
+
+STEP 3: UPDATE BACKEND .env
+==========================================
+Open: backend/.env
+
+Replace these lines:
+SUPABASE_SERVICE_ROLE_KEY=GET_THIS_FROM_SUPABASE_DASHBOARD
+  → Paste your service_role key from STEP 1
+
+API_SECRET_KEY=GENERATE_RANDOM_32_CHAR_STRING_HERE
+  → Paste your generated key from STEP 2
+
+Save the file.
+
+STEP 4: UPDATE FRONTEND .env
+==========================================
+Open: frontend/.env
+
+Replace this line:
+VITE_API_KEY=PASTE_THE_SAME_API_SECRET_KEY_FROM_BACKEND_HERE
+  → Paste the SAME key from STEP 2 (must match backend!)
+
+Save the file.
+
+STEP 5: INSTALL & RUN BACKEND
+==========================================
+cd backend
+npm install
+npm run dev
+
+Should see:
+🚀 Server running on port 3001
+📡 Environment: development
+
+STEP 6: RUN FRONTEND (in new terminal)
+==========================================
+cd frontend
+npm run dev
+
+Should open at: http://localhost:5173
+
+STEP 7: TEST IT
+==========================================
+1. Login as super admin
+2. Go to Businesses page
+3. Click the purple Key icon 🔑 on any business
+4. Toggle "Enable Self-Service" ON
+5. Should create account and show credentials!
+6. No more 400 errors!
+
+==========================================
+EXAMPLE .env VALUES (AFTER SETUP)
+==========================================
+
+backend/.env:
+-----------
+SUPABASE_URL=https://uflzxfewtemiysygfwun.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9s...
+PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+API_SECRET_KEY=a1b2c3d4e5f6789012345678901234567890123456789012345678901234
+
+frontend/.env:
+-----------
+VITE_SUPABASE_URL=https://uflzxfewtemiysygfwun.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_BACKEND_URL=http://localhost:3001
+VITE_API_KEY=a1b2c3d4e5f6789012345678901234567890123456789012345678901234
+
+(Note: API_SECRET_KEY and VITE_API_KEY must be IDENTICAL!)
+
+==========================================
+TROUBLESHOOTING
+==========================================
+
+Error: "Missing Supabase environment variables"
+→ Check SUPABASE_SERVICE_ROLE_KEY in backend/.env
+
+Error: "Unauthorized: Invalid API key"
+→ Make sure API_SECRET_KEY (backend) matches VITE_API_KEY (frontend)
+
+Error: "CORS error"
+→ Check FRONTEND_URL in backend/.env is http://localhost:5173
+
+Backend won't start:
+→ Make sure you're in /backend folder
+→ Run: npm install
+→ Check Node version: node -v (need v18+)
+
+Frontend API calls fail:
+→ Check backend is running on port 3001
+→ Check VITE_BACKEND_URL=http://localhost:3001
+
+==========================================

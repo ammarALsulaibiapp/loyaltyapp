@@ -1,0 +1,117 @@
+==========================================
+DEPLOYMENT INSTRUCTIONS
+==========================================
+
+BACKEND SETUP (Render.com)
+==========================================
+
+1. Push backend code to GitHub
+   - Create a new repo or use existing one
+   - Push the /backend folder
+
+2. Deploy on Render:
+   - Go to https://render.com
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repo
+   - Select the backend folder
+   - Configure:
+     * Name: loyalty-backend
+     * Runtime: Node
+     * Build Command: npm install && npm run build
+     * Start Command: npm start
+     * Plan: Free or paid
+
+3. Add Environment Variables in Render:
+   - SUPABASE_URL: Get from Supabase dashboard
+   - SUPABASE_SERVICE_ROLE_KEY: Get from Supabase → Settings → API → service_role key
+   - API_SECRET_KEY: Generate random string (use: openssl rand -hex 32)
+   - FRONTEND_URL: Your frontend URL (will add after frontend deploy)
+   - PORT: 3001
+   - NODE_ENV: production
+
+4. Deploy and copy the URL (e.g., https://loyalty-backend.onrender.com)
+
+==========================================
+FRONTEND SETUP (Supabase/Netlify)
+==========================================
+
+1. Add backend URL to frontend .env:
+   - Copy frontend/.env.example to frontend/.env
+   - Add:
+     VITE_BACKEND_URL=https://loyalty-backend.onrender.com
+     VITE_API_KEY=your-api-secret-key-here (same as backend)
+
+2. Deploy Frontend:
+   
+   Option A - Netlify:
+   - Go to https://netlify.com
+   - Drag & drop /frontend/dist folder
+   - Or connect GitHub repo
+   - Build settings:
+     * Build command: npm run build
+     * Publish directory: dist
+   - Add environment variables in Netlify dashboard
+
+   Option B - Supabase Hosting:
+   - Install Supabase CLI: npm install -g supabase
+   - In frontend folder: supabase deploy
+   - Follow prompts
+
+3. Update FRONTEND_URL in Render backend env variables with your deployed URL
+
+==========================================
+TESTING
+==========================================
+
+1. Login as Super Admin
+2. Go to Businesses page
+3. Click Key icon on a business
+4. Enable Self-Service
+5. Should create account successfully
+6. Copy credentials and try logging in
+
+==========================================
+API ENDPOINTS (Backend)
+==========================================
+
+BASE URL: https://your-backend.onrender.com
+
+All requests need header:
+x-api-key: your-api-secret-key
+
+POST /api/auth/create-business-owner
+POST /api/auth/create-staff
+POST /api/auth/reset-password
+POST /api/auth/update-email
+POST /api/auth/delete-user
+GET /health (no auth needed)
+
+==========================================
+TROUBLESHOOTING
+==========================================
+
+If "Cannot create user":
+- Check SUPABASE_SERVICE_ROLE_KEY is correct
+- Check backend logs in Render dashboard
+- Verify API_KEY matches in frontend and backend
+
+If CORS error:
+- Update FRONTEND_URL in backend env variables
+- Restart backend service
+
+If 401 Unauthorized:
+- Check x-api-key header is being sent
+- Verify API_KEY env variable is set
+
+==========================================
+SECURITY CHECKLIST
+==========================================
+
+✓ Never commit .env files
+✓ Use strong random API_SECRET_KEY
+✓ CORS restricted to your frontend URL only
+✓ Service role key only in backend (never in frontend)
+✓ Rate limiting enabled (100 req/15min)
+✓ Helmet.js security headers enabled
+
+==========================================

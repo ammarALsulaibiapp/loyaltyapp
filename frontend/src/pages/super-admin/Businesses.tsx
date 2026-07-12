@@ -1,0 +1,823 @@
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '../../lib/supabase'
+import { backendAPI } from '../../lib/api'
+import { useAuthStore } from '../../stores/authStore'
+import Card from '../../components/ui/Card'
+import Button from '../../components/ui/Button'
+import Modal from '../../components/ui/Modal'
+import Input from '../../components/ui/Input'
+import Toggle from '../../components/ui/Toggle'
+import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield } from 'lucide-react'
+import { format } from 'date-fns'
+import { isDemoMode, mockBusinesses } from '../../lib/mockData'
+import { useTranslation } from 'react-i18next'
+
+interface Business {
+  id: string
+  name: string
+  slug: string
+  email: string | null
+  phone_number: string | null
+  logo_url: string | null
+  brand_color: string
+  is_active: boolean
+  self_service_enabled: boolean
+  currency?: string
+  owner_user_id: string | null
+  created_at: string
+}
+
+export default function BusinessesPage() {
+  const { t } = useTranslation()
+  const { profile } = useAuthStore()
+  const queryClient = useQueryClient()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isEditBusinessDataModal, setIsEditBusinessDataModal] = useState(false)
+  const [editingBusiness, setEditingBusiness] = useState<Business | null>(null)
+  const [generatedPassword, setGeneratedPassword] = useState('')
+  const [ownerEmail, setOwnerEmail] = useState('')
+  const [newOwnerPassword, setNewOwnerPassword] = useState('')
+  const [copied, setCopied] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: '',
+    email: '',
+    phone_number: '',
+    brand_color: '#0ea5e9',
+    logo_url: '',
+    currency: 'OMR',
+  })
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    slug: '',
+    email: '',
+    phone_number: '',
+    brand_color: '#0ea5e9',
+    logo_url: '',
+    currency: 'OMR',
+    password: '',
+  })
+
+  // Fetch businesses
+  const { data: businesses, isLoading } = useQuery({
+    queryKey: ['businesses'],
+    queryFn: async () => {
+      // DEMO MODE: Return mock data
+      if (isDemoMode()) {
+        return mockBusinesses
+      }
+
+      const { data, error } = await supabase
+        .from('businesses')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      return data as Business[]
+    },
+  })
+
+  // Create business mutation
+  const createMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const { error } = await (supabase.from('businesses') as any).insert(data)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['businesses'] })
+      setIsModalOpen(false)
+      resetForm()
+    },
+  })
+
+  // Update business mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data: typeof editFormData & { id: string }) => {
+      if (isDemoMode()) {
+        return { success: true, message: 'Business updated in demo mode' }
+      }
+
+      const { error } = await (supabase.from('businesses') as any)
+        .update({
+          name: data.name,
+          slug: data.slug,
+          email: data.email,
+          phone_number: data.phone_number,
+          brand_color: data.brand_color,
+          logo_url: data.logo_url,
+        })
+        .eq('id', data.id)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['businesses'] })
+      setIsEditBusinessDataModal(false)
+      setEditingBusiness(null)
+      alert('Business updated successfully!')
+    },
+    onError: (error: any) => {
+      alert(`Error updating business: ${error.message}`)
+    },
+  })
+
+  // Delete business mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (businessId: string) => {
+      if (isDemoMode()) {
+        // Demo mode: just show success
+        return
+      }
+
+      const { error } = await supabase
+        .from('businesses')
+        .delete()
+        .eq('id', businessId)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['businesses'] })
+      alert('✅ Business deleted successfully!')
+    },
+    onError: (error: any) => {
+      alert(`❌ Error deleting business: ${error.message}`)
+    },
+  })
+
+  // Toggle active status
+  const toggleActiveMutation = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      if (isDemoMode()) {
+        // Demo mode: just show success
+        return
+      }
+      const { error } = await (supabase.from('businesses') as any)
+        .update({ is_active: !is_active })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['businesses'] })
+    },
+  })
+
+  // Toggle self-service
+  const toggleSelfServiceMutation = useMutation({
+    mutationFn: async ({ businessId, enabled }: { businessId: string; enabled: boolean }) => {
+      if (isDemoMode()) {
+        // Demo mode: just show success
+        if (enabled) {
+          const business = mockBusinesses.find(b => b.id === businessId)
+          if (business) {
+            const email = business.email || `owner@${business.slug}.com`
+            const password = generateRandomPassword()
+            setOwnerEmail(email)
+            setGeneratedPassword(password)
+          }
+        }
+        return
+      }
+
+      const business = businesses?.find(b => b.id === businessId)
+      if (!business) throw new Error('Business not found')
+
+      if (enabled) {
+        // Create owner account using backend API
+        const email = business.email || `owner@${business.slug}.com`
+        const password = generateRandomPassword()
+        
+        try {
+          // Call backend to create user with service role
+          const result = await backendAPI.createBusinessOwner({
+            email,
+            password,
+            full_name: `${business.name} Owner`,
+            business_id: businessId,
+            requester_role: profile?.role || 'super_admin'
+          })
+
+          // Update business to enable self-service and link owner
+          const { error } = await (supabase.from('businesses') as any)
+            .update({ 
+              self_service_enabled: true,
+              owner_user_id: result.user_id
+            })
+            .eq('id', businessId)
+          
+          if (error) throw error
+          
+          setOwnerEmail(email)
+          setGeneratedPassword(password)
+        } catch (error: any) {
+          throw new Error(`Failed to create owner account: ${error.message}`)
+        }
+      } else {
+        // Disable self-service
+        const { error } = await (supabase.from('businesses') as any)
+          .update({ self_service_enabled: false })
+          .eq('id', businessId)
+        
+        if (error) throw error
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['businesses'] })
+    },
+  })
+
+  const generateRandomPassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%'
+    let password = ''
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return password
+  }
+
+  const handleGenerateNewPassword = () => {
+    const newPassword = generateRandomPassword()
+    setNewOwnerPassword(newPassword)
+  }
+
+  const handleResetOwnerPassword = async () => {
+    if (!editingBusiness || !newOwnerPassword) return
+
+    if (isDemoMode()) {
+      setGeneratedPassword(newOwnerPassword)
+      setNewOwnerPassword('')
+      alert('Password updated in demo mode!')
+      return
+    }
+
+    try {
+      const email = `owner@${editingBusiness.slug}.com`
+      
+      // Just call the backend to create/update the owner account
+      const result = await backendAPI.createBusinessOwner({
+        email: email,
+        password: newOwnerPassword,
+        full_name: `${editingBusiness.name} Owner`,
+        business_id: editingBusiness.id,
+        requester_role: profile?.role || 'super_admin'
+      })
+      
+      setOwnerEmail(email)
+      setGeneratedPassword(newOwnerPassword)
+      setNewOwnerPassword('')
+      alert('Password set successfully! Owner can now login.')
+      
+    } catch (error: any) {
+      alert(`Error: ${error.message}`)
+    }
+  }
+
+  const handleCopyCredentials = () => {
+    const text = `Email: ${ownerEmail}\nPassword: ${generatedPassword}`
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } else {
+      alert(`Credentials:\n\nEmail: ${ownerEmail}\nPassword: ${generatedPassword}`)
+    }
+  }
+
+  const copyToClipboard = (text: string, label: string) => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+      alert(`${label} copied!`)
+    } else {
+      alert(`${label}:\n${text}`)
+    }
+  }
+
+  const openEditModal = (business: Business) => {
+    setEditingBusiness(business)
+    setOwnerEmail(`owner@${business.slug}.com`)
+    setGeneratedPassword('')
+    setIsEditModalOpen(true)
+  }
+
+  const openEditBusinessDataModal = (business: Business) => {
+    setEditingBusiness(business)
+    setEditFormData({
+      name: business.name,
+      slug: business.slug,
+      email: business.email || '',
+      phone_number: business.phone_number || '',
+      brand_color: business.brand_color || '#0ea5e9',
+      logo_url: business.logo_url || '',
+      currency: (business as any).currency || 'OMR',
+      password: '',
+    })
+    setIsEditBusinessDataModal(true)
+  }
+
+  const handleGeneratePasswordForEdit = () => {
+    const newPassword = generateRandomPassword()
+    setEditFormData({ ...editFormData, password: newPassword } as any)
+  }
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      slug: '',
+      email: '',
+      phone_number: '',
+      brand_color: '#0ea5e9',
+      logo_url: '',
+      currency: 'OMR',
+    })
+    setEditingBusiness(null)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    createMutation.mutate(formData)
+  }
+
+  const handleUpdate = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (editingBusiness) {
+      updateMutation.mutate({ ...editFormData, id: editingBusiness.id })
+    }
+  }
+
+  const openCreateModal = () => {
+    resetForm()
+    setIsModalOpen(true)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('businesses.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            {t('businesses.manageBusinesses')}
+          </p>
+        </div>
+        <Button icon={<Plus className="w-4 h-4" />} onClick={openCreateModal}>
+          {t('businesses.addNew')}
+        </Button>
+      </div>
+
+      <Card>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  {t('businesses.name')}
+                </th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  {t('businesses.slug', 'Slug')}
+                </th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  {t('businesses.email')}
+                </th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  {t('businesses.status')}
+                </th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  {t('businesses.selfService', 'Self-Service')}
+                </th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  {t('businesses.createdAt')}
+                </th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  {t('businesses.actions')}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {businesses?.map((business) => (
+                <tr
+                  key={business.id}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                >
+                  <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">
+                    {business.name}
+                  </td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                    {business.slug}
+                  </td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                    <div className="text-sm">
+                      {business.email && <div>{business.email}</div>}
+                      {business.phone_number && <div>{business.phone_number}</div>}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        business.is_active
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      }`}
+                    >
+                      {business.is_active ? t('common.active') : t('businesses.suspended', 'Suspended')}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    {business.self_service_enabled ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        <Shield className="w-3 h-3" />
+                        {t('common.enabled', 'Enabled')}
+                      </span>
+                    ) : (
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                        {t('common.disabled', 'Disabled')}
+                      </span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                    {business.created_at ? format(new Date(business.created_at), 'MMM dd, yyyy') : 'N/A'}
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          toggleActiveMutation.mutate({
+                            id: business.id,
+                            is_active: business.is_active,
+                          })
+                        }
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                        title={business.is_active ? 'Suspend' : 'Activate'}
+                      >
+                        {business.is_active ? (
+                          <Pause className="w-4 h-4 text-orange-600" />
+                        ) : (
+                          <Play className="w-4 h-4 text-green-600" />
+                        )}
+                      </button>
+                      <button
+                        onClick={() => openEditBusinessDataModal(business)}
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                        title={t('businesses.editBusiness', 'Edit Business Data')}
+                      >
+                        <Edit className="w-4 h-4 text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => openEditModal(business)}
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                        title="Manage Self-Service"
+                      >
+                        <Key className="w-4 h-4 text-purple-600" />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          if (confirm(`⚠️ Delete ${business.name}?\n\nThis will permanently delete:\n• The business\n• All customers\n• All loyalty programs\n• All visits and rewards\n• All staff accounts\n\nThis action CANNOT be undone!`)) {
+                            deleteMutation.mutate(business.id)
+                          }
+                        }}
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                        title="Delete Business"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {/* Create/Edit Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={t('businesses.addNew')}
+        size="lg"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label={t('businesses.name')}
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+          />
+          <Input
+            label={t('businesses.slug', 'Slug')}
+            value={formData.slug}
+            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+            helperText={t('businesses.slugHelp', 'Unique identifier (e.g., coffee-shop-123)')}
+            required
+          />
+          <Input
+            label={t('businesses.logoUrl', 'Logo URL')}
+            value={formData.logo_url}
+            onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+            placeholder="https://example.com/logo.png"
+            helperText={t('businesses.logoUrlHelp', 'Paste image URL')}
+          />
+          <Input
+            label={t('businesses.ownerEmail', 'Owner Login Email (Optional)')}
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            placeholder="owner@example.com"
+          />
+          <Input
+            label={t('businesses.phone', 'Phone Number')}
+            value={formData.phone_number}
+            onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('businesses.brandColor', 'Brand Color')}
+            </label>
+            <input
+              type="color"
+              value={formData.brand_color}
+              onChange={(e) => setFormData({ ...formData, brand_color: e.target.value })}
+              className="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600"
+            />
+          </div>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" loading={createMutation.isPending}>
+              {t('common.create')}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Business Data Modal */}
+      <Modal
+        isOpen={isEditBusinessDataModal}
+        onClose={() => setIsEditBusinessDataModal(false)}
+        title={t('businesses.editBusiness', 'Edit Business Information')}
+        size="lg"
+      >
+        <form onSubmit={handleUpdate} className="space-y-4">
+          <Input
+            label={t('businesses.name')}
+            value={editFormData.name}
+            onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+            required
+          />
+          <Input
+            label={t('businesses.slug', 'Slug')}
+            value={editFormData.slug}
+            onChange={(e) => setEditFormData({ ...editFormData, slug: e.target.value })}
+            helperText={t('businesses.slugHelp', 'Unique identifier')}
+            required
+          />
+          <Input
+            label={t('businesses.logoUrl', 'Logo URL')}
+            value={editFormData.logo_url}
+            onChange={(e) => setEditFormData({ ...editFormData, logo_url: e.target.value })}
+            placeholder="https://example.com/logo.png"
+            helperText={t('businesses.logoUrlHelp', 'Paste image URL')}
+          />
+          <Input
+            label={t('businesses.email', 'Email')}
+            type="email"
+            value={editFormData.email}
+            onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+            helperText="Business contact email (NOT for login - use Self-Service for login)"
+          />
+          <Input
+            label={t('businesses.phone')}
+            value={editFormData.phone_number}
+            onChange={(e) => setEditFormData({ ...editFormData, phone_number: e.target.value })}
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('businesses.brandColor', 'Brand Color')}
+            </label>
+            <input
+              type="color"
+              value={editFormData.brand_color}
+              onChange={(e) => setEditFormData({ ...editFormData, brand_color: e.target.value })}
+              className="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600"
+            />
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-3">
+              <p className="text-sm text-blue-900 dark:text-blue-100">
+                <strong>💡 {t('common.tip', 'Tip:')}</strong> {t('businesses.credentialsTip', 'To set login credentials for the business owner, use the Key icon to enable Self-Service Access.')}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6">
+            <Button variant="outline" onClick={() => setIsEditBusinessDataModal(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" loading={updateMutation.isPending}>
+              {t('businesses.updateBusiness', 'Update Business')}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Business Modal with Self-Service Toggle */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title={t('businesses.manageBusiness', 'Manage Business')}
+        size="lg"
+      >
+        {editingBusiness && (
+          <div className="space-y-6">
+            {/* Business Info */}
+            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                {editingBusiness.name}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Slug: {editingBusiness.slug}
+              </p>
+              {editingBusiness.email && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Email: {editingBusiness.email}
+                </p>
+              )}
+            </div>
+
+            {/* Self-Service Toggle */}
+            <Card title={`🔑 ${t('businesses.selfService', 'Self-Service Access')}`}>
+              <div className="space-y-4">
+                <Toggle
+                  enabled={editingBusiness.self_service_enabled}
+                  onChange={(enabled) => {
+                    toggleSelfServiceMutation.mutate({
+                      businessId: editingBusiness.id,
+                      enabled,
+                    })
+                  }}
+                  label={t('businesses.enableSelfService', 'Enable Self-Service Access')}
+                  description={t('businesses.selfServiceDesc', 'Allow business owner to login and manage their own loyalty programs, QR codes, and customers')}
+                />
+
+                {editingBusiness.self_service_enabled || generatedPassword ? (
+                  <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-start gap-3 mb-4">
+                      <Key className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                          {t('businesses.ownerLogin', 'Owner Login Credentials')}
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded">
+                            <div>
+                              <span className="text-blue-700 dark:text-blue-300 font-medium">
+                                Email:
+                              </span>{' '}
+                              <span className="text-blue-900 dark:text-blue-100 font-mono">
+                                {ownerEmail}
+                              </span>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              icon={<Copy className="w-3 h-3" />}
+                              onClick={() => copyToClipboard(ownerEmail, 'Email')}
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                          {generatedPassword && (
+                            <div className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded">
+                              <div>
+                                <span className="text-blue-700 dark:text-blue-300 font-medium">
+                                  {t('auth.password', 'Password')}:
+                                </span>{' '}
+                                <span className="text-blue-900 dark:text-blue-100 font-mono">
+                                  {generatedPassword}
+                                </span>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                icon={<Copy className="w-3 h-3" />}
+                                onClick={() => copyToClipboard(generatedPassword, 'Password')}
+                              >
+                                {t('common.copy', 'Copy')}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Password Reset Section */}
+                        <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded border border-blue-200 dark:border-blue-700">
+                          <h5 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                            🔄 {t('staff.newPassword', 'Reset Owner Password')}
+                          </h5>
+                          <div className="space-y-2">
+                            <div className="flex gap-2">
+                              <Input
+                                type="text"
+                                value={newOwnerPassword}
+                                onChange={(e) => setNewOwnerPassword(e.target.value)}
+                                placeholder={t('staff.newPassword', 'Enter new password or generate')}
+                              />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleGenerateNewPassword}
+                              >
+                                {t('staff.generatePassword', 'Generate')}
+                              </Button>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={handleResetOwnerPassword}
+                              disabled={!newOwnerPassword}
+                            >
+                              {t('common.update', 'Update Password')}
+                            </Button>
+                          </div>
+                        </div>
+
+                        {generatedPassword && (
+                          <div className="mt-3 flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              icon={copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                              onClick={handleCopyCredentials}
+                            >
+                              {copied ? t('common.copied', 'Copied!') : t('businesses.copyCredentials', 'Copy All Credentials')}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              icon={<Mail className="w-4 h-4" />}
+                            >
+                              {t('businesses.emailToOwner', 'Email to Owner')}
+                            </Button>
+                          </div>
+                        )}
+
+                        <div className="mt-3 p-3 bg-white dark:bg-gray-800 rounded border border-blue-200 dark:border-blue-700">
+                          <p className="text-xs text-blue-700 dark:text-blue-300 font-medium mb-1">
+                            ⚠️ {t('businesses.important', 'Important:')}
+                          </p>
+                          <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                            <li>• {t('businesses.sendCredentials', 'Send these credentials securely')}</li>
+                            <li>• {t('businesses.ownerCanLogin', 'They can login at the same URL you use')}</li>
+                            <li>• {t('businesses.onlyTheirData', 'They will see ONLY their business data')}</li>
+                            <li>• {t('businesses.dataPreserved', 'All customer data is preserved')}</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('businesses.selfServiceDisabled', 'Self-service is currently disabled.')}
+                    </p>
+                  </div>
+                )}
+
+                {/* What They Can Do */}
+                {editingBusiness.self_service_enabled && (
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                    <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+                      ✅ {t('businesses.whenEnabled', 'When self-service is enabled, business owner can:')}
+                    </h4>
+                    <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
+                      <li>• {t('businesses.canGenerateQR', 'Generate their own QR codes')}</li>
+                      <li>• {t('businesses.canManagePrograms', 'Create and manage loyalty programs')}</li>
+                      <li>• {t('businesses.canViewCustomers', 'View all customers')}</li>
+                      <li>• {t('businesses.canManageStaff', 'Add and manage staff accounts')}</li>
+                      <li>• {t('businesses.canViewReports', 'View reports and analytics')}</li>
+                      <li>• {t('businesses.canManageSettings', 'Manage business settings')}</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                {t('common.close', 'Close')}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
+  )
+}

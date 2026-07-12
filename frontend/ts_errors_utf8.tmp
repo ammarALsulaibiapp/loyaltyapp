@@ -1,0 +1,107 @@
+﻿src/App.tsx(1,50): error TS6133: 'Navigate' is declared but its value is never read.
+src/hooks/useDemoQuery.ts(16,14): error TS2349: This expression is not callable.
+  Not all constituents of type 'unique symbol | QueryFunction<T, readonly unknown[], never>' are callable.
+    Type 'unique symbol' has no call signatures.
+src/layouts/BusinessLayout.tsx(21,3): error TS6133: 'QrCode' is declared but its value is never read.
+src/lib/api.ts(3,33): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/api.ts(4,29): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/mockData.ts(305,35): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/qr-generator.ts(56,29): error TS6133: 'qrHash' is declared but its value is never read.
+src/lib/supabase.ts(4,33): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/supabase.ts(5,37): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/wallet.ts(178,66): error TS2339: Property 'MSStream' does not exist on type 'Window & typeof globalThis'.
+src/pages/business/Customers.tsx(14,34): error TS6133: 'generateSecureToken' is declared but its value is never read.
+src/pages/business/Customers.tsx(91,9): error TS2353: Object literal may only specify known properties, and 'business_id' does not exist in type 'never[]'.
+src/pages/business/Customers.tsx(100,19): error TS2345: Argument of type '{ qr_code: any; }' is not assignable to parameter of type 'never'.
+src/pages/business/Customers.tsx(100,42): error TS2339: Property 'id' does not exist on type 'never'.
+src/pages/business/Customers.tsx(101,33): error TS2339: Property 'id' does not exist on type 'never'.
+src/pages/business/LoyaltyPrograms.tsx(11,16): error TS6133: 'Edit' is declared but its value is never read.
+src/pages/business/LoyaltyPrograms.tsx(11,22): error TS6133: 'Trash2' is declared but its value is never read.
+src/pages/business/LoyaltyPrograms.tsx(87,9): error TS2353: Object literal may only specify known properties, and 'business_id' does not exist in type 'never[]'.
+src/pages/business/LoyaltyPrograms.tsx(184,22): error TS2367: This comparison appears to be unintentional because the types '"visit_based" | "points_based"' and '"stamp_card"' have no overlap.
+src/pages/business/LoyaltyPrograms.tsx(188,33): error TS2339: Property 'type' does not exist on type 'never'.
+src/pages/business/LoyaltyPrograms.tsx(221,18): error TS2367: This comparison appears to be unintentional because the types '"visit_based" | "points_based"' and '"stamp_card"' have no overlap.
+src/pages/business/LoyaltyPrograms.tsx(225,32): error TS2339: Property 'required_stamps' does not exist on type 'never'.
+src/pages/business/LoyaltyPrograms.tsx(245,18): error TS2367: This comparison appears to be unintentional because the types '"visit_based" | "points_based"' and '"cashback"' have no overlap.
+src/pages/business/LoyaltyPrograms.tsx(249,32): error TS2339: Property 'cashback_percentage' does not exist on type 'never'.
+src/pages/business/QRGenerator.tsx(61,71): error TS2339: Property 'slug' does not exist on type 'never'.
+src/pages/business/QRGenerator.tsx(69,24): error TS2339: Property 'brand_color' does not exist on type 'never'.
+src/pages/business/Rewards-OLD-BROKEN.tsx(308,12): error TS2367: This comparison appears to be unintentional because the types '"visit_based"' and '"points_based"' have no overlap.
+src/pages/business/Rewards-OLD-BROKEN.tsx(334,12): error TS2367: This comparison appears to be unintentional because the types '"visit_based"' and '"stamp_card"' have no overlap.
+src/pages/business/Rewards-OLD-BROKEN.tsx(347,12): error TS2367: This comparison appears to be unintentional because the types '"visit_based"' and '"cashback"' have no overlap.
+src/pages/business/Settings.tsx(8,27): error TS6133: 'Palette' is declared but its value is never read.
+src/pages/business/Settings.tsx(51,21): error TS2339: Property 'name' does not exist on type 'never'.
+src/pages/business/Settings.tsx(52,22): error TS2339: Property 'email' does not exist on type 'never'.
+src/pages/business/Settings.tsx(53,29): error TS2339: Property 'phone_number' does not exist on type 'never'.
+src/pages/business/Settings.tsx(54,24): error TS2339: Property 'address' does not exist on type 'never'.
+src/pages/business/Settings.tsx(55,28): error TS2339: Property 'description' does not exist on type 'never'.
+src/pages/business/Settings.tsx(59,28): error TS2339: Property 'brand_color' does not exist on type 'never'.
+src/pages/business/Settings.tsx(63,40): error TS2339: Property 'sms_enabled' does not exist on type 'never'.
+src/pages/business/Settings.tsx(64,45): error TS2339: Property 'whatsapp_enabled' does not exist on type 'never'.
+src/pages/business/Settings.tsx(65,42): error TS2339: Property 'email_enabled' does not exist on type 'never'.
+src/pages/business/Settings.tsx(66,52): error TS2339: Property 'notify_customer_created' does not exist on type 'never'.
+src/pages/business/Settings.tsx(67,49): error TS2339: Property 'notify_reward_earned' does not exist on type 'never'.
+src/pages/business/Settings.tsx(68,51): error TS2339: Property 'notify_reward_redeemed' does not exist on type 'never'.
+src/pages/business/Settings.tsx(69,44): error TS2339: Property 'notify_birthday' does not exist on type 'never'.
+src/pages/business/Settings.tsx(70,54): error TS2339: Property 'notify_membership_upgrade' does not exist on type 'never'.
+src/pages/business/Settings.tsx(80,17): error TS2345: Argument of type 'any' is not assignable to parameter of type 'never'.
+src/pages/business/Settings.tsx(97,17): error TS2345: Argument of type 'any' is not assignable to parameter of type 'never'.
+src/pages/business/Settings.tsx(115,11): error TS2353: Object literal may only specify known properties, and 'business_id' does not exist in type 'never[]'.
+src/pages/business/Staff.tsx(12,33): error TS6133: 'Copy' is declared but its value is never read.
+src/pages/business/Staff.tsx(121,17): error TS2345: Argument of type '{ full_name: string; phone_number: string; }' is not assignable to parameter of type 'never'.
+src/pages/business/Staff.tsx(135,19): error TS2345: Argument of type '{ email: string; }' is not assignable to parameter of type 'never'.
+src/pages/business/Staff.tsx(176,17): error TS2345: Argument of type '{ is_active: boolean; }' is not assignable to parameter of type 'never'.
+src/pages/CustomerCard.tsx(6,16): error TS6133: 'Award' is declared but its value is never read.
+src/pages/CustomerCard.tsx(6,23): error TS6133: 'Activity' is declared but its value is never read.
+src/pages/CustomerCard.tsx(6,43): error TS6133: 'QrCodeIcon' is declared but its value is never read.
+src/pages/CustomerCard.tsx(86,26): error TS2367: This comparison appears to be unintentional because the types '"points_based"' and '"stamp_card"' have no overlap.
+src/pages/CustomerCard.tsx(87,64): error TS2339: Property 'required_stamps' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(88,36): error TS2339: Property 'required_stamps' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(148,43): error TS2339: Property 'business_id' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(160,47): error TS2339: Property 'id' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(165,39): error TS2339: Property 'visit_count' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(168,39): error TS2339: Property 'visit_count' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(171,39): error TS2339: Property 'total_points' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(188,26): error TS2339: Property 'qr_code' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(189,61): error TS2339: Property 'qr_code' does not exist on type 'never'.
+src/pages/CustomerCard.tsx(231,9): error TS6133: 'getTierColor' is declared but its value is never read.
+src/pages/CustomerCard.tsx(242,9): error TS6133: 'renderStamps' is declared but its value is never read.
+src/pages/PublicSignup.tsx(126,11): error TS2353: Object literal may only specify known properties, and 'business_id' does not exist in type 'never[]'.
+src/pages/PublicSignup.tsx(147,36): error TS2339: Property 'id' does not exist on type 'never'.
+src/pages/staff/CustomerLookup.tsx(95,44): error TS2339: Property 'id' does not exist on type 'never'.
+src/pages/staff/CustomerLookup.tsx(103,46): error TS2339: Property 'id' does not exist on type 'never'.
+src/pages/staff/CustomerLookup.tsx(106,15): error TS2698: Spread types may only be created from object types.
+src/pages/staff/CustomerLookup.tsx(113,13): error TS2698: Spread types may only be created from object types.
+src/pages/staff/CustomerLookup.tsx(114,36): error TS2339: Property 'visit_count' does not exist on type 'never'.
+src/pages/staff/CustomerLookup.tsx(115,44): error TS2339: Property 'total_rewards_earned' does not exist on type 'never'.
+src/pages/staff/CustomerLookup.tsx(180,9): error TS2353: Object literal may only specify known properties, and 'business_id' does not exist in type 'never[]'.
+src/pages/staff/CustomerLookup.tsx(206,9): error TS2353: Object literal may only specify known properties, and 'business_id' does not exist in type 'never[]'.
+src/pages/staff/CustomerLookup.tsx(340,41): error TS2339: Property 'logo_url' does not exist on type 'never'.
+src/pages/staff/CustomerLookup.tsx(343,47): error TS2339: Property 'logo_url' does not exist on type 'never'.
+src/pages/staff/Dashboard.tsx(181,13): error TS2322: Type '{ placeholder: string; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; icon: Element; }' is not assignable to type 'IntrinsicAttributes & InputProps & RefAttributes<HTMLInputElement>'.
+  Property 'icon' does not exist on type 'IntrinsicAttributes & InputProps & RefAttributes<HTMLInputElement>'.
+src/pages/super-admin/Businesses.tsx(84,66): error TS2345: Argument of type '{ name: string; slug: string; email: string; phone_number: string; brand_color: string; logo_url: string; currency: string; }' is not assignable to parameter of type 'never[]'.
+  Type '{ name: string; slug: string; email: string; phone_number: string; brand_color: string; logo_url: string; currency: string; }' is missing the following properties from type 'never[]': length, pop, push, concat, and 29 more.
+src/pages/super-admin/Businesses.tsx(103,17): error TS2345: Argument of type '{ name: string; slug: string; email: string; phone_number: string; brand_color: string; logo_url: string; }' is not assignable to parameter of type 'never'.
+src/pages/super-admin/Businesses.tsx(159,17): error TS2345: Argument of type '{ is_active: boolean; }' is not assignable to parameter of type 'never'.
+src/pages/super-admin/Businesses.tsx(206,21): error TS2345: Argument of type '{ self_service_enabled: boolean; owner_user_id: any; }' is not assignable to parameter of type 'never'.
+src/pages/super-admin/Businesses.tsx(223,19): error TS2345: Argument of type '{ self_service_enabled: boolean; }' is not assignable to parameter of type 'never'.
+src/pages/super-admin/Businesses.tsx(262,13): error TS6133: 'result' is declared but its value is never read.
+src/pages/super-admin/Businesses.tsx(322,9): error TS6133: 'handleGeneratePasswordForEdit' is declared but its value is never read.
+src/pages/super-admin/Businesses.tsx(328,17): error TS2345: Argument of type '{ name: string; slug: string; email: string; phone_number: string; brand_color: string; logo_url: string; }' is not assignable to parameter of type 'SetStateAction<{ name: string; slug: string; email: string; phone_number: string; brand_color: string; logo_url: string; currency: string; }>'.
+  Property 'currency' is missing in type '{ name: string; slug: string; email: string; phone_number: string; brand_color: string; logo_url: string; }' but required in type '{ name: string; slug: string; email: string; phone_number: string; brand_color: string; logo_url: string; currency: string; }'.
+src/pages/super-admin/Dashboard.tsx(54,54): error TS2339: Property 'is_active' does not exist on type 'never'.
+src/pages/super-admin/Dashboard.tsx(55,60): error TS2339: Property 'status' does not exist on type 'never'.
+src/pages/super-admin/Dashboard.tsx(56,61): error TS2339: Property 'status' does not exist on type 'never'.
+src/pages/super-admin/Dashboard.tsx(59,67): error TS2339: Property 'is_redeemed' does not exist on type 'never'.
+src/pages/super-admin/Invoices.tsx(85,17): error TS2345: Argument of type '{ status: string; paid_date: string; }' is not assignable to parameter of type 'never'.
+src/pages/super-admin/PlatformSettings.tsx(6,1): error TS6133: 'ARAB_CURRENCIES' is declared but its value is never read.
+src/pages/super-admin/QRGenerator.tsx(6,1): error TS6133: 'Select' is declared but its value is never read.
+src/stores/authStore.ts(4,22): error TS6133: 'mockProfile' is declared but its value is never read.
+src/stores/authStore.ts(43,9): error TS2322: Type '{ id: string; email: string; full_name: string; role: "super_admin"; business_id: null; phone_number: string; avatar_url: null; is_active: boolean; }' is not assignable to type '{ id: string; email: string; full_name: string; role: "business_admin"; business_id: string; phone_number: string; avatar_url: null; is_active: boolean; }'.
+  Types of property 'role' are incompatible.
+    Type '"super_admin"' is not assignable to type '"business_admin"'.
+src/stores/authStore.ts(45,9): error TS2322: Type '{ id: string; email: string; full_name: string; role: "staff"; business_id: string; phone_number: string; avatar_url: null; is_active: boolean; }' is not assignable to type '{ id: string; email: string; full_name: string; role: "business_admin"; business_id: string; phone_number: string; avatar_url: null; is_active: boolean; }'.
+  Types of property 'role' are incompatible.
+    Type '"staff"' is not assignable to type '"business_admin"'.
+src/stores/authStore.ts(85,11): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'never[]'.
