@@ -283,11 +283,13 @@ export default function PublicSignup() {
         >
           <div className="text-center">
             {business.logo_url && (
-              <img
-                src={business.logo_url}
-                alt={business.name}
-                className="w-20 h-20 rounded-full mx-auto mb-4 object-cover ring-2 ring-white/50"
-              />
+              <div className="w-20 h-20 rounded-full mx-auto mb-4 bg-white p-2 ring-2 ring-white/50 flex items-center justify-center">
+                <img
+                  src={business.logo_url}
+                  alt={business.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
             )}
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               {business.name}
