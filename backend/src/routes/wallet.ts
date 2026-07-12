@@ -49,11 +49,12 @@ router.get('/google/:customerId', async (req, res) => {
       customerData: customerWalletData
     })
 
-  } catch (error: any) {
-    console.error('Google Wallet error:', error)
+  } catch (error) {
+    const err = error as any
+    console.error('Google Wallet error:', err)
     res.status(500).json({ 
       error: 'Failed to generate wallet pass',
-      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      details: process.env.NODE_ENV === 'development' ? err?.message : undefined
     })
   }
 })
@@ -75,7 +76,7 @@ router.post('/class/:businessSlug', async (req, res) => {
     }
 
     // Create loyalty class in Google Wallet
-    const result: any = await googleWalletService.createLoyaltyClass(business)
+    const result = await googleWalletService.createLoyaltyClass(business) as any
     
     res.json({ 
       success: true, 
@@ -83,11 +84,12 @@ router.post('/class/:businessSlug', async (req, res) => {
       business: business.name 
     })
 
-  } catch (error: any) {
-    console.error('Create loyalty class error:', error)
+  } catch (error) {
+    const err = error as any
+    console.error('Create loyalty class error:', err)
     res.status(500).json({ 
       error: 'Failed to create loyalty class',
-      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      details: process.env.NODE_ENV === 'development' ? err?.message : undefined
     })
   }
 })
@@ -136,11 +138,12 @@ router.patch('/update/:customerId', async (req, res) => {
       error: result.error
     })
 
-  } catch (error: any) {
-    console.error('Update wallet pass error:', error)
+  } catch (error) {
+    const err = error as any
+    console.error('Update wallet pass error:', err)
     res.status(500).json({ 
       error: 'Failed to update wallet pass',
-      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      details: process.env.NODE_ENV === 'development' ? err?.message : undefined
     })
   }
 })

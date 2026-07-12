@@ -166,7 +166,9 @@ router.post('/create-staff', requireApiKey, async (req, res) => {
         
         if (profileData) {
           userId = profileData.id
-          await supabaseAdmin.auth.admin.updateUserById(userId!, { password })
+          if (userId) {
+            await supabaseAdmin.auth.admin.updateUserById(userId, { password })
+          }
         }
       } else {
         return res.status(400).json({ error: authError.message })
