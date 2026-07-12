@@ -517,11 +517,13 @@ export default function CustomerCard() {
           {/* Logo positioned at top */}
           {customer.businesses.logo_url && (
             <div className={`absolute -top-12 ${language === 'ar' ? 'right-6' : 'left-6'} transform hover:scale-105 transition-transform duration-300`}>
-              <img
-                src={customer.businesses.logo_url}
-                alt={customer.businesses.name}
-                className="w-24 h-24 object-contain bg-white rounded-2xl p-2 shadow-xl ring-4 ring-white/50 dark:ring-gray-800/50"
-              />
+              <div className="w-24 h-24 bg-white rounded-2xl p-3 shadow-xl ring-4 ring-white/50 dark:ring-gray-800/50 flex items-center justify-center">
+                <img
+                  src={customer.businesses.logo_url}
+                  alt={customer.businesses.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
           )}
 
@@ -550,7 +552,7 @@ export default function CustomerCard() {
                               customer.businesses.logo_url ? (
                                 // Use business logo as stamp when filled
                                 <div className="relative">
-                                  <div className="w-full aspect-square max-w-[72px] bg-white shadow-md rounded-2xl p-1.5 border-2 border-primary-100 dark:border-primary-900/30 flex items-center justify-center">
+                                  <div className="w-full aspect-square max-w-[72px] bg-white shadow-md rounded-2xl p-2 border-2 border-primary-100 dark:border-primary-900/30 flex items-center justify-center">
                                     <img
                                       src={customer.businesses.logo_url}
                                       alt="stamp"
@@ -570,12 +572,12 @@ export default function CustomerCard() {
                                 </div>
                               )
                             ) : (
-                              <div className="w-full aspect-square max-w-[72px] bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center">
+                              <div className="w-full aspect-square max-w-[72px] bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center p-2">
                                 {customer.businesses.logo_url ? (
                                   <img
                                     src={customer.businesses.logo_url}
                                     alt="empty"
-                                    className="w-3/4 h-3/4 object-contain opacity-20 grayscale"
+                                    className="w-full h-full object-contain opacity-20 grayscale"
                                   />
                                 ) : (
                                   <Coffee className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300 dark:text-gray-600" />
