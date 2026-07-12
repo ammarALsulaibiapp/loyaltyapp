@@ -260,11 +260,12 @@ export default function CustomerCard() {
             let current = 0
             let required = 0
 
-            // Fetch actual progress from DB
-            const { data: progressRow } = await supabase
-              .from('customer_program_progress')
-              .select('visit_count, total_points, total_spent')
-              .eq('customer_id', (customerData as any).id)
+            // Use customer's total_visits instead of customer_program_progress
+            const progressRow = { 
+              visit_count: (customerData as any).total_visits || 0, 
+              total_points: (customerData as any).total_points || 0, 
+              total_spent: (customerData as any).total_spent || 0 
+            }
               .eq('loyalty_program_id', program.id)
               .maybeSingle()
 

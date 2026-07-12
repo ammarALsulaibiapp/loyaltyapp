@@ -115,10 +115,8 @@ export default function CustomerLookup() {
       // Get progress for each program
       const withCounts = await Promise.all(
         (progs as any[]).map(async (prog: any) => {
-          const { data: progress } = await supabase
-            .from('customer_program_progress')
-            .select('visit_count, total_rewards_earned')
-            .eq('customer_id', selectedCustomer.id)
+          // Use total_visits from customer record instead of customer_program_progress
+          const progress = { visit_count: selectedCustomer.total_visits || 0, total_rewards_earned: 0 }
             .eq('loyalty_program_id', prog.id)
             .single()
 
