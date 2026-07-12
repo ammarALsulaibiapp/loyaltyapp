@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
-import ws from 'ws'
+import WebSocket from 'ws'
 
 // Load environment variables first
 dotenv.config()
@@ -18,11 +18,7 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
     autoRefreshToken: false,
     persistSession: false
   },
-  global: {
-    // @ts-ignore - Fix for Node.js 18 WebSocket support
-    fetch: (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
-  },
   realtime: {
-    transport: ws as any
+    transport: WebSocket
   }
 })
