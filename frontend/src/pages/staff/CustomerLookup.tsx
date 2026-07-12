@@ -202,11 +202,21 @@ export default function CustomerLookup() {
       if (!profile?.business_id || !selectedCustomer) throw new Error('Missing data')
       if (isDemoMode()) return { success: true }
 
+      // Auto-select first active loyalty program if none selected
+      let loyaltyProgramId = data.loyalty_program_id
+      if (!loyaltyProgramId && programs && programs.length > 0) {
+        const activeProgram = programs.find((p: any) => p.is_active)
+        if (activeProgram) {
+          loyaltyProgramId = activeProgram.id
+          console.log('Auto-selected loyalty program:', activeProgram.name)
+        }
+      }
+
       // Calculate points using the program's points_per_currency multiplier
       const amountSpent = parseFloat(data.amount_spent) || 0
       let pointsEarned = amountSpent
-      if (data.loyalty_program_id && programs) {
-        const selectedProgram = programs.find((p: any) => p.id === data.loyalty_program_id)
+      if (loyaltyProgramId && programs) {
+        const selectedProgram = programs.find((p: any) => p.id === loyaltyProgramId)
         if (selectedProgram?.points_per_currency) {
           pointsEarned = amountSpent * selectedProgram.points_per_currency
         }
@@ -216,7 +226,7 @@ export default function CustomerLookup() {
         business_id: profile.business_id,
         customer_id: selectedCustomer.id,
         staff_id: profile.id,
-        loyalty_program_id: data.loyalty_program_id || null,
+        loyalty_program_id: loyaltyProgramId,
         amount_spent: amountSpent,
         points_earned: pointsEarned,
       })
