@@ -29,17 +29,7 @@ const allowedOrigins = (process.env.FRONTEND_URL?.split(',') || ['*']).map(url =
 })
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true)
-
-    if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      console.warn(`⚠️ CORS blocked request from origin: ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
-      callback(null, false)
-    }
-  },
+  origin: true, // TEMPORARILY ALLOW ALL ORIGINS - FIX CORS ISSUE
   credentials: true
 }))
 
