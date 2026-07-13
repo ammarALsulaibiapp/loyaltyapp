@@ -59,10 +59,11 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: 'Something went wrong!' })
 })
 
-// Start server - Railway needs no specific host binding
+// Start server
+const PORT_NUM = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001
+
 app.listen(PORT_NUM, () => {
   console.log(`🚀 Server running on port ${PORT_NUM}`)
   console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`)
   console.log(`✅ CORS: Allowing ALL origins`)
-  console.log(`🌐 Host: 0.0.0.0 (all interfaces)`)
 })
