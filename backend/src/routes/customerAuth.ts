@@ -8,6 +8,11 @@ const router = Router()
 const JWT_SECRET = process.env.CUSTOMER_JWT_SECRET || process.env.API_SECRET_KEY || 'fallback-secret-change-me'
 const SALT_ROUNDS = 12
 
+// Handle OPTIONS preflight for this route specifically
+router.options('*', (req, res) => {
+  res.status(200).end()
+})
+
 // =====================================================
 // POST /api/customer-auth/register
 // Register a new customer account (phone + name + password)
