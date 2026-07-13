@@ -13,10 +13,7 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Security middleware
-app.use(helmet())
-
-// CORS - MUST BE BEFORE ROUTES
+// CORS - MUST BE BEFORE HELMET
 app.use(cors({
   origin: true,
   credentials: true,
@@ -26,6 +23,11 @@ app.use(cors({
 
 // Handle preflight
 app.options('*', cors())
+
+// Security middleware - AFTER CORS
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}))
 
 // Rate limiting
 const limiter = rateLimit({
