@@ -7,9 +7,7 @@ dotenv.config()
 const supabaseUrl = process.env.SUPABASE_URL!
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-if (!supabaseUrl || !supabaseServiceRoleKey) {
-  throw new Error('Missing Supabase environment variables')
-}
+
 
 // Import ws for Node.js 18 WebSocket support
 let websocketConstructor: any = undefined
@@ -21,13 +19,27 @@ if (typeof WebSocket === 'undefined') {
   }
 }
 
-// Service role client - has admin access to auth and bypasses RLS
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  },
-  realtime: websocketConstructor ? {
-    transport: websocketConstructor
-  } : undefined
-})
+let supabaseAdminInstance: any = null
+
+if (supabaseUrl && supabaseServiceRoleKey) {
+  supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    },
+    realtime: websocketConstructor ? {
+      transport: websocketConstructor
+    } : undefined
+  })
+} else {
+  console.error('❌ CRITICAL CONFIGURATION ERROR: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables are missing on the server! Database queries will fail.');
+  
+  // Create a dummy proxy object so imports don't crash but operations fail gracefully
+  supabaseAdminInstance = new Proxy({}, {
+    get: () => {
+      throw new Error('Supabase client is unconfigured. Please add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to environment variables.');
+    }
+  });
+}
+
+export const supabaseAdmin = supabaseAdminInstance
