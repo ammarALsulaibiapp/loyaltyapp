@@ -52,6 +52,7 @@ export default function CustomerCard() {
   const [error, setError] = useState<string | null>(null)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showIOSInstruct, setShowIOSInstruct] = useState(false)
+  const [refetchTrigger, setRefetchTrigger] = useState(0)
 
   // Realtime subscription for visits - auto refresh when staff adds visit
   useEffect(() => {
@@ -67,8 +68,8 @@ export default function CustomerCard() {
           filter: `customer_id=eq.${customerId}`
         }, 
         () => {
-          // Reload customer data when visit is added
-          window.location.reload()
+          // Trigger refetch by changing state
+          setRefetchTrigger(prev => prev + 1)
         }
       )
       .subscribe()
@@ -340,7 +341,7 @@ export default function CustomerCard() {
       const interval = setInterval(fetchData, 30000)
       return () => clearInterval(interval)
     }
-  }, [customerId])
+  }, [customerId, refetchTrigger])
 
   if (error) {
     return (

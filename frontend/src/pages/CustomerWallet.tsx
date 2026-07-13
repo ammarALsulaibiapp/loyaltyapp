@@ -41,6 +41,63 @@ export default function CustomerWallet() {
   const [showAddCard, setShowAddCard] = useState(false)
   const [securityError, setSecurityError] = useState('')
   const phoneInputRef = useRef<HTMLInputElement>(null)
+  const [refetchTrigger, setRefetchTrigger] = useState(0)
+
+  // Declare loadCustomerCards first
+  const loadCustomerCards = async (phone: string) => {
+    // Don't load if phone is too short (prevents accidental loading while typing)
+    if (!phone || phone.length < 8) {
+      setLoading(false)
+      return
+    }
+
+    try {
+      setLoading(true)
+      setSecurityError('')
+
+      if (isDemoMode()) {
+        const demoCards = mockCustomers.map((c: any) => ({
+          ...c,
+          businesses: {
+            id: 'demo-business-1',
+            name: 'Coffee Paradise',
+            logo_url: null,
+            brand_color: '#8B4513',
+            description: 'Your favorite coffee shop'
+          },
+          next_reward: 'Free Coffee',
+          visits_to_reward: 3
+        }))
+        setCards(demoCards)
+        setLoading(false)
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('customers')
+        .select(`
+          *,
+          businesses (
+            id,
+            name,
+            logo_url,
+            brand_color,
+            description
+          )
+        `)
+        .eq('phone_number', phone)
+        .eq('is_active', true)
+
+      if (error) throw error
+
+      setCards((data as any) || [])
+    } catch (error: any) {
+      console.error('Load cards error:', error)
+      setSecurityError('Failed to load your cards. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Realtime subscription for visits - auto refresh wallet
   useEffect(() => {
@@ -55,10 +112,8 @@ export default function CustomerWallet() {
           table: 'visits'
         }, 
         () => {
-          // Reload wallet cards when any visit is added
-          if (phoneNumber) {
-            loadCustomerCards(phoneNumber)
-          }
+          // Trigger refetch
+          setRefetchTrigger(prev => prev + 1)
         }
       )
       .subscribe()
@@ -67,6 +122,13 @@ export default function CustomerWallet() {
       supabase.removeChannel(channel)
     }
   }, [phoneNumber])
+
+  // Refetch when trigger changes
+  useEffect(() => {
+    if (phoneNumber && refetchTrigger > 0) {
+      loadCustomerCards(phoneNumber)
+    }
+  }, [refetchTrigger, phoneNumber])
 
   // Get phone number and security token from URL or localStorage
   useEffect(() => {
@@ -98,84 +160,6 @@ export default function CustomerWallet() {
     // No valid access, show phone input
     setLoading(false)
   }, [searchParams])
-
-  const loadCustomerCards = async (phone: string) => {
-    // Don't load if phone is too short (prevents accidental loading while typing)
-    if (!phone || phone.length < 8) {
-      return
-    }
-
-    try {
-      setLoading(true)
-
-      if (isDemoMode()) {
-        // Demo: Show multiple mock cards for same phone
-        const mockCards = mockCustomers
-          .filter(c => c.phone_number === phone)
-          .map(customer => ({
-            ...customer,
-            businesses: {
-              id: 'demo-business-1',
-              name: 'Gloria Jeans',
-              logo_url: 'https://www.gloriajeans.com/cdn/shop/files/logo_bde1e1c0-43e0-4f8d-8eeb-f43beaa31607_336x.png',
-              brand_color: '#e2a06a',
-              description: 'Premium coffee experience'
-            },
-            next_reward: 'Free Coffee',
-            visits_to_reward: 3
-          }))
-
-        // Add more demo cards for different businesses
-        mockCards.push(mockCards[0])
-
-        setCards(mockCards as CustomerCard[])
-      } else {
-        // Real mode: Fetch from Supabase
-        
-        // Try multiple phone number formats for flexible matching
-        const phoneVariations = [
-          phone,                                    // Exact as entered: "90966269"
-          `+968${phone}`,                          // Add Oman code: "+96890966269" 
-          phone.replace('+968', ''),               // Remove +968: "90966269"
-          phone.replace(/[^0-9]/g, ''),           // Only digits: "96890966269" -> "96890966269"
-        ]
-        
-        // Remove duplicates and empty strings
-        const uniquePhones = [...new Set(phoneVariations.filter(p => p && p.length >= 8))]
-        
-        const { data, error } = await supabase
-          .from('customers')
-          .select(`
-            *,
-            businesses (
-              id,
-              name,
-              logo_url,
-              brand_color,
-              description
-            )
-          `)
-          .in('phone_number', uniquePhones)
-          .eq('is_active', true)
-
-        if (error) {
-          throw error
-        }
-        
-        setCards(data as CustomerCard[])
-        
-        // Set phone number state so component shows cards instead of input form
-        setPhoneNumber(phone)
-        
-        // Always set loading to false after query completes
-        setLoading(false)
-      }
-    } catch (error) {
-      console.error('Error loading customer cards:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handlePhoneSubmit = () => {
     const inputValue = phoneInputRef.current?.value?.trim() || ''
