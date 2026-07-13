@@ -41,7 +41,6 @@ export default function CustomerWallet() {
   const [showAddCard, setShowAddCard] = useState(false)
   const [securityError, setSecurityError] = useState('')
   const phoneInputRef = useRef<HTMLInputElement>(null)
-  const [refetchTrigger, setRefetchTrigger] = useState(0)
 
   // Declare loadCustomerCards first
   const loadCustomerCards = async (phone: string) => {
@@ -98,37 +97,6 @@ export default function CustomerWallet() {
       setLoading(false)
     }
   }
-
-  // Realtime subscription for visits - auto refresh wallet
-  useEffect(() => {
-    if (!phoneNumber || isDemoMode()) return
-
-    const channel = supabase
-      .channel('wallet-visits')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'visits'
-        }, 
-        () => {
-          // Trigger refetch
-          setRefetchTrigger(prev => prev + 1)
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [phoneNumber])
-
-  // Refetch when trigger changes
-  useEffect(() => {
-    if (phoneNumber && refetchTrigger > 0) {
-      loadCustomerCards(phoneNumber)
-    }
-  }, [refetchTrigger, phoneNumber])
 
   // Get phone number and security token from URL or localStorage
   useEffect(() => {

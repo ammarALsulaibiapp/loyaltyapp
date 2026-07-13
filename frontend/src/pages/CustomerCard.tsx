@@ -52,32 +52,6 @@ export default function CustomerCard() {
   const [error, setError] = useState<string | null>(null)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showIOSInstruct, setShowIOSInstruct] = useState(false)
-  const [refetchTrigger, setRefetchTrigger] = useState(0)
-
-  // Realtime subscription for visits - auto refresh when staff adds visit
-  useEffect(() => {
-    if (!customerId || isDemoMode()) return
-
-    const channel = supabase
-      .channel('customer-visits')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'visits',
-          filter: `customer_id=eq.${customerId}`
-        }, 
-        () => {
-          // Trigger refetch by changing state
-          setRefetchTrigger(prev => prev + 1)
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [customerId])
 
   // Capture the PWA install prompt
   useEffect(() => {
@@ -341,7 +315,7 @@ export default function CustomerCard() {
       const interval = setInterval(fetchData, 30000)
       return () => clearInterval(interval)
     }
-  }, [customerId, refetchTrigger])
+  }, [customerId])
 
   if (error) {
     return (
