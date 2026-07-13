@@ -16,22 +16,16 @@ const PORT = process.env.PORT || 3001
 // Security middleware
 app.use(helmet())
 
-// CORS - allow multiple origins (normalizing to extract pure origins, e.g. stripping paths like /login or trailing slashes)
-const allowedOrigins = (process.env.FRONTEND_URL?.split(',') || ['*']).map(url => {
-  try {
-    const trimmed = url.trim()
-    if (trimmed === '*') return '*'
-    const parsed = new URL(trimmed)
-    return parsed.origin
-  } catch {
-    return url.trim()
-  }
-})
-
+// CORS - MUST BE BEFORE ROUTES
 app.use(cors({
-  origin: true, // TEMPORARILY ALLOW ALL ORIGINS - FIX CORS ISSUE
-  credentials: true
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }))
+
+// Handle preflight
+app.options('*', cors())
 
 // Rate limiting
 const limiter = rateLimit({
