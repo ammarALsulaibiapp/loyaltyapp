@@ -18,6 +18,7 @@ import {
   Users,
   Gift,
   Award,
+  Wallet,
 } from 'lucide-react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
@@ -35,7 +36,8 @@ export default function SuperAdminLayout() {
     { name: t('nav.customers'), href: '/super-admin/customers', icon: Users },
     { name: t('nav.loyaltyPrograms'), href: '/super-admin/loyalty-programs', icon: Gift },
     { name: t('nav.rewards'), href: '/super-admin/rewards', icon: Award },
-    { name: t('nav.qrGenerator'), href: '/super-admin/qr-generator', icon: QrCode },
+    { name: 'Shop QR', href: '/super-admin/qr-generator', icon: QrCode },
+    { name: 'Wallet QR', href: '/super-admin/wallet-qr', icon: Wallet },
     { name: t('nav.invoices'), href: '/super-admin/invoices', icon: FileText },
     { name: t('nav.settings'), href: '/super-admin/settings', icon: Settings },
   ]

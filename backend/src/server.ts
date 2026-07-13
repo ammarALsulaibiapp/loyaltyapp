@@ -13,14 +13,7 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Parse allowed origins from env
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-  : ['http://localhost:5173', 'http://localhost:3000']
-
-console.log('🔐 CORS allowed origins:', allowedOrigins)
-
-// CORS - MUST BE BEFORE HELMET - Allow all origins in production for now
+// CORS - Allow all origins
 app.use(cors({
   origin: true, // Allow all origins
   credentials: true,
@@ -66,11 +59,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: 'Something went wrong!' })
 })
 
-// Start server
-const PORT_NUM = process.env.PORT && process.env.PORT.trim() !== '' ? parseInt(process.env.PORT, 10) : 3001
-
-app.listen(PORT_NUM, '0.0.0.0', () => {
+// Start server - Railway needs no specific host binding
+app.listen(PORT_NUM, () => {
   console.log(`🚀 Server running on port ${PORT_NUM}`)
   console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`)
   console.log(`✅ CORS: Allowing ALL origins`)
+  console.log(`🌐 Host: 0.0.0.0 (all interfaces)`)
 })

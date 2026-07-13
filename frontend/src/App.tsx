@@ -97,6 +97,7 @@ function App() {
             <Route path="loyalty-programs" element={<LoyaltyProgramsPage />} />
             <Route path="rewards" element={<RewardsPage />} />
             <Route path="qr-generator" element={<SuperAdminQRGenerator />} />
+            <Route path="wallet-qr" element={<WalletQRGenerator />} />
             <Route path="invoices" element={<InvoicesPage />} />
             <Route path="settings" element={<PlatformSettingsPage />} />
           </Route>
