@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useLanguageStore } from '../stores/languageStore'
 import { useTranslation } from 'react-i18next'
-import { Gift, Award, Activity, QrCode as QrCodeIcon, Coffee, Star, Download, Smartphone, Wallet } from 'lucide-react'
+import { Gift, Award, Activity, QrCode as QrCodeIcon, Coffee, Star, Download, Wallet } from 'lucide-react'
 import QRCode from 'qrcode'
 import { isDemoMode, mockCustomers, mockRewards, mockLoyaltyPrograms } from '../lib/mockData'
 import { generateSecureWalletURL } from '../lib/walletSecurity'
@@ -50,18 +50,7 @@ export default function CustomerCard() {
   const [qrDataUrl, setQrDataUrl] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
-  const [showIOSInstruct, setShowIOSInstruct] = useState(false)
 
-  // Capture the PWA install prompt
-  useEffect(() => {
-    const handler = (e: any) => {
-      e.preventDefault()
-      setDeferredPrompt(e)
-    }
-    window.addEventListener('beforeinstallprompt', handler)
-    return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
 
   // Update manifest dynamically for this business
   useEffect(() => {
@@ -385,31 +374,7 @@ export default function CustomerCard() {
     }
   }
 
-  const handleAddToWallet = async () => {
-    // Check if PWA install prompt is available (Android)
-    if (deferredPrompt) {
-      deferredPrompt.prompt()
-      const { outcome } = await deferredPrompt.userChoice
-      console.log(`User response to install prompt: ${outcome}`)
-      setDeferredPrompt(null)
-      return
-    }
 
-    // iOS: Show visual instructions popup
-    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent)
-    if (isIOS) {
-      setShowIOSInstruct(true)
-      return
-    }
-
-    // Android fallback: Show instructions
-    const isAndroid = /Android/.test(navigator.userAgent)
-    if (isAndroid) {
-      alert(`Add ${customer?.businesses.name} Card:\n\n1. Tap menu (⋮) in browser\n2. Tap "Add to Home screen"\n3. Tap "Add"`)
-    } else {
-      alert('Bookmark this page to access anytime!')
-    }
-  }
 
   const handleAddToGoogleWallet = async () => {
     if (!customer) return
@@ -658,19 +623,7 @@ export default function CustomerCard() {
                     </button>
                   )}
 
-                  {/* PWA Install Button (All devices) */}
-                  <button
-                    onClick={handleAddToWallet}
-                    className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-                  >
-                    <Smartphone className="w-5 h-5" />
-                    <span>{t('card.addToPhone')}</span>
-                  </button>
                 </div>
-                
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-                  {t('card.addToPhoneHelper')}
-                </p>
               </div>
             )}
 
@@ -714,67 +667,7 @@ export default function CustomerCard() {
         </div>
       </div>
 
-      {/* iOS Install Instructions Popup */}
-      {showIOSInstruct && (
-        <div 
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end justify-center p-4"
-          onClick={() => setShowIOSInstruct(false)}
-        >
-          <div 
-            className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full shadow-2xl animate-slide-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-              Add to Home Screen
-            </h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400 font-bold">
-                  1
-                </div>
-                <div>
-                  <p className="text-gray-900 dark:text-white font-medium">Tap the Share button</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Look for <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded text-blue-600 dark:text-blue-400 font-mono">⬆️</span> at the bottom of Safari</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400 font-bold">
-                  2
-                </div>
-                <div>
-                  <p className="text-gray-900 dark:text-white font-medium">Scroll down and tap "Add to Home Screen"</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">It has a plus icon <span className="text-lg">➕</span></p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400 font-bold">
-                  3
-                </div>
-                <div>
-                  <p className="text-gray-900 dark:text-white font-medium">Tap "Add"</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Your card will appear as an app!</p>
-                </div>
-              </div>
-            </div>
 
-            <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-              <p className="text-sm text-green-800 dark:text-green-300 text-center font-medium">
-                ✨ Quick access anytime - No need to scan QR code again!
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowIOSInstruct(false)}
-              className="w-full mt-4 px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-            >
-              Got it!
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

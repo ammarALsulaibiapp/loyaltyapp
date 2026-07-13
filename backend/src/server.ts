@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import dotenv from 'dotenv'
 import authRoutes from './routes/auth'
+import customerAuthRoutes from './routes/customerAuth'
 import walletRoutes from './routes/wallet'
 
 // Load environment variables
@@ -48,6 +49,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/customer-auth', customerAuthRoutes)
 app.use('/api/wallet', walletRoutes)
 
 // Error handler
