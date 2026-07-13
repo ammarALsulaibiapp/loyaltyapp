@@ -494,15 +494,10 @@ export default function CustomerCard() {
           <div></div>
           <button
             onClick={() => {
-              try {
-                // Generate secure wallet URL
-                const secureURL = generateSecureWalletURL(customer.phone_number)
-                window.location.href = secureURL
-              } catch (error) {
-                console.error('Wallet navigation error:', error)
-                // Fallback to simple URL
-                window.location.href = `/wallet?phone=${encodeURIComponent(customer.phone_number)}`
-              }
+              // Store phone number in localStorage so wallet can load it
+              localStorage.setItem('walletPhoneNumber', customer.phone_number)
+              // Navigate to wallet
+              window.location.href = '/wallet'
             }}
             className="bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all"
             title="View all my cards"

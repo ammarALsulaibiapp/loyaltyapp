@@ -100,14 +100,22 @@ export default function CustomerWallet() {
 
   // Get phone number and security token from URL or localStorage
   useEffect(() => {
+    // Priority 1: Check simple localStorage (most recent)
+    const storedPhone = localStorage.getItem('walletPhoneNumber')
+    if (storedPhone && storedPhone.length >= 8) {
+      setPhoneNumber(storedPhone)
+      loadCustomerCards(storedPhone)
+      return
+    }
+
+    // Priority 2: Check URL parameters
     const urlPhone = searchParams.get('phone')
     const urlToken = searchParams.get('token')
-    
-    // First check URL parameters
     if (urlPhone && urlToken) {
       if (isSecureWalletAccess(urlPhone, urlToken)) {
         setPhoneNumber(urlPhone)
-        storeWalletAccess(urlPhone) // Store for future visits
+        storeWalletAccess(urlPhone)
+        localStorage.setItem('walletPhoneNumber', urlPhone)
         loadCustomerCards(urlPhone)
         return
       } else {
@@ -117,10 +125,11 @@ export default function CustomerWallet() {
       }
     }
     
-    // Check stored wallet access
+    // Priority 3: Check stored wallet access
     const stored = getStoredWalletAccess()
     if (stored && stored.phone.length >= 8) {
       setPhoneNumber(stored.phone)
+      localStorage.setItem('walletPhoneNumber', stored.phone)
       loadCustomerCards(stored.phone)
       return
     }
@@ -139,8 +148,9 @@ export default function CustomerWallet() {
     }
     
     if (inputValue) {
-      // Store secure wallet access
+      // Store in both security and simple localStorage
       storeWalletAccess(inputValue)
+      localStorage.setItem('walletPhoneNumber', inputValue)
       loadCustomerCards(inputValue)
     }
   }
