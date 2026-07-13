@@ -339,7 +339,7 @@ function QRScannerModal({ onClose, onScan }: { onClose: () => void, onScan: (slu
             // Extract business slug from scanned URL
             // Expected format: https://domain.com/signup?business=SLUG
             try {
-              const url = new URL(text)
+              const url = new URL(text, window.location.origin)
               const slug = url.searchParams.get('business') || url.searchParams.get('Business')
               if (slug) {
                 scanner.stop()
@@ -450,7 +450,7 @@ export default function CustomerWallet() {
   const navigate = useNavigate()
   const { language } = useLanguageStore()
   const { t } = useTranslation()
-  const { customer, cards, loading, initialized, checkAuth, logout, refreshCards } = useCustomerAuthStore()
+  const { customer, cards, loading, initialized, checkAuth, logout, refreshCards, addCard } = useCustomerAuthStore()
   const [showScanner, setShowScanner] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showIOSInstruct, setShowIOSInstruct] = useState(false)
@@ -479,12 +479,15 @@ export default function CustomerWallet() {
     return () => clearInterval(interval)
   }, [customer, refreshCards])
 
-  const handleQRScan = useCallback((slug: string) => {
+  const handleQRScan = useCallback(async (slug: string) => {
     setShowScanner(false)
-    // Navigate to the existing public signup page with the business slug
-    // The phone number will be pre-known from the customer account
-    navigate(`/signup?business=${encodeURIComponent(slug)}`)
-  }, [navigate])
+    try {
+      await addCard(slug)
+      alert('Success! This loyalty card has been instantly added to your wallet.')
+    } catch (err: any) {
+      alert(err.message || 'Failed to add card. Please try again.')
+    }
+  }, [addCard])
 
   const handleAddToHomeScreen = async () => {
     if (deferredPrompt) {

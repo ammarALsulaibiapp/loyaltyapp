@@ -111,6 +111,30 @@ class CustomerAuthAPI {
 
     return data
   }
+
+  async addCard(businessSlug: string): Promise<{ success: boolean; message: string; cardId: string }> {
+    const token = this.getToken()
+    if (!token) {
+      throw new Error('Not logged in')
+    }
+
+    const response = await fetch(`${BACKEND_URL}/api/customer-auth/add-card`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ business_slug: businessSlug })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to add card')
+    }
+
+    return data
+  }
 }
 
 export const customerAuthAPI = new CustomerAuthAPI()

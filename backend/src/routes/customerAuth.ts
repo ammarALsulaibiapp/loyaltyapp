@@ -278,5 +278,106 @@ router.get('/me', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' })
   }
 })
+// =====================================================
+// POST /api/customer-auth/add-card
+// Instantly add a shop card to the customer's wallet by business slug
+// =====================================================
+router.post('/add-card', async (req, res) => {
+  try {
+    const { business_slug } = req.body
+    if (!business_slug) {
+      return res.status(400).json({ error: 'Business slug is required' })
+    }
 
+    // Extract token from Authorization header
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: No token provided' })
+    }
+
+    const token = authHeader.split(' ')[1]
+
+    // Verify JWT
+    let decoded: any
+    try {
+      decoded = jwt.verify(token, JWT_SECRET)
+    } catch {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' })
+    }
+
+    if (decoded.type !== 'customer') {
+      return res.status(403).json({ error: 'Forbidden: Invalid token type' })
+    }
+
+    // Look up the business by slug
+    const { data: business, error: bizError } = await supabaseAdmin
+      .from('businesses')
+      .select('id, name, brand_color')
+      .eq('slug', business_slug.trim())
+      .eq('is_active', true)
+      .maybeSingle()
+
+    if (bizError || !business) {
+      return res.status(404).json({ error: 'Business not found or is inactive' })
+    }
+
+    // Check if customer card already exists for this business and phone
+    const { data: existing, error: findError } = await supabaseAdmin
+      .from('customers')
+      .select('id, is_active')
+      .eq('business_id', business.id)
+      .eq('phone_number', decoded.phone_number)
+      .maybeSingle()
+
+    if (findError) {
+      console.error('Find customer error:', findError)
+      return res.status(500).json({ error: 'Database error' })
+    }
+
+    if (existing) {
+      if (!existing.is_active) {
+        // Re-activate if it was deactivated
+        await supabaseAdmin
+          .from('customers')
+          .update({ is_active: true })
+          .eq('id', existing.id)
+      }
+      return res.json({ success: true, message: 'Card already in wallet', cardId: existing.id })
+    }
+
+    // Create a unique QR code for the customer card
+    const qrCode = `${business.id}-${decoded.phone_number}-${Date.now()}`
+
+    // Insert new customer card record
+    const { data: newCard, error: createError } = await supabaseAdmin
+      .from('customers')
+      .insert({
+        business_id: business.id,
+        phone_number: decoded.phone_number,
+        full_name: decoded.full_name || null,
+        qr_code: qrCode,
+        total_visits: 0,
+        total_points: 0,
+        total_spent: 0,
+        membership_tier: 'bronze',
+        is_active: true
+      })
+      .select('id')
+      .single()
+
+    if (createError) {
+      console.error('Create card error:', createError)
+      return res.status(500).json({ error: 'Failed to add card to wallet' })
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Card added instantly to wallet',
+      cardId: newCard.id
+    })
+  } catch (error: any) {
+    console.error('/add-card error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
 export default router

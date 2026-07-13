@@ -14,6 +14,7 @@ interface CustomerAuthState {
   logout: () => void
   checkAuth: () => Promise<void>
   refreshCards: () => Promise<void>
+  addCard: (businessSlug: string) => Promise<void>
 }
 
 export const useCustomerAuthStore = create<CustomerAuthState>((set, get) => ({
@@ -103,5 +104,10 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set, get) => ({
       // Silently fail — cards just won't update
       console.error('Failed to refresh cards')
     }
+  },
+
+  addCard: async (businessSlug: string) => {
+    await customerAuthAPI.addCard(businessSlug)
+    await get().refreshCards()
   }
 }))
