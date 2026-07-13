@@ -457,18 +457,7 @@ export default function CustomerCard() {
           }}
         >
           <div></div>
-          <button
-            onClick={() => {
-              // Store phone number in localStorage so wallet can load it
-              localStorage.setItem('walletPhoneNumber', customer.phone_number)
-              // Navigate to wallet
-              window.location.href = '/wallet'
-            }}
-            className="bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all"
-            title="View all my cards"
-          >
-            <Wallet className="w-6 h-6" />
-          </button>
+          {/* Wallet icon removed for privacy - business should not see customer's other loyalty cards */}
         </div>
 
         {/* Main Card */}

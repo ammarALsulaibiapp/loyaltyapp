@@ -80,24 +80,90 @@ export default function BusinessDashboard() {
     },
   })
 
-  // Mock data for charts
-  const visitData = [
-    { day: 'Mon', visits: 23 },
-    { day: 'Tue', visits: 34 },
-    { day: 'Wed', visits: 28 },
-    { day: 'Thu', visits: 41 },
-    { day: 'Fri', visits: 52 },
-    { day: 'Sat', visits: 48 },
-    { day: 'Sun', visits: 35 },
+  // Mock data for charts - should be replaced with real data from visits table
+  const { data: visitChartData } = useQuery({
+    queryKey: ['visit-chart', profile?.business_id],
+    queryFn: async () => {
+      if (!profile?.business_id) return visitData
+      
+      if (isDemoMode()) return visitData
+      
+      // Fetch last 7 days of visit data
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = subDays(new Date(), 6 - i)
+        return {
+          date: format(date, 'yyyy-MM-dd'),
+          day: format(date, 'EEE')
+        }
+      })
+      
+      const { data: visits } = await supabase
+        .from('visits')
+        .select('visit_date')
+        .eq('business_id', profile.business_id)
+        .gte('visit_date', last7Days[0].date)
+      
+      return last7Days.map(day => ({
+        day: day.day,
+        visits: visits?.filter(v => v.visit_date === day.date).length || 0
+      }))
+    }
+  })
+
+  const visitData = visitChartData || [
+    { day: 'Mon', visits: 0 },
+    { day: 'Tue', visits: 0 },
+    { day: 'Wed', visits: 0 },
+    { day: 'Thu', visits: 0 },
+    { day: 'Fri', visits: 0 },
+    { day: 'Sat', visits: 0 },
+    { day: 'Sun', visits: 0 },
   ]
 
-  const customerGrowth = [
-    { month: 'Jan', customers: 120 },
-    { month: 'Feb', customers: 145 },
-    { month: 'Mar', customers: 178 },
-    { month: 'Apr', customers: 203 },
-    { month: 'May', customers: 235 },
-    { month: 'Jun', customers: 268 },
+  const { data: customerGrowthData } = useQuery({
+    queryKey: ['customer-growth', profile?.business_id],
+    queryFn: async () => {
+      if (!profile?.business_id) return customerGrowth
+      
+      if (isDemoMode()) return customerGrowth
+      
+      // Fetch last 6 months of customer growth
+      const last6Months = Array.from({ length: 6 }, (_, i) => {
+        const date = new Date()
+        date.setMonth(date.getMonth() - (5 - i))
+        return {
+          month: format(date, 'MMM'),
+          startDate: format(new Date(date.getFullYear(), date.getMonth(), 1), 'yyyy-MM-dd'),
+          endDate: format(new Date(date.getFullYear(), date.getMonth() + 1, 0), 'yyyy-MM-dd')
+        }
+      })
+      
+      const results = await Promise.all(
+        last6Months.map(async (month) => {
+          const { data } = await supabase
+            .from('customers')
+            .select('id')
+            .eq('business_id', profile.business_id)
+            .lte('created_at', month.endDate + 'T23:59:59')
+          
+          return {
+            month: month.month,
+            customers: data?.length || 0
+          }
+        })
+      )
+      
+      return results
+    }
+  })
+
+  const customerGrowth = customerGrowthData || [
+    { month: 'Jan', customers: 0 },
+    { month: 'Feb', customers: 0 },
+    { month: 'Mar', customers: 0 },
+    { month: 'Apr', customers: 0 },
+    { month: 'May', customers: 0 },
+    { month: 'Jun', customers: 0 },
   ]
 
   if (isLoading) {

@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '../../lib/supabase'
+import { useAuthStore } from '../../stores/authStore'
+import { isDemoMode } from '../../lib/mockData'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import { Download, FileText, BarChart3, TrendingUp } from 'lucide-react'
@@ -7,9 +11,49 @@ import { useTranslation } from 'react-i18next'
 export default function ReportsPage() {
   const { t, i18n } = useTranslation()
   const isRTL = i18n.language === 'ar'
+  const { profile } = useAuthStore()
   const [dateRange, setDateRange] = useState({
     start: '',
     end: '',
+  })
+
+  // Fetch real stats for reports
+  const { data: reportStats } = useQuery({
+    queryKey: ['report-stats', profile?.business_id, dateRange],
+    queryFn: async () => {
+      if (!profile?.business_id) return null
+      
+      if (isDemoMode()) {
+        return {
+          totalCustomers: 268,
+          totalVisits: 1245,
+          totalRewards: 156,
+          revenue: 8500,
+          retentionRate: 78
+        }
+      }
+      
+      const filters = { business_id: profile.business_id }
+      const dateFilters: any = {}
+      if (dateRange.start) dateFilters.gte = ('created_at', dateRange.start)
+      if (dateRange.end) dateFilters.lte = ('created_at', dateRange.end)
+      
+      const [customers, visits, rewards] = await Promise.all([
+        supabase.from('customers').select('id').match(filters),
+        supabase.from('visits').select('id, amount_spent').match(filters),
+        supabase.from('rewards').select('id, is_redeemed').match(filters)
+      ])
+      
+      const totalRevenue = visits.data?.reduce((sum, v) => sum + (v.amount_spent || 0), 0) || 0
+      
+      return {
+        totalCustomers: customers.data?.length || 0,
+        totalVisits: visits.data?.length || 0,
+        totalRewards: rewards.data?.filter(r => r.is_redeemed).length || 0,
+        revenue: totalRevenue,
+        retentionRate: customers.data?.length ? Math.round((visits.data?.length || 0) / customers.data.length) : 0
+      }
+    }
   })
 
   const reports = [
@@ -58,10 +102,10 @@ export default function ReportsPage() {
       generated: new Date().toISOString(),
       dateRange,
       data: {
-        totalCustomers: 268,
-        totalVisits: 1245,
-        totalRewards: 156,
-        revenue: '$8,500',
+        totalCustomers: reportStats?.totalCustomers || 0,
+        totalVisits: reportStats?.totalVisits || 0,
+        totalRewards: reportStats?.totalRewards || 0,
+        revenue: `$${reportStats?.revenue?.toLocaleString() || 0}`,
       }
     }
 
@@ -229,19 +273,19 @@ export default function ReportsPage() {
       <Card title={t('reports.quickStatistics', 'Quick Statistics')} subtitle={t('reports.overview', 'Overview of key metrics')}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">268</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{reportStats?.totalCustomers || 0}</p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('reports.totalCustomers', 'Total Customers')}</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">1,245</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{reportStats?.totalVisits?.toLocaleString() || 0}</p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('reports.totalVisits', 'Total Visits')}</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">156</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{reportStats?.totalRewards || 0}</p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('reports.rewardsGiven', 'Rewards Given')}</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">78%</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{reportStats?.retentionRate || 0}%</p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('reports.retentionRate', 'Retention Rate')}</p>
           </div>
         </div>
