@@ -34,9 +34,6 @@ export default function ReportsPage() {
       }
       
       const filters = { business_id: profile.business_id }
-      const dateFilters: any = {}
-      if (dateRange.start) dateFilters.gte = ('created_at', dateRange.start)
-      if (dateRange.end) dateFilters.lte = ('created_at', dateRange.end)
       
       const [customers, visits, rewards] = await Promise.all([
         supabase.from('customers').select('id').match(filters),
@@ -44,12 +41,12 @@ export default function ReportsPage() {
         supabase.from('rewards').select('id, is_redeemed').match(filters)
       ])
       
-      const totalRevenue = visits.data?.reduce((sum, v) => sum + (v.amount_spent || 0), 0) || 0
+      const totalRevenue = (visits.data as any[])?.reduce((sum: number, v: any) => sum + (v.amount_spent || 0), 0) || 0
       
       return {
         totalCustomers: customers.data?.length || 0,
         totalVisits: visits.data?.length || 0,
-        totalRewards: rewards.data?.filter(r => r.is_redeemed).length || 0,
+        totalRewards: (rewards.data as any[])?.filter((r: any) => r.is_redeemed).length || 0,
         revenue: totalRevenue,
         retentionRate: customers.data?.length ? Math.round((visits.data?.length || 0) / customers.data.length) : 0
       }

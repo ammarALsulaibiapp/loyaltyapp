@@ -81,9 +81,9 @@ export default function BusinessDashboard() {
   })
 
   // Mock data for charts - should be replaced with real data from visits table
-  const { data: visitChartData } = useQuery({
+  const { data: visitChartData } = useQuery<{ day: string; visits: number }[]>({
     queryKey: ['visit-chart', profile?.business_id],
-    queryFn: async () => {
+    queryFn: async (): Promise<{ day: string; visits: number }[]> => {
       if (!profile?.business_id) return visitData
       
       if (isDemoMode()) return visitData
@@ -105,12 +105,12 @@ export default function BusinessDashboard() {
       
       return last7Days.map(day => ({
         day: day.day,
-        visits: visits?.filter(v => v.visit_date === day.date).length || 0
+        visits: (visits as any[])?.filter((v: any) => v.visit_date === day.date).length || 0
       }))
     }
   })
 
-  const visitData = visitChartData || [
+  const visitData: { day: string; visits: number }[] = visitChartData || [
     { day: 'Mon', visits: 0 },
     { day: 'Tue', visits: 0 },
     { day: 'Wed', visits: 0 },
@@ -120,12 +120,21 @@ export default function BusinessDashboard() {
     { day: 'Sun', visits: 0 },
   ]
 
-  const { data: customerGrowthData } = useQuery({
+  const { data: customerGrowthData } = useQuery<{ month: string; customers: number }[]>({
     queryKey: ['customer-growth', profile?.business_id],
-    queryFn: async () => {
-      if (!profile?.business_id) return customerGrowth
+    queryFn: async (): Promise<{ month: string; customers: number }[]> => {
+      const defaultData = [
+        { month: 'Jan', customers: 0 },
+        { month: 'Feb', customers: 0 },
+        { month: 'Mar', customers: 0 },
+        { month: 'Apr', customers: 0 },
+        { month: 'May', customers: 0 },
+        { month: 'Jun', customers: 0 },
+      ]
       
-      if (isDemoMode()) return customerGrowth
+      if (!profile?.business_id) return defaultData
+      
+      if (isDemoMode()) return defaultData
       
       // Fetch last 6 months of customer growth
       const last6Months = Array.from({ length: 6 }, (_, i) => {
@@ -143,7 +152,7 @@ export default function BusinessDashboard() {
           const { data } = await supabase
             .from('customers')
             .select('id')
-            .eq('business_id', profile.business_id)
+            .eq('business_id', profile.business_id!)
             .lte('created_at', month.endDate + 'T23:59:59')
           
           return {
@@ -157,7 +166,7 @@ export default function BusinessDashboard() {
     }
   })
 
-  const customerGrowth = customerGrowthData || [
+  const customerGrowth: { month: string; customers: number }[] = customerGrowthData || [
     { month: 'Jan', customers: 0 },
     { month: 'Feb', customers: 0 },
     { month: 'Mar', customers: 0 },
