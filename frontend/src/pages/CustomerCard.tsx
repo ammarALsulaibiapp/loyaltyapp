@@ -53,6 +53,31 @@ export default function CustomerCard() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showIOSInstruct, setShowIOSInstruct] = useState(false)
 
+  // Realtime subscription for visits - auto refresh when staff adds visit
+  useEffect(() => {
+    if (!customerId || isDemoMode()) return
+
+    const channel = supabase
+      .channel('customer-visits')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'visits',
+          filter: `customer_id=eq.${customerId}`
+        }, 
+        () => {
+          // Reload customer data when visit is added
+          window.location.reload()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [customerId])
+
   // Capture the PWA install prompt
   useEffect(() => {
     const handler = (e: any) => {

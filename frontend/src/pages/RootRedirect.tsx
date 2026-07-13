@@ -7,21 +7,6 @@ export default function RootRedirect() {
   const { user, profile } = useAuthStore()
 
   useEffect(() => {
-    console.log('=== ROOT REDIRECT DEBUG ===')
-    
-    // Check if there's a stored customer ID (from PWA shortcut)
-    const storedCustomerId = localStorage.getItem('loyaltyCardCustomerId')
-    console.log('Stored customer ID:', storedCustomerId)
-    
-    if (storedCustomerId) {
-      console.log('Redirecting to card:', `/card/${storedCustomerId}`)
-      navigate(`/card/${storedCustomerId}`, { replace: true })
-      return
-    }
-
-    console.log('User:', user)
-    console.log('Profile:', profile)
-
     if (user && profile) {
       // Redirect based on role
       if (profile.role === 'super_admin') {
@@ -32,7 +17,6 @@ export default function RootRedirect() {
         navigate('/staff', { replace: true })
       }
     } else {
-      console.log('No user/profile, going to login')
       navigate('/login', { replace: true })
     }
   }, [user, profile, navigate])

@@ -31,7 +31,6 @@ import StaffPage from './pages/business/Staff'
 import ReportsPage from './pages/business/Reports'
 import SettingsPage from './pages/business/Settings'
 import QRGenerator from './pages/business/QRGenerator'
-import ProjectsPage from './pages/business/Projects'
 
 // Staff Pages
 import StaffDashboard from './pages/staff/Dashboard'
@@ -118,7 +117,6 @@ function App() {
             <Route path="qr-generator" element={<QRGenerator />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
-            <Route path="projects" element={<ProjectsPage />} />
           </Route>
 
           {/* Staff Routes */}

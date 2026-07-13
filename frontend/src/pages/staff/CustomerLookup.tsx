@@ -30,6 +30,33 @@ export default function CustomerLookup() {
     phone_number: '',
   })
 
+  // Realtime subscription for visits
+  useEffect(() => {
+    if (!profile?.business_id) return
+
+    const channel = supabase
+      .channel('visits-changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'visits',
+          filter: `business_id=eq.${profile.business_id}`
+        }, 
+        () => {
+          // Refresh all customer data when any visit changes
+          queryClient.invalidateQueries({ queryKey: ['all-customers'] })
+          queryClient.invalidateQueries({ queryKey: ['programs-with-counts'] })
+          queryClient.invalidateQueries({ queryKey: ['customer-rewards'] })
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [profile?.business_id, queryClient])
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery)

@@ -42,6 +42,32 @@ export default function CustomerWallet() {
   const [securityError, setSecurityError] = useState('')
   const phoneInputRef = useRef<HTMLInputElement>(null)
 
+  // Realtime subscription for visits - auto refresh wallet
+  useEffect(() => {
+    if (!phoneNumber || isDemoMode()) return
+
+    const channel = supabase
+      .channel('wallet-visits')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'visits'
+        }, 
+        () => {
+          // Reload wallet cards when any visit is added
+          if (phoneNumber) {
+            loadCustomerCards(phoneNumber)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [phoneNumber])
+
   // Get phone number and security token from URL or localStorage
   useEffect(() => {
     const urlPhone = searchParams.get('phone')

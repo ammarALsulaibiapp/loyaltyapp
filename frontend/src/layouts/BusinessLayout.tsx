@@ -35,7 +35,6 @@ export default function BusinessLayout() {
 
   const adminNavigation = [
     { name: t('nav.dashboard'), href: '/business', icon: LayoutDashboard },
-    { name: t('nav.projects'), href: '/business/projects', icon: Kanban },
     { name: t('nav.customers'), href: '/business/customers', icon: Users },
     { name: t('nav.loyaltyPrograms'), href: '/business/loyalty-programs', icon: Gift },
     { name: t('nav.rewards'), href: '/business/rewards', icon: Award },
