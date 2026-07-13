@@ -13,18 +13,26 @@ export default function WalletQRGenerator() {
 
   useEffect(() => {
     const generateWalletQR = async () => {
+      console.log('💳 Generating Wallet QR code...')
       const url = `${window.location.origin}/wallet/register`
+      console.log('📝 Wallet URL:', url)
       setWalletUrl(url)
       
-      const qr = await QRCode.toDataURL(url, {
-        width: 400,
-        margin: 2,
-        color: {
-          dark: '#8B5CF6',
-          light: '#FFFFFF',
-        },
-      })
-      setQrDataUrl(qr)
+      try {
+        console.log('🔄 Creating QR code...')
+        const qr = await QRCode.toDataURL(url, {
+          width: 400,
+          margin: 2,
+          color: {
+            dark: '#8B5CF6',
+            light: '#FFFFFF',
+          },
+        })
+        console.log('✅ Wallet QR generated successfully, length:', qr.length)
+        setQrDataUrl(qr)
+      } catch (error) {
+        console.error('❌ Error generating wallet QR:', error)
+      }
     }
 
     generateWalletQR()

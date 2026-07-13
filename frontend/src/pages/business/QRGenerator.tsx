@@ -26,18 +26,26 @@ export default function QRGenerator() {
 
   useEffect(() => {
     const loadBusiness = async () => {
-      if (!profile?.business_id) return
+      if (!profile?.business_id) {
+        console.log('❌ No business_id in profile:', profile)
+        return
+      }
 
       try {
+        console.log('📍 Loading business for ID:', profile.business_id)
+        
         // DEMO MODE
         if (isDemoMode()) {
           const mockBiz = mockBusinesses.find(b => b.id === profile.business_id)
           if (mockBiz) {
+            console.log('✅ Found mock business:', mockBiz)
             setBusiness(mockBiz as Business)
             const url = `${window.location.origin}/signup?business=${mockBiz.slug}`
             setSignupUrl(url)
+            console.log('📝 Signup URL:', url)
             
             // Generate QR code
+            console.log('🔄 Generating QR code...')
             const qr = await QRCode.toDataURL(url, {
               width: 400,
               margin: 2,
@@ -46,25 +54,35 @@ export default function QRGenerator() {
                 light: '#FFFFFF',
               },
             })
+            console.log('✅ QR Code generated successfully')
             setQrDataUrl(qr)
+          } else {
+            console.error('❌ Mock business not found')
           }
           return
         }
 
         // Real mode
+        console.log('🔄 Fetching from Supabase...')
         const { data, error } = await supabase
           .from('businesses')
           .select('id, name, slug, brand_color')
           .eq('id', profile.business_id)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error('❌ Supabase error:', error)
+          throw error
+        }
         
+        console.log('✅ Business data:', data)
         setBusiness(data as Business)
         const url = `${window.location.origin}/signup?business=${(data as any).slug}`
         setSignupUrl(url)
+        console.log('📝 Signup URL:', url)
         
         // Generate QR code
+        console.log('🔄 Generating QR code...')
         const qr = await QRCode.toDataURL(url, {
           width: 400,
           margin: 2,
@@ -73,9 +91,10 @@ export default function QRGenerator() {
             light: '#FFFFFF',
           },
         })
+        console.log('✅ QR Code generated successfully, length:', qr.length)
         setQrDataUrl(qr)
       } catch (error) {
-        console.error('Error loading business:', error)
+        console.error('❌ Error loading business:', error)
       }
     }
 

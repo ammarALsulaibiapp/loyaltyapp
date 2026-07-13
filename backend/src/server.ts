@@ -13,12 +13,20 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// CORS - MUST BE BEFORE HELMET
+// Parse allowed origins from env
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+  : ['http://localhost:5173', 'http://localhost:3000']
+
+console.log('🔐 CORS allowed origins:', allowedOrigins)
+
+// CORS - MUST BE BEFORE HELMET - Allow all origins in production for now
 app.use(cors({
-  origin: true,
+  origin: true, // Allow all origins
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'Accept'],
+  exposedHeaders: ['Content-Length', 'Content-Type']
 }))
 
 // Handle preflight
