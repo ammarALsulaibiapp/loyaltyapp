@@ -26,7 +26,8 @@ app.use(cors({
     if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
-      callback(new Error('Not allowed by CORS'))
+      console.warn(`⚠️ CORS blocked request from origin: ${origin}. Make sure this origin is added to FRONTEND_URL environment variable.`);
+      callback(null, false)
     }
   },
   credentials: true
