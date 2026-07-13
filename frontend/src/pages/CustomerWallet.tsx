@@ -7,8 +7,9 @@ import type { CustomerCard } from '../lib/customerApi'
 import {
   Plus, Star, Coffee, ShoppingBag, Scissors, Car,
   Eye, EyeOff, LogOut, X, Smartphone, ScanLine, Loader2,
-  User, Phone, Lock, UserPlus, LogIn
+  User, Phone, Lock, UserPlus, LogIn, QrCode as QrCodeIcon
 } from 'lucide-react'
+import QRCode from 'qrcode'
 
 // =====================================================
 // Auth Forms (Login / Register)
@@ -454,6 +455,8 @@ export default function CustomerWallet() {
   const [showScanner, setShowScanner] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showIOSInstruct, setShowIOSInstruct] = useState(false)
+  const [showWalletQR, setShowWalletQR] = useState(false)
+  const [walletQRUrl, setWalletQRUrl] = useState('')
 
   // Initialize auth on mount
   useEffect(() => {
@@ -478,6 +481,28 @@ export default function CustomerWallet() {
     }, 30000)
     return () => clearInterval(interval)
   }, [customer, refreshCards])
+
+  // Generate Wallet QR Code when customer profile is loaded
+  useEffect(() => {
+    if (!customer) return
+    const generateQR = async () => {
+      try {
+        const url = `${window.location.origin}/wallet?phone=${encodeURIComponent(customer.phone_number)}`
+        const qrData = await QRCode.toDataURL(url, {
+          width: 250,
+          margin: 2,
+          color: {
+            dark: '#1e3a8a',
+            light: '#ffffff'
+          }
+        })
+        setWalletQRUrl(qrData)
+      } catch (err) {
+        console.error('Failed to generate wallet QR code', err)
+      }
+    }
+    generateQR()
+  }, [customer])
 
   const handleQRScan = useCallback(async (slug: string) => {
     setShowScanner(false)
@@ -560,6 +585,14 @@ export default function CustomerWallet() {
               <p className="text-sm text-gray-500">{customer.full_name} · {customer.phone_number}</p>
             </div>
             <div className="flex items-center gap-2">
+              {/* Show Wallet QR */}
+              <button
+                onClick={() => setShowWalletQR(true)}
+                className="p-2 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100 transition-all"
+                title="My Wallet QR Code"
+              >
+                <QrCodeIcon className="w-5 h-5" />
+              </button>
               {/* Add to Home Screen */}
               <button
                 onClick={handleAddToHomeScreen}
@@ -753,6 +786,72 @@ export default function CustomerWallet() {
             >
               Got it!
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Wallet QR Code Modal */}
+      {showWalletQR && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowWalletQR(false)}
+        >
+          <div
+            className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <QrCodeIcon className="w-5 h-5 text-purple-600" />
+                My Wallet QR Code
+              </h3>
+              <button
+                onClick={() => setShowWalletQR(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+
+            {walletQRUrl ? (
+              <div className="bg-gray-50 p-4 rounded-2xl inline-block mb-4 border border-gray-100">
+                <img
+                  src={walletQRUrl}
+                  alt="Wallet QR Code"
+                  className="w-48 h-48 mx-auto"
+                />
+              </div>
+            ) : (
+              <div className="w-48 h-48 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+              </div>
+            )}
+
+            <p className="font-bold text-gray-900">{customer.full_name}</p>
+            <p className="text-sm text-gray-500 mb-6">{customer.phone_number}</p>
+
+            <div className="bg-purple-50 text-purple-800 p-4 rounded-xl text-xs text-left mb-6 font-medium leading-relaxed">
+              💡 Show this QR code to shop owners or staff. They can scan it to search for your profile or check your loyalty status!
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/wallet?phone=${encodeURIComponent(customer.phone_number)}`
+                  navigator.clipboard.writeText(url)
+                  alert('Wallet link copied to clipboard!')
+                }}
+                className="flex-1 py-3 px-4 bg-purple-100 text-purple-700 font-semibold rounded-xl hover:bg-purple-200 transition-all text-sm"
+              >
+                Copy Link
+              </button>
+              <button
+                onClick={() => setShowWalletQR(false)}
+                className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all text-sm"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
