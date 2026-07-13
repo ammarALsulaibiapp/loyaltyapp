@@ -16,8 +16,18 @@ const PORT = process.env.PORT || 3001
 // Security middleware
 app.use(helmet())
 
-// CORS - allow multiple origins
-const allowedOrigins = process.env.FRONTEND_URL?.split(',') || ['*']
+// CORS - allow multiple origins (normalizing to extract pure origins, e.g. stripping paths like /login or trailing slashes)
+const allowedOrigins = (process.env.FRONTEND_URL?.split(',') || ['*']).map(url => {
+  try {
+    const trimmed = url.trim()
+    if (trimmed === '*') return '*'
+    const parsed = new URL(trimmed)
+    return parsed.origin
+  } catch {
+    return url.trim()
+  }
+})
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl)
@@ -26,7 +36,7 @@ app.use(cors({
     if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
-      console.warn(`⚠️ CORS blocked request from origin: ${origin}. Make sure this origin is added to FRONTEND_URL environment variable.`);
+      console.warn(`⚠️ CORS blocked request from origin: ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
       callback(null, false)
     }
   },
