@@ -19,6 +19,8 @@ import {
   X,
   Search,
   Kanban,
+  QrCode,
+  Wallet,
 } from 'lucide-react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
@@ -39,6 +41,8 @@ export default function BusinessLayout() {
     { name: t('nav.loyaltyPrograms'), href: '/business/loyalty-programs', icon: Gift },
     { name: t('nav.rewards'), href: '/business/rewards', icon: Award },
     { name: t('nav.staff'), href: '/business/staff', icon: UserCog },
+    { name: 'Shop QR', href: '/business/qr-generator', icon: QrCode },
+    { name: 'Wallet QR', href: '/business/wallet-qr', icon: Wallet },
     { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
     { name: t('nav.settings'), href: '/business/settings', icon: Settings },
   ]

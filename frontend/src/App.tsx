@@ -31,6 +31,7 @@ import StaffPage from './pages/business/Staff'
 import ReportsPage from './pages/business/Reports'
 import SettingsPage from './pages/business/Settings'
 import QRGenerator from './pages/business/QRGenerator'
+import WalletQRGenerator from './pages/business/WalletQRGenerator'
 
 // Staff Pages
 import StaffDashboard from './pages/staff/Dashboard'
@@ -115,6 +116,7 @@ function App() {
             <Route path="rewards" element={<RewardsPage />} />
             <Route path="staff" element={<StaffPage />} />
             <Route path="qr-generator" element={<QRGenerator />} />
+            <Route path="wallet-qr" element={<WalletQRGenerator />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
@@ -135,6 +137,7 @@ function App() {
           {/* Public Routes - NO LOGIN REQUIRED */}
           <Route path="/card/:customerId" element={<CustomerCard />} />
           <Route path="/wallet" element={<CustomerWallet />} />
+          <Route path="/wallet/register" element={<CustomerWallet />} />
           <Route path="/signup" element={<PublicSignup />} />
 
           {/* Default redirect */}
