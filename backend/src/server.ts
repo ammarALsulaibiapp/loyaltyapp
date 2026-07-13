@@ -32,9 +32,11 @@ app.use(cors({
 // Handle preflight
 app.options('*', cors())
 
-// Security middleware - AFTER CORS
+// Security middleware - AFTER CORS - Relaxed for production
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: false
 }))
 
 // Rate limiting - SKIP OPTIONS
@@ -70,4 +72,5 @@ const PORT_NUM = process.env.PORT && process.env.PORT.trim() !== '' ? parseInt(p
 app.listen(PORT_NUM, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT_NUM}`)
   console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`)
+  console.log(`✅ CORS: Allowing ALL origins`)
 })
