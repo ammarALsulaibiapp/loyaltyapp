@@ -34,7 +34,8 @@ export default function CustomerLookup() {
   useEffect(() => {
     if (!profile?.business_id) return
 
-    const channel = supabase
+    // Subscribe to both visits AND customers table changes
+    const visitsChannel = supabase
       .channel('visits-changes')
       .on('postgres_changes', 
         { 
@@ -52,8 +53,26 @@ export default function CustomerLookup() {
       )
       .subscribe()
 
+    const customersChannel = supabase
+      .channel('customers-changes')
+      .on('postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'customers',
+          filter: `business_id=eq.${profile.business_id}`
+        },
+        () => {
+          // Refresh customer data when customer records update
+          queryClient.invalidateQueries({ queryKey: ['all-customers'] })
+          queryClient.invalidateQueries({ queryKey: ['programs-with-counts'] })
+        }
+      )
+      .subscribe()
+
     return () => {
-      supabase.removeChannel(channel)
+      supabase.removeChannel(visitsChannel)
+      supabase.removeChannel(customersChannel)
     }
   }, [profile?.business_id, queryClient])
 
