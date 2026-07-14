@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sabaa Soul - Smart Business Solutions</title>
-    <meta name="description" content="Modern digital solutions for businesses. Loyalty systems, point of sale, and more.">
+    <title>Mahfazaty - Digital Loyalty System</title>
+    <meta name="description" content="Modern digital loyalty platform for businesses">
+    <link rel="icon" type="image/png" href="https://mahfazaty.sabaasoul.com/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,299 +14,636 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --text: #1F2937;
+            --text-light: #6B7280;
+            --bg: #FFFFFF;
+            --bg-light: #F9FAFB;
+            --border: #E5E7EB;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body[dir="rtl"] {
+            font-family: 'Cairo', sans-serif;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0 24px;
         }
 
         /* Header */
         header {
-            text-align: center;
-            color: white;
-            margin-bottom: 60px;
-            animation: fadeInDown 0.8s ease;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
         }
 
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .lang-toggle {
+            padding: 8px 16px;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .cta-btn {
+            padding: 12px 28px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .cta-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            padding: 12px 28px;
+            background: white;
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            border: 2px solid var(--primary);
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            padding: 60px 0;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
             font-size: 48px;
             font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 800;
             margin-bottom: 16px;
-            letter-spacing: -1px;
+            color: var(--text);
         }
 
-        .tagline {
-            font-size: 20px;
-            opacity: 0.95;
-            font-weight: 300;
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: var(--text-light);
+            margin-bottom: 60px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* Products Grid */
-        .products {
+        .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
+            gap: 40px;
         }
 
-        .product-card {
-            background: white;
-            border-radius: 24px;
+        .feature-card {
+            background: var(--bg-light);
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            animation: fadeInUp 0.8s ease;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 24px;
+        }
+
+        .feature-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .feature-description {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* How it Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: var(--bg-light);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .step {
+            text-align: center;
             position: relative;
-            overflow: hidden;
         }
 
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 auto 24px;
         }
 
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
         }
 
-        .product-icon {
-            font-size: 48px;
+        .step-description {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            text-align: center;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 42px;
+            font-weight: 800;
             margin-bottom: 20px;
         }
 
-        .product-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #1a1a1a;
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.95;
         }
 
-        .product-description {
-            font-size: 16px;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .product-features {
-            list-style: none;
-            margin-bottom: 24px;
-        }
-
-        .product-features li {
-            padding: 8px 0;
-            color: #555;
-            font-size: 14px;
-        }
-
-        .product-features li::before {
-            content: '✓ ';
-            color: #667eea;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        .btn {
-            display: inline-block;
+        .btn-white {
             padding: 14px 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: var(--primary);
             text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 700;
             font-size: 16px;
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .status-badge {
             display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 16px;
+            transition: all 0.3s;
         }
 
-        .status-live {
-            background: #10b981;
-            color: white;
-        }
-
-        .status-soon {
-            background: #f59e0b;
-            color: white;
+        .btn-white:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         /* Footer */
         footer {
-            text-align: center;
+            padding: 60px 0 30px;
+            background: var(--text);
             color: white;
-            padding: 40px 20px;
-            animation: fadeIn 1s ease;
         }
 
-        .contact-info {
-            margin-bottom: 24px;
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
         }
 
-        .contact-info a {
-            color: white;
+        .footer-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p, .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
-            margin: 0 16px;
-            opacity: 0.9;
-            transition: opacity 0.3s ease;
+            display: block;
+            margin-bottom: 12px;
+            font-size: 15px;
         }
 
-        .contact-info a:hover {
-            opacity: 1;
+        .footer-section a:hover {
+            color: white;
         }
 
-        .copyright {
-            opacity: 0.8;
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
             font-size: 14px;
         }
 
-        /* Animations */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .logo {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
                 font-size: 36px;
             }
 
-            .tagline {
+            .hero p {
                 font-size: 18px;
             }
 
-            .product-card {
-                padding: 30px;
+            .section-title {
+                font-size: 32px;
             }
 
-            .products {
-                gap: 20px;
+            .cta-section h2 {
+                font-size: 32px;
             }
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">🚀 Sabaa Soul</div>
-            <div class="tagline">Smart Business Solutions for Modern Enterprises</div>
-        </header>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <img src="https://mahfazaty.sabaasoul.com/logo.png" alt="Mahfazaty">
+                    <span data-en="Mahfazaty" data-ar="محفظتي">Mahfazaty</span>
+                </a>
+                <div class="nav-links">
+                    <a href="#features" data-en="Features" data-ar="المميزات">Features</a>
+                    <a href="#how-it-works" data-en="How it Works" data-ar="كيف يعمل">How it Works</a>
+                    <a href="#contact" data-en="Contact" data-ar="تواصل">Contact</a>
+                    <button class="lang-toggle" onclick="toggleLanguage()">العربية</button>
+                    <a href="https://mahfazaty.sabaasoul.com" class="cta-btn" data-en="Launch App" data-ar="افتح التطبيق">Launch App</a>
+                </div>
+                <button class="mobile-menu-btn">☰</button>
+            </nav>
+        </div>
+    </header>
 
-        <div class="products">
-            <!-- Loyalty System -->
-            <div class="product-card" onclick="window.location.href='https://mahfazaty.sabaasoul.com'">
-                <span class="status-badge status-live">🟢 LIVE</span>
-                <div class="product-icon">🎯</div>
-                <h2 class="product-title">Loyalty System</h2>
-                <p class="product-description">
-                    Complete digital loyalty management platform. Increase customer retention and boost repeat visits.
-                </p>
-                <ul class="product-features">
-                    <li>QR-based stamp cards</li>
-                    <li>Automated rewards</li>
-                    <li>Customer analytics</li>
-                    <li>Multi-language support</li>
-                    <li>Mobile-first design</li>
-                </ul>
-                <a href="https://mahfazaty.sabaasoul.com" class="btn">Launch App →</a>
-            </div>
-
-            <!-- POS System -->
-            <div class="product-card">
-                <span class="status-badge status-soon">🔄 COMING SOON</span>
-                <div class="product-icon">💳</div>
-                <h2 class="product-title">POS System</h2>
-                <p class="product-description">
-                    Modern point of sale solution integrated with loyalty programs and inventory management.
-                </p>
-                <ul class="product-features">
-                    <li>Fast checkout process</li>
-                    <li>Inventory tracking</li>
-                    <li>Sales analytics</li>
-                    <li>Payment integration</li>
-                    <li>Cloud-based reports</li>
-                </ul>
-                <button class="btn" disabled style="opacity: 0.6; cursor: not-allowed;">Coming Soon</button>
-            </div>
-
-            <!-- Booking System -->
-            <div class="product-card">
-                <span class="status-badge status-soon">🔄 COMING SOON</span>
-                <div class="product-icon">📅</div>
-                <h2 class="product-title">Booking System</h2>
-                <p class="product-description">
-                    Appointment scheduling and booking management for service-based businesses.
-                </p>
-                <ul class="product-features">
-                    <li>Online bookings 24/7</li>
-                    <li>Automated reminders</li>
-                    <li>Staff scheduling</li>
-                    <li>Payment collection</li>
-                    <li>Customer management</li>
-                </ul>
-                <button class="btn" disabled style="opacity: 0.6; cursor: not-allowed;">Coming Soon</button>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 data-en="Digital Loyalty System for Modern Businesses" data-ar="نظام الولاء الرقمي للأعمال الحديثة">
+                Digital Loyalty System for Modern Businesses
+            </h1>
+            <p data-en="Transform customer relationships with QR-based loyalty cards, automated rewards, and powerful analytics." data-ar="حوّل علاقات العملاء من خلال بطاقات الولاء المعتمدة على رمز الاستجابة السريعة والمكافآت التلقائية والتحليلات القوية.">
+                Transform customer relationships with QR-based loyalty cards, automated rewards, and powerful analytics.
+            </p>
+            <div class="hero-buttons">
+                <a href="https://mahfazaty.sabaasoul.com" class="cta-btn" data-en="Get Started Free" data-ar="ابدأ مجاناً">Get Started Free</a>
+                <a href="#how-it-works" class="btn-secondary" data-en="Learn More" data-ar="اعرف المزيد">Learn More</a>
             </div>
         </div>
+    </section>
 
-        <footer>
-            <div class="contact-info">
-                <a href="mailto:support@sabaasoul.com">📧 support@sabaasoul.com</a>
-                <a href="mailto:info@sabaasoul.com">💼 info@sabaasoul.com</a>
+    <!-- Stats -->
+    <section class="container">
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label" data-en="Active Customers" data-ar="عميل نشط">Active Customers</div>
             </div>
-            <div class="copyright">
-                © 2026 Sabaa Soul. All rights reserved.
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label" data-en="Businesses" data-ar="شركة">Businesses</div>
             </div>
-        </footer>
-    </div>
+            <div class="stat-item">
+                <div class="stat-number">50K+</div>
+                <div class="stat-label" data-en="Rewards Given" data-ar="مكافأة موزعة">Rewards Given</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title" data-en="Powerful Features" data-ar="مميزات قوية">Powerful Features</h2>
+            <p class="section-subtitle" data-en="Everything you need to build customer loyalty and increase retention" data-ar="كل ما تحتاجه لبناء ولاء العملاء وزيادة الاحتفاظ بهم">
+                Everything you need to build customer loyalty and increase retention
+            </p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title" data-en="QR Code Scanning" data-ar="مسح رمز الاستجابة السريعة">QR Code Scanning</h3>
+                    <p class="feature-description" data-en="Fast and secure QR code system for instant stamp collection" data-ar="نظام رمز استجابة سريع وآمن لجمع الطوابع الفورية">
+                        Fast and secure QR code system for instant stamp collection
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎁</div>
+                    <h3 class="feature-title" data-en="Automated Rewards" data-ar="مكافآت تلقائية">Automated Rewards</h3>
+                    <p class="feature-description" data-en="Set up reward rules once and let the system handle everything automatically" data-ar="قم بإعداد قواعد المكافآت مرة واحدة ودع النظام يتعامل مع كل شيء تلقائياً">
+                        Set up reward rules once and let the system handle everything automatically
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title" data-en="Real-time Analytics" data-ar="تحليلات فورية">Real-time Analytics</h3>
+                    <p class="feature-description" data-en="Track customer behavior, visits, and reward redemption with detailed insights" data-ar="تتبع سلوك العملاء والزيارات واسترداد المكافآت برؤى تفصيلية">
+                        Track customer behavior, visits, and reward redemption with detailed insights
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title" data-en="Multi-language Support" data-ar="دعم متعدد اللغات">Multi-language Support</h3>
+                    <p class="feature-description" data-en="Full Arabic and English interface for both staff and customers" data-ar="واجهة عربية وإنجليزية كاملة للموظفين والعملاء">
+                        Full Arabic and English interface for both staff and customers
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title" data-en="Staff Management" data-ar="إدارة الموظفين">Staff Management</h3>
+                    <p class="feature-description" data-en="Create staff accounts with controlled access and permissions" data-ar="إنشاء حسابات الموظفين مع الوصول والأذونات المتحكم بها">
+                        Create staff accounts with controlled access and permissions
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title" data-en="Mobile First" data-ar="الجوال أولاً">Mobile First</h3>
+                    <p class="feature-description" data-en="Optimized for mobile devices - works perfectly on phones and tablets" data-ar="محسّن للأجهزة المحمولة - يعمل بشكل مثالي على الهواتف والأجهزة اللوحية">
+                        Optimized for mobile devices - works perfectly on phones and tablets
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title" data-en="How It Works" data-ar="كيف يعمل">How It Works</h2>
+            <p class="section-subtitle" data-en="Get started in 3 simple steps" data-ar="ابدأ في 3 خطوات بسيطة">
+                Get started in 3 simple steps
+            </p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title" data-en="Create Your Program" data-ar="أنشئ برنامجك">Create Your Program</h3>
+                    <p class="step-description" data-en="Set up your loyalty program with custom stamps and rewards in minutes" data-ar="قم بإعداد برنامج الولاء الخاص بك بطوابع ومكافآت مخصصة في دقائق">
+                        Set up your loyalty program with custom stamps and rewards in minutes
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title" data-en="Add Your Customers" data-ar="أضف عملاءك">Add Your Customers</h3>
+                    <p class="step-description" data-en="Customers sign up with phone number - quick and easy registration" data-ar="يسجل العملاء برقم الهاتف - تسجيل سريع وسهل">
+                        Customers sign up with phone number - quick and easy registration
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title" data-en="Scan & Reward" data-ar="امسح وكافئ">Scan & Reward</h3>
+                    <p class="step-description" data-en="Staff scans QR codes to add stamps. System automatically gives rewards!" data-ar="يقوم الموظفون بمسح رموز QR لإضافة الطوابع. يمنح النظام المكافآت تلقائياً!">
+                        Staff scans QR codes to add stamps. System automatically gives rewards!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 data-en="Ready to Build Customer Loyalty?" data-ar="جاهز لبناء ولاء العملاء؟">Ready to Build Customer Loyalty?</h2>
+            <p data-en="Join hundreds of businesses using Mahfazaty to grow their customer base" data-ar="انضم إلى مئات الشركات التي تستخدم محفظتي لتنمية قاعدة عملائها">
+                Join hundreds of businesses using Mahfazaty to grow their customer base
+            </p>
+            <a href="https://mahfazaty.sabaasoul.com" class="btn-white" data-en="Start Free Trial" data-ar="ابدأ تجربة مجانية">Start Free Trial</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 data-en="Mahfazaty" data-ar="محفظتي">Mahfazaty</h3>
+                    <p data-en="Modern digital loyalty platform for businesses" data-ar="منصة ولاء رقمية حديثة للشركات">
+                        Modern digital loyalty platform for businesses
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3 data-en="Product" data-ar="المنتج">Product</h3>
+                    <a href="#features" data-en="Features" data-ar="المميزات">Features</a>
+                    <a href="#how-it-works" data-en="How it Works" data-ar="كيف يعمل">How it Works</a>
+                    <a href="https://mahfazaty.sabaasoul.com" data-en="Pricing" data-ar="الأسعار">Pricing</a>
+                </div>
+                <div class="footer-section">
+                    <h3 data-en="Company" data-ar="الشركة">Company</h3>
+                    <p data-en="Sabaa Soul Solutions" data-ar="سبع سول للحلول">Sabaa Soul Solutions</p>
+                    <p data-en="Sultanate of Oman" data-ar="سلطنة عمان">Sultanate of Oman</p>
+                </div>
+                <div class="footer-section">
+                    <h3 data-en="Contact" data-ar="تواصل">Contact</h3>
+                    <a href="mailto:support@sabaasoul.com">support@sabaasoul.com</a>
+                    <a href="mailto:info@sabaasoul.com">info@sabaasoul.com</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-en="© 2026 Mahfazaty by Sabaa Soul. All rights reserved." data-ar="© 2026 محفظتي من سبع سول. جميع الحقوق محفوظة.">
+                    © 2026 Mahfazaty by Sabaa Soul. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            const html = document.documentElement;
+            const langBtn = document.querySelector('.lang-toggle');
+            
+            if (currentLang === 'ar') {
+                html.setAttribute('lang', 'ar');
+                html.setAttribute('dir', 'rtl');
+                langBtn.textContent = 'English';
+            } else {
+                html.setAttribute('lang', 'en');
+                html.setAttribute('dir', 'ltr');
+                langBtn.textContent = 'العربية';
+            }
+
+            // Update all text elements
+            document.querySelectorAll('[data-en]').forEach(el => {
+                el.textContent = el.getAttribute('data-' + currentLang);
+            });
+        }
+    </script>
 </body>
 </html>
