@@ -39,10 +39,8 @@ export default function Register() {
       {/* Logo */}
       <div className="absolute top-8 start-8">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold">L</span>
-          </div>
-          <span className="text-black font-semibold text-lg">LoyaltyPass</span>
+          <img src="/logo.png" alt="Mahfazaty" className="w-9 h-9 rounded-xl" />
+          <span className="text-black font-semibold text-lg">Mahfazaty</span>
         </div>
       </div>
 

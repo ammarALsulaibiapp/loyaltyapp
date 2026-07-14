@@ -38,10 +38,8 @@ export default function Login() {
       {/* Logo */}
       <div className="absolute top-8 left-8">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold">L</span>
-          </div>
-          <span className="text-black font-semibold text-lg">{t('auth.brandName', 'LoyaltyPass')}</span>
+          <img src="/logo.png" alt="Mahfazaty" className="w-9 h-9 rounded-xl" />
+          <span className="text-black font-semibold text-lg">{t('auth.brandName', 'Mahfazaty')}</span>
         </div>
       </div>
 
