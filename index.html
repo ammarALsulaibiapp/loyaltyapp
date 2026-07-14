@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabaa Soul - Smart Business Solutions</title>
+    <meta name="description" content="Modern digital solutions for businesses. Loyalty systems, point of sale, and more.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            font-size: 20px;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        /* Products Grid */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeInUp 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .product-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .product-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .product-features {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .product-features li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .product-features li::before {
+            content: '✓ ';
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .status-live {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-soon {
+            background: #f59e0b;
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            animation: fadeIn 1s ease;
+        }
+
+        .contact-info {
+            margin-bottom: 24px;
+        }
+
+        .contact-info a {
+            color: white;
+            text-decoration: none;
+            margin: 0 16px;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            opacity: 1;
+        }
+
+        .copyright {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 36px;
+            }
+
+            .tagline {
+                font-size: 18px;
+            }
+
+            .product-card {
+                padding: 30px;
+            }
+
+            .products {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🚀 Sabaa Soul</div>
+            <div class="tagline">Smart Business Solutions for Modern Enterprises</div>
+        </header>
+
+        <div class="products">
+            <!-- Loyalty System -->
+            <div class="product-card" onclick="window.location.href='https://app.sabaasoul.com'">
+                <span class="status-badge status-live">🟢 LIVE</span>
+                <div class="product-icon">🎯</div>
+                <h2 class="product-title">Loyalty System</h2>
+                <p class="product-description">
+                    Complete digital loyalty management platform. Increase customer retention and boost repeat visits.
+                </p>
+                <ul class="product-features">
+                    <li>QR-based stamp cards</li>
+                    <li>Automated rewards</li>
+                    <li>Customer analytics</li>
+                    <li>Multi-language support</li>
+                    <li>Mobile-first design</li>
+                </ul>
+                <a href="https://app.sabaasoul.com" class="btn">Launch App →</a>
+            </div>
+
+            <!-- POS System -->
+            <div class="product-card">
+                <span class="status-badge status-soon">🔄 COMING SOON</span>
+                <div class="product-icon">💳</div>
+                <h2 class="product-title">POS System</h2>
+                <p class="product-description">
+                    Modern point of sale solution integrated with loyalty programs and inventory management.
+                </p>
+                <ul class="product-features">
+                    <li>Fast checkout process</li>
+                    <li>Inventory tracking</li>
+                    <li>Sales analytics</li>
+                    <li>Payment integration</li>
+                    <li>Cloud-based reports</li>
+                </ul>
+                <button class="btn" disabled style="opacity: 0.6; cursor: not-allowed;">Coming Soon</button>
+            </div>
+
+            <!-- Booking System -->
+            <div class="product-card">
+                <span class="status-badge status-soon">🔄 COMING SOON</span>
+                <div class="product-icon">📅</div>
+                <h2 class="product-title">Booking System</h2>
+                <p class="product-description">
+                    Appointment scheduling and booking management for service-based businesses.
+                </p>
+                <ul class="product-features">
+                    <li>Online bookings 24/7</li>
+                    <li>Automated reminders</li>
+                    <li>Staff scheduling</li>
+                    <li>Payment collection</li>
+                    <li>Customer management</li>
+                </ul>
+                <button class="btn" disabled style="opacity: 0.6; cursor: not-allowed;">Coming Soon</button>
+            </div>
+        </div>
+
+        <footer>
+            <div class="contact-info">
+                <a href="mailto:support@sabaasoul.com">📧 support@sabaasoul.com</a>
+                <a href="mailto:info@sabaasoul.com">💼 info@sabaasoul.com</a>
+            </div>
+            <div class="copyright">
+                © 2026 Sabaa Soul. All rights reserved.
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
