@@ -73,9 +73,9 @@ export default function InvoicesPage() {
       total: isAr ? 'المجموع الإجمالي' : 'Total Amount',
       thankYou: isAr ? 'شكراً لتعاملكم معنا!' : 'Thank you for your business!',
       billedBy: isAr ? 'الجهة المصدرة' : 'Billed By',
-      platformName: 'LoyaltyPass Co.',
-      platformAddress: isAr ? 'مسقط، سلطنة عمان' : 'Muscat, Sultanate of Oman',
-      platformEmail: 'billing@loyaltypass.com',
+      platformName: 'Mahfazaty',
+      platformAddress: isAr ? 'سلطنة عمان' : 'Sultanate of Oman',
+      platformEmail: 'support@sabaasoul.com',
     }
 
     let issueDateFormatted = 'N/A'
@@ -126,9 +126,12 @@ export default function InvoicesPage() {
           </div>
 
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-6 mb-8 gap-4">
-            <div>
-              <h1 class="text-3xl font-extrabold text-[#ff6b9d]">${labels.invoice}</h1>
-              <p class="text-sm text-gray-500 mt-1">${labels.invoiceNumber}: <span class="font-bold text-gray-700">${invoiceNum}</span></p>
+            <div class="flex items-center gap-3">
+              <img src="https://mahfazaty.sabaasoul.com/logo.png" alt="Mahfazaty" style="width: 48px; height: 48px; border-radius: 12px;">
+              <div>
+                <h1 class="text-3xl font-extrabold text-[#3B82F6]">${labels.invoice}</h1>
+                <p class="text-sm text-gray-500 mt-1">${labels.invoiceNumber}: <span class="font-bold text-gray-700">${invoiceNum}</span></p>
+              </div>
             </div>
             <div class="text-end">
               <span class="px-3 py-1.5 rounded-full text-xs font-bold uppercase" style="${statusColors[invoiceStatus] || ''}">

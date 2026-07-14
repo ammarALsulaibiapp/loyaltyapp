@@ -58,7 +58,7 @@ export default function SuperAdminLayout() {
               <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
                 L
               </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">{t('common.brand')}</h1>
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
               <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md text-[10px] font-bold">{t('common.adminBadge')}</span>
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function SuperAdminLayout() {
               <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
                 L
               </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">{t('common.brand')}</h1>
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
               <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md text-[10px] font-bold">{t('common.adminBadge')}</span>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function SuperAdminLayout() {
           >
             <Menu className="w-5 h-5" />
           </button>
-          <h1 className="text-sm font-semibold">{t('common.brand')}</h1>
+          <h1 className="text-sm font-semibold">Mahfazaty</h1>
           <div className="w-9" />
         </div>
 

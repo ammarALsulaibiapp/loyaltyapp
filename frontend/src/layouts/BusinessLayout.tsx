@@ -70,7 +70,7 @@ export default function BusinessLayout() {
               <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
                 L
               </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">{t('common.brand')}</h1>
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
             </div>
           </div>
 
@@ -183,7 +183,7 @@ export default function BusinessLayout() {
               <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
                 L
               </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">{t('common.brand')}</h1>
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
             </div>
           </div>
 
@@ -270,7 +270,7 @@ export default function BusinessLayout() {
           >
             <Menu className="w-5 h-5" />
           </button>
-          <h1 className="text-sm font-semibold text-gray-900 dark:text-white">{t('common.brand')}</h1>
+          <h1 className="text-sm font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
           <div className="w-9" /> {/* Spacer for centering */}
         </div>
 
