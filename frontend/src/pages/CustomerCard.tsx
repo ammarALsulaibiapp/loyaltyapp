@@ -484,85 +484,92 @@ export default function CustomerCard() {
               </h1>
             )}
 
-            {/* Stamp Cards Grid - Kyan Style */}
+            {/* Stamp Cards Grid - Dark Green Coffee Style */}
             {loyaltyProgress.length > 0 && (
-              <div className="mt-16 mb-8">
+              <div className="mt-8 mb-8">
                 {loyaltyProgress.map((progress, idx) => {
                   const stamps = Array.from({ length: progress.required_amount }, (_, i) => i < progress.current_progress)
+                  const isCompleted = progress.current_progress >= progress.required_amount
                   
                     return (
-                    <div key={idx} className="mb-8">
-                      {/* Stamps Grid - 4 columns responsive */}
-                      <div className="grid grid-cols-4 gap-3 sm:gap-4 mb-8">
-                        {stamps.map((filled, i) => (
-                          <div key={i} className="flex justify-center transform hover:scale-105 transition-all duration-300">
-                            {filled ? (
-                              customer.businesses.logo_url ? (
-                                // Use business logo as stamp when filled
-                                <div className="relative">
-                                  <div className="w-full aspect-square max-w-[72px] bg-white shadow-md rounded-2xl p-2 border-2 border-primary-100 dark:border-primary-900/30 flex items-center justify-center">
-                                    <img
-                                      src={customer.businesses.logo_url}
-                                      alt="stamp"
-                                      className="w-full h-full object-contain"
-                                      style={{ filter: 'none' }}
-                                    />
-                                  </div>
-                                  <div className="absolute -top-2 end-0 -me-2 w-6 h-6 bg-gradient-to-r from-blue-500 to-primary-600 rounded-full flex items-center justify-center shadow-lg">
-                                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="w-full aspect-square max-w-[72px] bg-gradient-to-br from-primary-400 to-primary-600 shadow-lg rounded-2xl flex items-center justify-center">
-                                  <Coffee className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                                </div>
-                              )
-                            ) : (
-                              <div className="w-full aspect-square max-w-[72px] bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center p-2">
-                                {customer.businesses.logo_url ? (
-                                  <img
-                                    src={customer.businesses.logo_url}
-                                    alt="empty"
-                                    className="w-full h-full object-contain opacity-20 grayscale"
-                                  />
-                                ) : (
-                                  <Coffee className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300 dark:text-gray-600" />
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                    <div key={idx} className="mb-8 bg-gradient-to-br from-[#1a4d2e] to-[#2d5a3f] rounded-3xl p-8 shadow-2xl">
+                      {/* Business Header */}
+                      <div className="flex items-center gap-3 mb-8 pb-6 border-b border-white/10">
+                        {customer.businesses.logo_url && (
+                          <img
+                            src={customer.businesses.logo_url}
+                            alt={customer.businesses.name}
+                            className="w-12 h-12 rounded-xl"
+                          />
+                        )}
+                        <div>
+                          <h3 className="text-white font-bold text-lg">{customer.businesses.name}</h3>
+                          <p className="text-white/70 text-sm">{progress.program_name}</p>
+                        </div>
+                        <button className="ms-auto p-2 text-white/80 hover:text-white">
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
                       </div>
 
-                      {/* Bottom Info - Glass Premium style */}
-                      <div className="flex justify-between items-end bg-gray-50/50 dark:bg-gray-900/30 p-4 sm:p-6 rounded-2xl pt-6">
+                      {/* Stamps Grid - 4 columns, 2 rows */}
+                      <div className="grid grid-cols-4 gap-4 mb-8">
+                        {stamps.map((filled, i) => (
+                          <div key={i} className="flex justify-center">
+                            <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-all ${
+                              filled 
+                                ? 'bg-white' 
+                                : 'bg-white/10 border-2 border-dashed border-white/20'
+                            }`}>
+                              {filled ? (
+                                <Coffee className="w-10 h-10 text-[#1a4d2e]" />
+                              ) : (
+                                <Coffee className="w-8 h-8 text-white/30" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {/* Gift icon for completed reward */}
+                        {isCompleted && (
+                          <div className="flex justify-center">
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-xl animate-pulse">
+                              <Gift className="w-12 h-12 text-white" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Barcode */}
+                      {qrDataUrl && (
+                        <div className="bg-white rounded-2xl p-4 text-center">
+                          <div className="flex justify-center gap-[2px] mb-2">
+                            {Array.from({length: 40}).map((_, i) => (
+                              <div key={i} className={`w-1 ${i % 3 === 0 ? 'h-12' : i % 2 === 0 ? 'h-10' : 'h-8'} bg-black`} />
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500">{t('card.showCodeToStaff')}</p>
+                        </div>
+                      )}
+
+                      {/* Progress Info */}
+                      <div className="mt-6 flex justify-between items-center">
                         <div>
-                          <p className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-2">
+                          <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
                             {t('card.remainingUntilGift')}
                           </p>
-                          <p className="text-5xl sm:text-6xl font-black text-gray-900 dark:text-white drop-shadow-sm">
+                          <p className="text-white text-3xl font-black">
                             {progress.required_amount - progress.current_progress}
                           </p>
                         </div>
                         <div className="text-end">
-                          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                          <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
                             {t('card.hello')}
                           </p>
-                          <p className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">
+                          <p className="text-white text-2xl font-bold">
                             {customer.full_name?.split(' ')[0] || t('card.friend')}
                           </p>
-                          {customer.birthday && (
-                            <div className="mt-2 text-end">
-                              <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                                {t('card.dateOfBirth')}
-                              </p>
-                              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                {new Date(customer.birthday).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-CA')}
-                              </p>
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
