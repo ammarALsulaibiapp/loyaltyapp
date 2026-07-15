@@ -18,6 +18,7 @@ import QRCode from 'qrcode'
 function WalletAuthForm() {
   const { login, register } = useCustomerAuthStore()
   const { t } = useTranslation()
+  const { language } = useLanguageStore()
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -43,11 +44,11 @@ function WalletAuthForm() {
     try {
       const cleanPhone = loginPhone.replace(/\s/g, '')
       if (cleanPhone.length < 8) {
-        throw new Error('Please enter a valid phone number (at least 8 digits)')
+        throw new Error(t('wallet.validPhoneError', 'Please enter a valid phone number (at least 8 digits)'))
       }
       await login(cleanPhone, loginPassword, rememberMe)
     } catch (err: any) {
-      setError(err.message || 'Login failed')
+      setError(err.message || t('wallet.loginFailed', 'Login failed'))
     } finally {
       setLoading(false)
     }
@@ -60,19 +61,19 @@ function WalletAuthForm() {
     // Validate
     const cleanPhone = regPhone.replace(/\s/g, '')
     if (cleanPhone.length < 8) {
-      setError('Please enter a valid phone number (at least 8 digits)')
+      setError(t('wallet.validPhoneError', 'Please enter a valid phone number (at least 8 digits)'))
       return
     }
     if (regName.trim().length < 2) {
-      setError('Please enter your full name')
+      setError(t('wallet.enterFullName', 'Please enter your full name'))
       return
     }
     if (regPassword.length < 8) {
-      setError('Password must be at least 8 characters')
+      setError(t('wallet.passwordMinError', 'Password must be at least 8 characters'))
       return
     }
     if (regPassword !== regConfirmPassword) {
-      setError('Passwords do not match')
+      setError(t('wallet.passwordsNoMatch', 'Passwords do not match'))
       return
     }
 
@@ -80,22 +81,22 @@ function WalletAuthForm() {
     try {
       await register(cleanPhone, regName.trim(), regPassword)
     } catch (err: any) {
-      setError(err.message || 'Registration failed')
+      setError(err.message || t('wallet.registrationFailed', 'Registration failed'))
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-md">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-purple-200">
             <ShoppingBag className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">My Wallet</h1>
-          <p className="text-gray-500 mt-1">All your loyalty cards in one place</p>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{t('wallet.myWallet', 'My Wallet')}</h1>
+          <p className="text-gray-500 mt-1">{t('wallet.allCardsInOne', 'All your loyalty cards in one place')}</p>
         </div>
 
         {/* Tab Switcher */}
@@ -108,7 +109,7 @@ function WalletAuthForm() {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            <LogIn className="w-4 h-4" /> Login
+            <LogIn className="w-4 h-4" /> {t('wallet.login', 'Login')}
           </button>
           <button
             onClick={() => { setActiveTab('register'); setError('') }}
@@ -118,7 +119,7 @@ function WalletAuthForm() {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            <UserPlus className="w-4 h-4" /> Register
+            <UserPlus className="w-4 h-4" /> {t('wallet.register', 'Register')}
           </button>
         </div>
 
@@ -142,7 +143,7 @@ function WalletAuthForm() {
                   type="tel"
                   value={loginPhone}
                   onChange={(e) => setLoginPhone(e.target.value)}
-                  placeholder="Phone number (e.g. +968 9123 4567)"
+                  placeholder={t('wallet.phonePlaceholder', 'Phone number (e.g. +968 9123 4567)')}
                   required
                   className="w-full h-[48px] pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-[15px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                 />
@@ -155,7 +156,7 @@ function WalletAuthForm() {
                   type={showLoginPassword ? 'text' : 'password'}
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="Password"
+                  placeholder={t('wallet.passwordPlaceholder', 'Password')}
                   required
                   className="w-full h-[48px] pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-[15px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                 />
@@ -189,7 +190,7 @@ function WalletAuthForm() {
                     )}
                   </div>
                 </div>
-                <span className="text-sm text-gray-600">Remember me for 30 days</span>
+                <span className="text-sm text-gray-600">{t('wallet.rememberMe', 'Remember me for 30 days')}</span>
               </label>
 
               {/* Submit */}
@@ -203,7 +204,7 @@ function WalletAuthForm() {
                 ) : (
                   <>
                     <LogIn className="w-5 h-5" />
-                    Login
+                    {t('wallet.login', 'Login')}
                   </>
                 )}
               </button>
@@ -220,7 +221,7 @@ function WalletAuthForm() {
                   type="tel"
                   value={regPhone}
                   onChange={(e) => setRegPhone(e.target.value)}
-                  placeholder="Phone number (e.g. +968 9123 4567)"
+                  placeholder={t('wallet.phonePlaceholder', 'Phone number (e.g. +968 9123 4567)')}
                   required
                   className="w-full h-[48px] pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-[15px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                 />
@@ -233,7 +234,7 @@ function WalletAuthForm() {
                   type="text"
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
-                  placeholder="Full name"
+                  placeholder={t('wallet.fullName', 'Full name')}
                   required
                   className="w-full h-[48px] pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-[15px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                 />
@@ -246,7 +247,7 @@ function WalletAuthForm() {
                   type={showRegPassword ? 'text' : 'password'}
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
-                  placeholder="Password (min 8 characters)"
+                  placeholder={t('wallet.passwordMin', 'Password (min 8 characters)')}
                   required
                   minLength={8}
                   className="w-full h-[48px] pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-[15px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
@@ -267,7 +268,7 @@ function WalletAuthForm() {
                   type={showRegPassword ? 'text' : 'password'}
                   value={regConfirmPassword}
                   onChange={(e) => setRegConfirmPassword(e.target.value)}
-                  placeholder="Confirm password"
+                  placeholder={t('wallet.confirmPassword', 'Confirm password')}
                   required
                   minLength={8}
                   className="w-full h-[48px] pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-[15px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
@@ -277,7 +278,7 @@ function WalletAuthForm() {
               {/* Password strength hint */}
               {regPassword.length > 0 && regPassword.length < 8 && (
                 <p className="text-xs text-amber-600 flex items-center gap-1">
-                  <span>⚠️</span> {8 - regPassword.length} more characters needed
+                  <span>⚠️</span> {8 - regPassword.length} {t('wallet.charactersNeeded', 'more characters needed')}
                 </p>
               )}
 
@@ -292,7 +293,7 @@ function WalletAuthForm() {
                 ) : (
                   <>
                     <UserPlus className="w-5 h-5" />
-                    Create Account
+                    {t('wallet.createAccount', 'Create Account')}
                   </>
                 )}
               </button>
@@ -302,7 +303,7 @@ function WalletAuthForm() {
 
         {/* Footer note */}
         <p className="text-center text-xs text-gray-400 mt-6">
-          Your loyalty cards from all shops, in one secure place
+          {t('wallet.loyaltyCardsSecure', 'Your loyalty cards from all shops, in one secure place')}
         </p>
       </div>
     </div>
@@ -315,6 +316,7 @@ function WalletAuthForm() {
 // =====================================================
 
 function QRScannerModal({ onClose, onScan }: { onClose: () => void, onScan: (slug: string) => void }) {
+  const { t } = useTranslation()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [error, setError] = useState('')
   const [scanning, setScanning] = useState(true)
@@ -399,7 +401,7 @@ function QRScannerModal({ onClose, onScan }: { onClose: () => void, onScan: (slu
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <ScanLine className="w-5 h-5 text-blue-600" />
-            Scan Shop QR Code
+            {t('wallet.scanShopQR', 'Scan Shop QR Code')}
           </h3>
           <button
             onClick={onClose}
@@ -419,7 +421,7 @@ function QRScannerModal({ onClose, onScan }: { onClose: () => void, onScan: (slu
               onClick={onClose}
               className="px-6 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-300 transition-all"
             >
-              Close
+              {t('wallet.close', 'Close')}
             </button>
           </div>
         ) : (
@@ -433,7 +435,7 @@ function QRScannerModal({ onClose, onScan }: { onClose: () => void, onScan: (slu
               )}
             </div>
             <p className="text-center text-sm text-gray-500">
-              Point your camera at a shop's loyalty QR code
+              {t('wallet.pointCamera', 'Point your camera at a shop\'s loyalty QR code')}
             </p>
           </>
         )}
@@ -516,11 +518,11 @@ export default function CustomerWallet() {
     setShowScanner(false)
     try {
       await addCard(slug)
-      alert('Success! This loyalty card has been instantly added to your wallet.')
+      alert(t('wallet.cardAddedSuccess', 'Success! This loyalty card has been instantly added to your wallet.'))
     } catch (err: any) {
-      alert(err.message || 'Failed to add card. Please try again.')
+      alert(err.message || t('wallet.cardAddFailed', 'Failed to add card. Please try again.'))
     }
-  }, [addCard])
+  }, [addCard, t])
 
   const handleAddToHomeScreen = async () => {
     // For Android - show native install prompt
@@ -573,7 +575,7 @@ export default function CustomerWallet() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading wallet...</p>
+          <p className="text-gray-600 font-medium">{t('wallet.loadingWallet', 'Loading wallet...')}</p>
         </div>
       </div>
     )
@@ -660,16 +662,16 @@ export default function CustomerWallet() {
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <ShoppingBag className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No loyalty cards yet</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('wallet.noCardsYet', 'No loyalty cards yet')}</h3>
             <p className="text-gray-500 mb-8 max-w-xs mx-auto">
-              Scan a shop's QR code to add your first loyalty card
+              {t('wallet.scanToAddFirst', 'Scan a shop\'s QR code to add your first loyalty card')}
             </p>
             <button
               onClick={() => setShowScanner(true)}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-8 rounded-2xl hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg shadow-blue-200"
             >
               <ScanLine className="w-5 h-5" />
-              Scan QR Code
+              {t('wallet.scanQRCode', 'Scan QR Code')}
             </button>
           </div>
         ) : (
@@ -721,7 +723,9 @@ export default function CustomerWallet() {
             >
               <div className="flex flex-col items-center gap-2">
                 <ScanLine className="w-7 h-7 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                <span className="text-gray-500 group-hover:text-blue-600 font-medium text-sm transition-colors">Scan QR to add new card</span>
+                <span className="text-gray-500 group-hover:text-blue-600 font-medium text-sm transition-colors">
+                  {t('wallet.scanToAddNew', 'Scan QR to add new card')}
+                </span>
               </div>
             </button>
           </div>
@@ -849,7 +853,7 @@ export default function CustomerWallet() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <QrCodeIcon className="w-5 h-5 text-purple-600" />
-                My Wallet QR Code
+                {t('wallet.myWalletQR', 'My Wallet QR Code')}
               </h3>
               <button
                 onClick={() => setShowWalletQR(false)}
@@ -877,7 +881,7 @@ export default function CustomerWallet() {
             <p className="text-sm text-gray-500 mb-6">{customer.phone_number}</p>
 
             <div className="bg-purple-50 text-purple-800 p-4 rounded-xl text-xs text-left mb-6 font-medium leading-relaxed">
-              💡 Show this QR code to shop owners or staff. They can scan it to search for your profile or check your loyalty status!
+              {t('wallet.showToStaff', '💡 Show this QR code to shop owners or staff. They can scan it to search for your profile or check your loyalty status!')}
             </div>
 
             <div className="flex gap-2">
@@ -885,17 +889,17 @@ export default function CustomerWallet() {
                 onClick={() => {
                   const url = `${window.location.origin}/wallet?phone=${encodeURIComponent(customer.phone_number)}`
                   navigator.clipboard.writeText(url)
-                  alert('Wallet link copied to clipboard!')
+                  alert(t('wallet.linkCopied', 'Wallet link copied to clipboard!'))
                 }}
                 className="flex-1 py-3 px-4 bg-purple-100 text-purple-700 font-semibold rounded-xl hover:bg-purple-200 transition-all text-sm"
               >
-                Copy Link
+                {t('wallet.copyLink', 'Copy Link')}
               </button>
               <button
                 onClick={() => setShowWalletQR(false)}
                 className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all text-sm"
               >
-                Close
+                {t('wallet.close', 'Close')}
               </button>
             </div>
           </div>
