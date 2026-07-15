@@ -484,36 +484,29 @@ export default function CustomerCard() {
               </h1>
             )}
 
-            {/* Stamp Cards Grid - Business Branded Style */}
+            {/* Stamp Cards Grid - Clean White Style */}
             {loyaltyProgress.length > 0 && (
               <div className="mt-8 mb-8">
                 {loyaltyProgress.map((progress, idx) => {
                   const stamps = Array.from({ length: progress.required_amount }, (_, i) => i < progress.current_progress)
                   const isCompleted = progress.current_progress >= progress.required_amount
-                  const brandColor = customer.businesses.brand_color || '#1a4d2e'
                   
                     return (
-                    <div key={idx} className="mb-8 rounded-3xl p-8 shadow-2xl" style={{
-                      background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)`
-                    }}>
+                    <div key={idx} className="mb-8 bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-2xl">
                       {/* Business Header */}
-                      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10">
+                      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100 dark:border-gray-800">
                         {customer.businesses.logo_url && (
                           <img
                             src={customer.businesses.logo_url}
                             alt={customer.businesses.name}
-                            className="w-12 h-12 rounded-xl"
+                            className="w-16 h-16 object-contain"
+                            style={{background: 'transparent'}}
                           />
                         )}
                         <div>
-                          <h3 className="text-white font-bold text-lg">{customer.businesses.name}</h3>
-                          <p className="text-white/70 text-sm">{progress.program_name}</p>
+                          <h3 className="text-gray-900 dark:text-white font-bold text-lg">{customer.businesses.name}</h3>
+                          <p className="text-gray-500 dark:text-gray-400 text-sm">{progress.program_name}</p>
                         </div>
-                        <button className="ms-auto p-2 text-white/80 hover:text-white">
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
                       </div>
 
                       {/* Stamps Grid - 4 columns */}
@@ -522,29 +515,16 @@ export default function CustomerCard() {
                           <div key={i} className="flex justify-center">
                             <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-all ${
                               filled 
-                                ? 'bg-white' 
-                                : 'bg-white/10 border-2 border-dashed border-white/20'
+                                ? 'bg-gray-50 dark:bg-gray-800' 
+                                : 'bg-white dark:bg-gray-900 border-2 border-dashed border-gray-200 dark:border-gray-700'
                             }`}>
-                              {filled ? (
-                                customer.businesses.logo_url ? (
-                                  <img 
-                                    src={customer.businesses.logo_url} 
-                                    alt="stamp" 
-                                    className="w-12 h-12 object-contain"
-                                  />
-                                ) : (
-                                  <Coffee className="w-10 h-10" style={{color: brandColor}} />
-                                )
-                              ) : (
-                                customer.businesses.logo_url ? (
-                                  <img 
-                                    src={customer.businesses.logo_url} 
-                                    alt="empty" 
-                                    className="w-8 h-8 object-contain opacity-30 grayscale"
-                                  />
-                                ) : (
-                                  <Coffee className="w-8 h-8 text-white/30" />
-                                )
+                              {customer.businesses.logo_url && (
+                                <img 
+                                  src={customer.businesses.logo_url} 
+                                  alt={filled ? "stamp" : "empty"} 
+                                  className={`object-contain ${filled ? 'w-14 h-14' : 'w-10 h-10 opacity-30 grayscale'}`}
+                                  style={{background: 'transparent'}}
+                                />
                               )}
                             </div>
                           </div>
@@ -563,18 +543,18 @@ export default function CustomerCard() {
                       {/* Progress Info */}
                       <div className="mt-6 flex justify-between items-center">
                         <div>
-                          <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
+                          <p className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider mb-1">
                             {t('card.remainingUntilGift')}
                           </p>
-                          <p className="text-white text-3xl font-black">
+                          <p className="text-gray-900 dark:text-white text-3xl font-black">
                             {progress.required_amount - progress.current_progress}
                           </p>
                         </div>
                         <div className="text-end">
-                          <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
+                          <p className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider mb-1">
                             {t('card.hello')}
                           </p>
-                          <p className="text-white text-2xl font-bold">
+                          <p className="text-gray-900 dark:text-white text-2xl font-bold">
                             {customer.full_name?.split(' ')[0] || t('card.friend')}
                           </p>
                         </div>
