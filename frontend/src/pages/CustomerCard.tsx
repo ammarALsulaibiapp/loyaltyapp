@@ -484,17 +484,20 @@ export default function CustomerCard() {
               </h1>
             )}
 
-            {/* Stamp Cards Grid - Dark Green Coffee Style */}
+            {/* Stamp Cards Grid - Business Branded Style */}
             {loyaltyProgress.length > 0 && (
               <div className="mt-8 mb-8">
                 {loyaltyProgress.map((progress, idx) => {
                   const stamps = Array.from({ length: progress.required_amount }, (_, i) => i < progress.current_progress)
                   const isCompleted = progress.current_progress >= progress.required_amount
+                  const brandColor = customer.businesses.brand_color || '#1a4d2e'
                   
                     return (
-                    <div key={idx} className="mb-8 bg-gradient-to-br from-[#1a4d2e] to-[#2d5a3f] rounded-3xl p-8 shadow-2xl">
+                    <div key={idx} className="mb-8 rounded-3xl p-8 shadow-2xl" style={{
+                      background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)`
+                    }}>
                       {/* Business Header */}
-                      <div className="flex items-center gap-3 mb-8 pb-6 border-b border-white/10">
+                      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10">
                         {customer.businesses.logo_url && (
                           <img
                             src={customer.businesses.logo_url}
@@ -513,8 +516,8 @@ export default function CustomerCard() {
                         </button>
                       </div>
 
-                      {/* Stamps Grid - 4 columns, 2 rows */}
-                      <div className="grid grid-cols-4 gap-4 mb-8">
+                      {/* Stamps Grid - 4 columns */}
+                      <div className="grid grid-cols-4 gap-4 mb-6">
                         {stamps.map((filled, i) => (
                           <div key={i} className="flex justify-center">
                             <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-all ${
@@ -530,7 +533,7 @@ export default function CustomerCard() {
                                     className="w-12 h-12 object-contain"
                                   />
                                 ) : (
-                                  <Coffee className="w-10 h-10 text-[#1a4d2e]" />
+                                  <Coffee className="w-10 h-10" style={{color: brandColor}} />
                                 )
                               ) : (
                                 customer.businesses.logo_url ? (
@@ -556,18 +559,6 @@ export default function CustomerCard() {
                           </div>
                         )}
                       </div>
-
-                      {/* Barcode */}
-                      {qrDataUrl && (
-                        <div className="bg-white rounded-2xl p-4 text-center">
-                          <div className="flex justify-center gap-[2px] mb-2">
-                            {Array.from({length: 40}).map((_, i) => (
-                              <div key={i} className={`w-1 ${i % 3 === 0 ? 'h-12' : i % 2 === 0 ? 'h-10' : 'h-8'} bg-black`} />
-                            ))}
-                          </div>
-                          <p className="text-xs text-gray-500">{t('card.showCodeToStaff')}</p>
-                        </div>
-                      )}
 
                       {/* Progress Info */}
                       <div className="mt-6 flex justify-between items-center">
