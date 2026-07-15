@@ -523,6 +523,7 @@ export default function CustomerWallet() {
   }, [addCard])
 
   const handleAddToHomeScreen = async () => {
+    // For Android - show native install prompt
     if (deferredPrompt) {
       deferredPrompt.prompt()
       const { outcome } = await deferredPrompt.userChoice
@@ -531,12 +532,14 @@ export default function CustomerWallet() {
       return
     }
 
+    // For iOS - show detailed instructions modal
     const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent)
     if (isIOS) {
       setShowIOSInstruct(true)
       return
     }
 
+    // Fallback for other browsers
     const isAndroid = /Android/.test(navigator.userAgent)
     if (isAndroid) {
       alert('To add this wallet to your home screen:\n\n1. Tap menu (⋮) in browser\n2. Tap "Add to Home screen"\n3. Tap "Add"')
@@ -752,10 +755,20 @@ export default function CustomerWallet() {
           <div
             className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl animate-slide-up"
             onClick={(e) => e.stopPropagation()}
+            dir={language === 'ar' ? 'rtl' : 'ltr'}
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
-              Add to Home Screen
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Smartphone className="w-8 h-8 text-white" />
+              </div>
+            </div>
+
+            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
+              {t('wallet.addToHomeScreen', 'Add to Home Screen')}
             </h3>
+            <p className="text-sm text-gray-500 text-center mb-6">
+              {t('wallet.installInstructions', 'Install Instructions')}
+            </p>
 
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -763,8 +776,18 @@ export default function CustomerWallet() {
                   1
                 </div>
                 <div>
-                  <p className="text-gray-900 font-medium">Tap the Share button</p>
-                  <p className="text-sm text-gray-600">Look for <span className="inline-block px-2 py-1 bg-blue-100 rounded text-blue-600 font-mono">⬆️</span> at the bottom of Safari</p>
+                  <p className="text-gray-900 font-medium">
+                    {t('wallet.iosStep1', 'Tap the Share button')}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t('wallet.iosStep1Desc', 'In Safari, tap the share icon at the bottom')}
+                  </p>
+                  <div className="mt-2 inline-flex items-center px-3 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    <span className={`text-sm font-semibold text-blue-700 ${language === 'ar' ? 'mr-2' : 'ml-2'}`}>Share</span>
+                  </div>
                 </div>
               </div>
 
@@ -773,8 +796,12 @@ export default function CustomerWallet() {
                   2
                 </div>
                 <div>
-                  <p className="text-gray-900 font-medium">Scroll down and tap "Add to Home Screen"</p>
-                  <p className="text-sm text-gray-600">It has a plus icon <span className="text-lg">➕</span></p>
+                  <p className="text-gray-900 font-medium">
+                    {t('wallet.iosStep2', 'Scroll down and tap "Add to Home Screen"')}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t('wallet.iosStep2Desc', 'It has a plus icon')} <span className="text-lg">➕</span>
+                  </p>
                 </div>
               </div>
 
@@ -783,23 +810,27 @@ export default function CustomerWallet() {
                   3
                 </div>
                 <div>
-                  <p className="text-gray-900 font-medium">Tap "Add"</p>
-                  <p className="text-sm text-gray-600">Your wallet will appear as an app!</p>
+                  <p className="text-gray-900 font-medium">
+                    {t('wallet.iosStep3', 'Tap "Add"')}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t('wallet.iosStep3Desc', 'Your wallet will appear as an app!')}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-green-50 rounded-xl">
+            <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
               <p className="text-sm text-green-800 text-center font-medium">
-                ✨ Quick access to all your loyalty cards!
+                {t('wallet.quickAccess', '✨ Quick access to all your loyalty cards!')}
               </p>
             </div>
 
             <button
               onClick={() => setShowIOSInstruct(false)}
-              className="w-full mt-4 px-6 py-3 bg-gray-200 text-gray-900 font-semibold rounded-xl hover:bg-gray-300 transition-colors"
+              className="w-full mt-4 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
             >
-              Got it!
+              {t('wallet.gotIt', 'Got it!')}
             </button>
           </div>
         </div>
