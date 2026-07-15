@@ -1,8 +1,8 @@
 {
-  "name": "Mahfazaty - Loyalty System",
+  "name": "Mahfazaty Wallet",
   "short_name": "Mahfazaty",
-  "description": "Digital loyalty card system by Sabaa Soul",
-  "start_url": "/",
+  "description": "Your digital loyalty wallet - Collect stamps and rewards from your favorite shops",
+  "start_url": "/wallet",
   "display": "standalone",
   "background_color": "#3B82F6",
   "theme_color": "#3B82F6",
