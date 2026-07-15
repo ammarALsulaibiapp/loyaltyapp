@@ -457,6 +457,15 @@ export default function CustomerWallet() {
   const [showIOSInstruct, setShowIOSInstruct] = useState(false)
   const [showWalletQR, setShowWalletQR] = useState(false)
   const [walletQRUrl, setWalletQRUrl] = useState('')
+  
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeFilter, setActiveFilter] = useState('nearby')
+  
+  // Filtered cards based on search
+  const filteredCards = cards.filter((card: CustomerCard) => 
+    card.businesses?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   // Initialize auth on mount
   useEffect(() => {
@@ -614,9 +623,66 @@ export default function CustomerWallet() {
         </div>
       </div>
 
-      {/* Cards List */}
-      <div className="max-w-md mx-auto p-4 pb-24">
-        {cards.length === 0 ? (
+      {/* Search Bar */}
+      <div className="max-w-md mx-auto px-4 pt-4">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder={t('wallet.searchPlaceholder', 'Search cafe, tea shop...')}
+            className="w-full h-14 pl-12 pr-4 bg-white rounded-2xl shadow-sm border border-gray-200 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+
+        {/* Collections */}
+        <div className="mt-6 mb-4">
+          <h3 className="text-gray-700 font-semibold mb-3 text-sm">{t('wallet.collections', 'Collections')}</h3>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            {[
+              { icon: '🧋', label: t('wallet.bubbleTea', 'Bubble Tea') },
+              { icon: '☕', label: t('wallet.coffee', 'Coffee') },
+              { icon: '🍽️', label: t('wallet.food', 'Food') }
+            ].map((cat, idx) => (
+              <button
+                key={idx}
+                className="flex-shrink-0 bg-white rounded-2xl p-4 w-24 text-center shadow-sm border border-gray-100 hover:shadow-md transition-all"
+              >
+                <div className="text-3xl mb-2">{cat.icon}</div>
+                <p className="text-xs font-medium text-gray-700">{cat.label}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex gap-2 mb-4">
+          {[
+            { key: 'nearby', label: t('wallet.nearBy', 'Near by') },
+            { key: 'deal', label: t('wallet.bestDeal', 'Best Deal') },
+            { key: 'soon', label: t('wallet.endSoon', 'End Soon') }
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveFilter(tab.key)}
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
+                activeFilter === tab.key
+                  ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-500'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cards Grid */}
+      <div className="max-w-md mx-auto px-4 pb-24">
+        {filteredCards.length === 0 ? (
           // No cards state
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -635,8 +701,8 @@ export default function CustomerWallet() {
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {cards
+          <div className="grid grid-cols-2 gap-3">
+            {filteredCards
               .filter((card: CustomerCard) => card.businesses && card.businesses.name)
               .map((card: CustomerCard) => {
                 const IconComponent = getBusinessIcon(card.businesses.name)
@@ -646,52 +712,31 @@ export default function CustomerWallet() {
                   <div
                     key={card.id}
                     onClick={() => navigate(`/card/${card.id}`)}
-                    className="bg-white rounded-2xl p-5 shadow-md hover:shadow-xl transition-all transform hover:scale-[1.02] cursor-pointer border border-gray-100"
-                    style={{ borderLeft: `5px solid ${card.businesses.brand_color}` }}
+                    className="bg-white rounded-2xl p-4 shadow-md hover:shadow-xl transition-all transform hover:scale-[1.02] cursor-pointer border border-gray-100"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        {card.businesses.logo_url ? (
-                          <div className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
-                            <img
-                              src={card.businesses.logo_url}
-                              alt={card.businesses.name}
-                              className="w-8 h-8 object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div
-                            className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
-                            style={{ backgroundColor: card.businesses.brand_color }}
-                          >
-                            <IconComponent className="w-6 h-6 text-white" />
-                          </div>
-                        )}
-                        <div>
-                          <h3 className="font-bold text-gray-900 text-[15px]">{card.businesses.name}</h3>
-                          <div className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r ${tierGradient} mt-1`}>
-                            {card.membership_tier.toUpperCase()}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-gray-900">{card.total_visits}</p>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">visits</p>
-                      </div>
+                    {/* Business Logo */}
+                    <div className="w-full aspect-square bg-gray-900 rounded-2xl mb-3 flex items-center justify-center overflow-hidden">
+                      {card.businesses.logo_url ? (
+                        <img
+                          src={card.businesses.logo_url}
+                          alt={card.businesses.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <IconComponent className="w-12 h-12 text-white" />
+                      )}
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-500">Points: <span className="font-semibold text-gray-700">{card.total_points}</span></p>
-                        {card.next_reward && (
-                          <p className="text-xs text-emerald-600 font-semibold mt-0.5">
-                            {card.visits_to_reward} more for {card.next_reward}
-                          </p>
-                        )}
-                      </div>
-                      <span className="text-xs text-blue-500 font-medium">View Card →</span>
-                    </div>
+                    {/* Business Name */}
+                    <h3 className="font-bold text-gray-900 text-sm mb-1 truncate">{card.businesses.name}</h3>
+                    
+                    {/* Offer/Stats */}
+                    <p className="text-xs font-semibold text-blue-600 mb-1">
+                      {card.next_reward || 'Buy 1 Get 1 Free'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {card.visits_to_reward ? `${card.visits_to_reward} stamps to go` : `${card.total_visits} visits`}
+                    </p>
                   </div>
                 )
               })}
