@@ -17,7 +17,7 @@ import QRCode from 'qrcode'
 
 function WalletAuthForm() {
   const { login, register } = useCustomerAuthStore()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { language } = useLanguageStore()
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
   const [loading, setLoading] = useState(false)
@@ -35,6 +35,11 @@ function WalletAuthForm() {
   const [regPassword, setRegPassword] = useState('')
   const [regConfirmPassword, setRegConfirmPassword] = useState('')
   const [showRegPassword, setShowRegPassword] = useState(false)
+
+  // Update i18n language when language store changes
+  useEffect(() => {
+    i18n.changeLanguage(language)
+  }, [language, i18n])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,6 +95,19 @@ function WalletAuthForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-md">
+        {/* Language Toggle - Top Right */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => {
+              const newLang = language === 'en' ? 'ar' : 'en'
+              useLanguageStore.setState({ language: newLang })
+            }}
+            className="px-4 py-2 bg-white/80 backdrop-blur-xl text-gray-700 rounded-xl hover:bg-white transition-all font-semibold text-sm shadow-md border border-gray-200"
+          >
+            {language === 'en' ? 'ع' : 'EN'}
+          </button>
+        </div>
+
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-purple-200">
@@ -452,7 +470,7 @@ function QRScannerModal({ onClose, onScan }: { onClose: () => void, onScan: (slu
 export default function CustomerWallet() {
   const navigate = useNavigate()
   const { language } = useLanguageStore()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { customer, cards, loading, initialized, checkAuth, logout, refreshCards, addCard } = useCustomerAuthStore()
   const [showScanner, setShowScanner] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
@@ -462,6 +480,11 @@ export default function CustomerWallet() {
   
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Update i18n language when language store changes
+  useEffect(() => {
+    i18n.changeLanguage(language)
+  }, [language, i18n])
   
   // Filtered cards based on search
   const filteredCards = cards.filter((card: CustomerCard) => 
