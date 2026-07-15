@@ -673,15 +673,16 @@ export default function CustomerWallet() {
                     className="bg-white rounded-2xl p-4 shadow-md hover:shadow-xl transition-all transform hover:scale-[1.02] cursor-pointer border border-gray-100"
                   >
                     {/* Business Logo */}
-                    <div className="w-full aspect-square bg-gray-900 rounded-2xl mb-3 flex items-center justify-center overflow-hidden">
+                    <div className="w-full aspect-square bg-gray-50 rounded-2xl mb-3 flex items-center justify-center overflow-hidden p-4">
                       {card.businesses.logo_url ? (
                         <img
                           src={card.businesses.logo_url}
                           alt={card.businesses.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
+                          style={{background: 'transparent'}}
                         />
                       ) : (
-                        <IconComponent className="w-12 h-12 text-white" />
+                        <IconComponent className="w-12 h-12 text-gray-400" />
                       )}
                     </div>
 
@@ -690,10 +691,10 @@ export default function CustomerWallet() {
                     
                     {/* Offer/Stats */}
                     <p className="text-xs font-semibold text-blue-600 mb-1">
-                      {card.next_reward || 'Buy 1 Get 1 Free'}
+                      {card.next_reward || t('wallet.buyOneGetOne', 'Buy 1 Get 1 Free')}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {card.visits_to_reward ? `${card.visits_to_reward} stamps to go` : `${card.total_visits} visits`}
+                      {card.visits_to_reward ? `${card.visits_to_reward} ${t('wallet.stampsToGo', 'stamps to go')}` : `${card.total_visits} ${t('wallet.visits', 'visits')}`}
                     </p>
                   </div>
                 )
