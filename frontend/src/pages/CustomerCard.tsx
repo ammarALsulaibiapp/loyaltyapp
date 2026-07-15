@@ -523,9 +523,25 @@ export default function CustomerCard() {
                                 : 'bg-white/10 border-2 border-dashed border-white/20'
                             }`}>
                               {filled ? (
-                                <Coffee className="w-10 h-10 text-[#1a4d2e]" />
+                                customer.businesses.logo_url ? (
+                                  <img 
+                                    src={customer.businesses.logo_url} 
+                                    alt="stamp" 
+                                    className="w-12 h-12 object-contain"
+                                  />
+                                ) : (
+                                  <Coffee className="w-10 h-10 text-[#1a4d2e]" />
+                                )
                               ) : (
-                                <Coffee className="w-8 h-8 text-white/30" />
+                                customer.businesses.logo_url ? (
+                                  <img 
+                                    src={customer.businesses.logo_url} 
+                                    alt="empty" 
+                                    className="w-8 h-8 object-contain opacity-30 grayscale"
+                                  />
+                                ) : (
+                                  <Coffee className="w-8 h-8 text-white/30" />
+                                )
                               )}
                             </div>
                           </div>
