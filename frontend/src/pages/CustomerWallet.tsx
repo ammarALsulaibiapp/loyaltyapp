@@ -589,10 +589,21 @@ export default function CustomerWallet() {
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">My Wallet</h1>
+              <h1 className="text-xl font-bold text-gray-900">{t('wallet.myCards', 'My Wallet')}</h1>
               <p className="text-sm text-gray-500">{customer.full_name} · {customer.phone_number}</p>
             </div>
             <div className="flex items-center gap-2">
+              {/* Language Toggle */}
+              <button
+                onClick={() => {
+                  const newLang = language === 'en' ? 'ar' : 'en'
+                  useLanguageStore.setState({ language: newLang })
+                }}
+                className="p-2 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all font-semibold text-sm"
+                title="Toggle Language"
+              >
+                {language === 'en' ? 'ع' : 'EN'}
+              </button>
               {/* Show Wallet QR */}
               <button
                 onClick={() => setShowWalletQR(true)}

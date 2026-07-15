@@ -513,16 +513,16 @@ export default function CustomerCard() {
                       <div className="grid grid-cols-4 gap-4 mb-6">
                         {stamps.map((filled, i) => (
                           <div key={i} className="flex justify-center">
-                            <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-all ${
+                            <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg transition-all ${
                               filled 
-                                ? 'bg-gray-50 dark:bg-gray-800' 
-                                : 'bg-white dark:bg-gray-900 border-2 border-dashed border-gray-200 dark:border-gray-700'
+                                ? 'bg-white' 
+                                : 'bg-white/10 border-2 border-dashed border-white/20'
                             }`}>
                               {customer.businesses.logo_url && (
                                 <img 
                                   src={customer.businesses.logo_url} 
                                   alt={filled ? "stamp" : "empty"} 
-                                  className={`object-contain ${filled ? 'w-14 h-14' : 'w-10 h-10 opacity-30 grayscale'}`}
+                                  className={`object-contain ${filled ? 'w-10 h-10 sm:w-14 sm:h-14' : 'w-8 h-8 sm:w-10 sm:h-10 opacity-30 grayscale'}`}
                                   style={{background: 'transparent'}}
                                 />
                               )}
