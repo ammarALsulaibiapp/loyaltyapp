@@ -13,6 +13,9 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3001
 
+// Trust Railway proxy (fix for rate limiter)
+app.set('trust proxy', 1)
+
 // CORS - Allow all origins
 app.use(cors({
   origin: true, // Allow all origins
