@@ -50,13 +50,13 @@ export default function Modal({
       <div className="flex min-h-full items-center justify-center p-4">
         <div
           className={clsx(
-            'relative w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl',
+            'relative w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl max-h-[90vh] flex flex-col',
             sizes[size]
           )}
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {title}
               </h3>
@@ -69,8 +69,8 @@ export default function Modal({
             </div>
           )}
 
-          {/* Content */}
-          <div className="px-6 py-4">{children}</div>
+          {/* Content - Scrollable */}
+          <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
         </div>
       </div>
     </div>

@@ -96,7 +96,7 @@ class BackendAPI {
   }
 
   async bulkDeleteBusinesses(business_ids: string[]) {
-    return this.fetch('/delete/businesses', { business_ids })
+    return this.fetch('/delete/businesses', { business_ids, requester_role: 'super_admin' })
   }
 }
 

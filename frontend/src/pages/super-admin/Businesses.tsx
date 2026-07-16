@@ -8,7 +8,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import Toggle from '../../components/ui/Toggle'
-import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield } from 'lucide-react'
+import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield, Bell, MessageSquare, Send } from 'lucide-react'
 import { format } from 'date-fns'
 import { isDemoMode, mockBusinesses } from '../../lib/mockData'
 import { useTranslation } from 'react-i18next'
@@ -35,12 +35,21 @@ export default function BusinessesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isEditBusinessDataModal, setIsEditBusinessDataModal] = useState(false)
+  const [isNotificationSettingsModal, setIsNotificationSettingsModal] = useState(false)
   const [editingBusiness, setEditingBusiness] = useState<Business | null>(null)
   const [generatedPassword, setGeneratedPassword] = useState('')
   const [ownerEmail, setOwnerEmail] = useState('')
   const [newOwnerPassword, setNewOwnerPassword] = useState('')
   const [copied, setCopied] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [notificationSettings, setNotificationSettings] = useState({
+    whatsapp_enabled: false,
+    whatsapp_provider: 'twilio',
+    whatsapp_credentials: { account_sid: '', auth_token: '', phone_number: '' },
+    sms_enabled: false,
+    sms_provider: 'twilio',
+    sms_credentials: { account_sid: '', auth_token: '', phone_number: '' },
+  })
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -360,6 +369,60 @@ export default function BusinessesPage() {
     setIsEditBusinessDataModal(true)
   }
 
+  const openNotificationSettings = async (business: Business) => {
+    setEditingBusiness(business)
+    
+    // Fetch current settings
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications/settings/${business.id}`, {
+        headers: { 'x-api-key': import.meta.env.VITE_API_KEY }
+      })
+      const data = await response.json()
+      
+      if (data.settings) {
+        setNotificationSettings({
+          whatsapp_enabled: data.settings.whatsapp_enabled || false,
+          whatsapp_provider: 'twilio',
+          whatsapp_credentials: { account_sid: '', auth_token: '', phone_number: '' },
+          sms_enabled: data.settings.sms_enabled || false,
+          sms_provider: 'twilio',
+          sms_credentials: { account_sid: '', auth_token: '', phone_number: '' },
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch notification settings:', error)
+    }
+    
+    setIsNotificationSettingsModal(true)
+  }
+
+  const saveNotificationSettings = async () => {
+    if (!editingBusiness) return
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications/settings/${editingBusiness.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
+        },
+        body: JSON.stringify(notificationSettings)
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        alert('✅ Notification settings saved!')
+        setIsNotificationSettingsModal(false)
+        queryClient.invalidateQueries({ queryKey: ['businesses'] })
+      } else {
+        alert('❌ Error: ' + data.error)
+      }
+    } catch (error: any) {
+      alert('❌ Error: ' + error.message)
+    }
+  }
+
   const handleGeneratePasswordForEdit = () => {
     const newPassword = generateRandomPassword()
     setEditFormData({ ...editFormData, password: newPassword } as any)
@@ -549,6 +612,13 @@ export default function BusinessesPage() {
                         title="Manage Self-Service"
                       >
                         <Key className="w-4 h-4 text-purple-600" />
+                      </button>
+                      <button
+                        onClick={() => openNotificationSettings(business)}
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                        title="Notification Settings"
+                      >
+                        <Bell className="w-4 h-4 text-blue-600" />
                       </button>
                       <button 
                         onClick={() => {
@@ -890,6 +960,181 @@ export default function BusinessesPage() {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* Notification Settings Modal */}
+      <Modal
+        isOpen={isNotificationSettingsModal}
+        onClose={() => setIsNotificationSettingsModal(false)}
+        title={`📱 Notification Settings - ${editingBusiness?.name || ''}`}
+        size="lg"
+      >
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+          {/* WhatsApp Settings */}
+          <Card title="💬 WhatsApp Notifications">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Provider
+                </label>
+                <select
+                  value={notificationSettings.whatsapp_provider}
+                  onChange={(e) => setNotificationSettings({
+                    ...notificationSettings,
+                    whatsapp_provider: e.target.value
+                  })}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                >
+                  <option value="twilio">Twilio</option>
+                  <option value="meta">Meta Business API</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <Input
+                label="Account SID / API Key"
+                value={notificationSettings.whatsapp_credentials.account_sid}
+                onChange={(e) => setNotificationSettings({
+                  ...notificationSettings,
+                  whatsapp_credentials: {
+                    ...notificationSettings.whatsapp_credentials,
+                    account_sid: e.target.value
+                  }
+                })}
+                placeholder="Enter Account SID"
+              />
+
+              <Input
+                label="Auth Token / Secret"
+                type="password"
+                value={notificationSettings.whatsapp_credentials.auth_token}
+                onChange={(e) => setNotificationSettings({
+                  ...notificationSettings,
+                  whatsapp_credentials: {
+                    ...notificationSettings.whatsapp_credentials,
+                    auth_token: e.target.value
+                  }
+                })}
+                placeholder="Enter Auth Token"
+              />
+
+              <Input
+                label="WhatsApp Phone Number (with country code)"
+                value={notificationSettings.whatsapp_credentials.phone_number}
+                onChange={(e) => setNotificationSettings({
+                  ...notificationSettings,
+                  whatsapp_credentials: {
+                    ...notificationSettings.whatsapp_credentials,
+                    phone_number: e.target.value
+                  }
+                })}
+                placeholder="+96812345678"
+              />
+
+              <div className="pt-3">
+                <Toggle
+                  enabled={notificationSettings.whatsapp_enabled}
+                  onChange={(enabled) => setNotificationSettings({
+                    ...notificationSettings,
+                    whatsapp_enabled: enabled
+                  })}
+                  label="Enable WhatsApp Notifications"
+                  description="Business can toggle this on/off"
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* SMS Settings */}
+          <Card title="📱 SMS Notifications">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Provider
+                </label>
+                <select
+                  value={notificationSettings.sms_provider}
+                  onChange={(e) => setNotificationSettings({
+                    ...notificationSettings,
+                    sms_provider: e.target.value
+                  })}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                >
+                  <option value="twilio">Twilio</option>
+                  <option value="aws_sns">AWS SNS</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <Input
+                label="Account SID / API Key"
+                value={notificationSettings.sms_credentials.account_sid}
+                onChange={(e) => setNotificationSettings({
+                  ...notificationSettings,
+                  sms_credentials: {
+                    ...notificationSettings.sms_credentials,
+                    account_sid: e.target.value
+                  }
+                })}
+                placeholder="Enter Account SID"
+              />
+
+              <Input
+                label="Auth Token / Secret"
+                type="password"
+                value={notificationSettings.sms_credentials.auth_token}
+                onChange={(e) => setNotificationSettings({
+                  ...notificationSettings,
+                  sms_credentials: {
+                    ...notificationSettings.sms_credentials,
+                    auth_token: e.target.value
+                  }
+                })}
+                placeholder="Enter Auth Token"
+              />
+
+              <Input
+                label="SMS Phone Number (with country code)"
+                value={notificationSettings.sms_credentials.phone_number}
+                onChange={(e) => setNotificationSettings({
+                  ...notificationSettings,
+                  sms_credentials: {
+                    ...notificationSettings.sms_credentials,
+                    phone_number: e.target.value
+                  }
+                })}
+                placeholder="+96812345678"
+              />
+
+              <div className="pt-3">
+                <Toggle
+                  enabled={notificationSettings.sms_enabled}
+                  onChange={(enabled) => setNotificationSettings({
+                    ...notificationSettings,
+                    sms_enabled: enabled
+                  })}
+                  label="Enable SMS Notifications"
+                  description="Business can toggle this on/off"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+            <p className="text-sm text-yellow-900 dark:text-yellow-100">
+              <strong>💡 Tip:</strong> Once you save API credentials, notifications will auto-enable. Business owners can toggle them on/off in their settings.
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <Button variant="outline" onClick={() => setIsNotificationSettingsModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={saveNotificationSettings}>
+              Save Settings
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   )
