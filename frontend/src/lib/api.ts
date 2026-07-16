@@ -59,6 +59,7 @@ class BackendAPI {
   }
 
   async createBusinessOwner(params: CreateBusinessOwnerParams) {
+    console.log('createBusinessOwner called with:', { ...params, password: '***' })
     return this.fetch('/auth/create-business-owner', params)
   }
 

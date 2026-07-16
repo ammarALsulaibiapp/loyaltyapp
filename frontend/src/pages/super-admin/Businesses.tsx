@@ -263,6 +263,7 @@ export default function BusinessesPage() {
         
         try {
           // Call backend to create user with service role
+          console.log('Profile role:', profile?.role, 'Full profile:', profile)
           const result = await backendAPI.createBusinessOwner({
             email,
             password,
