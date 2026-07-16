@@ -77,6 +77,27 @@ class BackendAPI {
   async deleteUser(user_id: string, requester_role: string) {
     return this.fetch('/auth/delete-user', { user_id, requester_role })
   }
+
+  // Bulk delete endpoints
+  async bulkDeleteCustomers(customer_ids: string[]) {
+    return this.fetch('/delete/customers', { customer_ids })
+  }
+
+  async bulkDeleteStaff(profile_ids: string[]) {
+    return this.fetch('/delete/staff', { profile_ids })
+  }
+
+  async bulkDeleteLoyaltyPrograms(program_ids: string[]) {
+    return this.fetch('/delete/loyalty-programs', { program_ids })
+  }
+
+  async bulkDeleteRewards(reward_ids: string[]) {
+    return this.fetch('/delete/rewards', { reward_ids })
+  }
+
+  async bulkDeleteBusinesses(business_ids: string[]) {
+    return this.fetch('/delete/businesses', { business_ids })
+  }
 }
 
 export const backendAPI = new BackendAPI()

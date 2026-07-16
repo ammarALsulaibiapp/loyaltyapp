@@ -21,6 +21,7 @@ export default function StaffPage() {
   const [editingStaff, setEditingStaff] = useState<any | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [generatedPassword, setGeneratedPassword] = useState('')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [formData, setFormData] = useState({
     email: '',
     full_name: '',
@@ -206,6 +207,44 @@ export default function StaffPage() {
     },
   })
 
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (profileIds: string[]) => {
+      if (isDemoMode()) return { success: true }
+      return await backendAPI.bulkDeleteStaff(profileIds)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff'] })
+      setSelectedIds([])
+      alert(`✅ ${selectedIds.length} staff member(s) deleted permanently!`)
+    },
+    onError: (error: any) => {
+      alert(`❌ Error: ${error.message}`)
+    },
+  })
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === staff?.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(staff?.map(s => s.id) || [])
+    }
+  }
+
+  const handleSelectOne = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id))
+    } else {
+      setSelectedIds([...selectedIds, id])
+    }
+  }
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return
+    if (confirm(`⚠️ Delete ${selectedIds.length} staff member(s) permanently?\n\nThis action CANNOT be undone!`)) {
+      bulkDeleteMutation.mutate(selectedIds)
+    }
+  }
+
   const openEditModal = (staff: any) => {
     setEditingStaff(staff)
     setFormData({
@@ -276,9 +315,22 @@ export default function StaffPage() {
             {t('staff.manageTeam')}
           </p>
         </div>
-        <Button icon={<Plus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>
-          {t('staff.addNew')}
-        </Button>
+        <div className="flex items-center gap-3">
+          {selectedIds.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+              className="!bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100"
+            >
+              <Trash2 className="w-4 h-4" />
+              {t('common.delete', 'Delete')} ({selectedIds.length})
+            </Button>
+          )}
+          <Button icon={<Plus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>
+            {t('staff.addNew')}
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -286,6 +338,14 @@ export default function StaffPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.length === staff?.length && staff?.length > 0}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                </th>
                 <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
                   {t('customers.name')}
                 </th>
@@ -313,8 +373,16 @@ export default function StaffPage() {
               {staff?.map((member) => (
                 <tr
                   key={member.id}
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${selectedIds.includes(member.id) ? 'bg-primary-50/50 dark:bg-primary-900/10' : ''}`}
                 >
+                  <td className="py-3 px-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(member.id)}
+                      onChange={() => handleSelectOne(member.id)}
+                      className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                  </td>
                   <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">
                     {member.full_name}
                   </td>

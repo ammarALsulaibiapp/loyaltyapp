@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { backendAPI } from '../../lib/api'
 import { useAuthStore } from '../../stores/authStore'
 import { isDemoMode, mockCustomers } from '../../lib/mockData'
 import { useTranslation } from 'react-i18next'
@@ -30,6 +31,7 @@ export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [formData, setFormData] = useState({
     phone_number: '',
     full_name: '',
@@ -117,6 +119,44 @@ export default function CustomersPage() {
     },
   })
 
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (customerIds: string[]) => {
+      if (isDemoMode()) return { success: true }
+      return await backendAPI.bulkDeleteCustomers(customerIds)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+      setSelectedIds([])
+      alert(`✅ ${selectedIds.length} customer(s) deleted permanently!`)
+    },
+    onError: (error: any) => {
+      alert(`❌ Error: ${error.message}`)
+    },
+  })
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === customers?.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(customers?.map((c: Customer) => c.id) || [])
+    }
+  }
+
+  const handleSelectOne = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id))
+    } else {
+      setSelectedIds([...selectedIds, id])
+    }
+  }
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return
+    if (confirm(`⚠️ Delete ${selectedIds.length} customer(s) permanently?\n\nThis will remove all their visits, points, and rewards.\n\nThis action CANNOT be undone!`)) {
+      bulkDeleteMutation.mutate(selectedIds)
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       phone_number: '',
@@ -190,6 +230,16 @@ export default function CustomersPage() {
               className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-transparent rounded-lg text-[13px] focus:outline-none focus:bg-white focus:border-gray-300 dark:focus:bg-gray-600 transition-all"
             />
           </div>
+          {selectedIds.length > 0 && (
+            <button
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+              className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[13px] font-medium flex items-center gap-2 transition-all disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" />
+              {t('common.delete', 'Delete')} ({selectedIds.length})
+            </button>
+          )}
           <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
@@ -217,10 +267,16 @@ export default function CustomersPage() {
           {customers?.map((customer) => (
             <div
               key={customer.id}
-              className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group"
+              className={`bg-white dark:bg-gray-800 rounded-xl p-5 border ${selectedIds.includes(customer.id) ? 'border-[#ff6b9d] ring-2 ring-[#ff6b9d]/20' : 'border-gray-100 dark:border-gray-700'} shadow-sm hover:shadow-md transition-all group`}
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(customer.id)}
+                    onChange={() => handleSelectOne(customer.id)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#ff6b9d] focus:ring-[#ff6b9d]"
+                  />
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b9d] to-[#ff8eb3] flex items-center justify-center text-white font-bold text-base shadow-md">
                     {customer.full_name?.charAt(0)?.toUpperCase() || customer.phone_number.charAt(0)}
                   </div>
@@ -286,6 +342,14 @@ export default function CustomersPage() {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
+                  <th className="px-5 py-3 text-start text-[11px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.length === customers?.length && customers?.length > 0}
+                      onChange={handleSelectAll}
+                      className="w-4 h-4 rounded border-gray-300 text-[#ff6b9d] focus:ring-[#ff6b9d]"
+                    />
+                  </th>
                   <th className="px-5 py-3 text-start text-[11px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">{t('common.customer', 'Customer')}</th>
                   <th className="px-5 py-3 text-start text-[11px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">{t('common.phone', 'Phone')}</th>
                   <th className="px-5 py-3 text-start text-[11px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">{t('card.visits', 'Visits')}</th>
@@ -297,7 +361,15 @@ export default function CustomersPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {customers?.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr key={customer.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${selectedIds.includes(customer.id) ? 'bg-[#ff6b9d]/5' : ''}`}>
+                    <td className="px-5 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(customer.id)}
+                        onChange={() => handleSelectOne(customer.id)}
+                        className="w-4 h-4 rounded border-gray-300 text-[#ff6b9d] focus:ring-[#ff6b9d]"
+                      />
+                    </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#ff6b9d] to-[#ff8eb3] flex items-center justify-center text-white font-semibold text-sm">

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { backendAPI } from '../../lib/api'
 import { useAuthStore } from '../../stores/authStore'
 import { isDemoMode, mockLoyaltyPrograms, mockBusinesses } from '../../lib/mockData'
 import Card from '../../components/ui/Card'
@@ -18,6 +19,7 @@ export default function LoyaltyProgramsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedBusinessId, setSelectedBusinessId] = useState('')
   const [businesses, setBusinesses] = useState<any[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   
   const isSuperAdmin = profile?.role === 'super_admin'
   const businessId = isSuperAdmin ? selectedBusinessId : profile?.business_id
@@ -138,6 +140,44 @@ export default function LoyaltyProgramsPage() {
     },
   })
 
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (programIds: string[]) => {
+      if (isDemoMode()) return { success: true }
+      return await backendAPI.bulkDeleteLoyaltyPrograms(programIds)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['loyalty-programs'] })
+      setSelectedIds([])
+      alert(`✅ ${selectedIds.length} program(s) deleted permanently!`)
+    },
+    onError: (error: any) => {
+      alert(`❌ Error: ${error.message}`)
+    },
+  })
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === programs?.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(programs?.map(p => p.id) || [])
+    }
+  }
+
+  const handleSelectOne = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id))
+    } else {
+      setSelectedIds([...selectedIds, id])
+    }
+  }
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return
+    if (confirm(`⚠️ Delete ${selectedIds.length} program(s) permanently?\n\nThis action CANNOT be undone!`)) {
+      bulkDeleteMutation.mutate(selectedIds)
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -176,9 +216,22 @@ export default function LoyaltyProgramsPage() {
             {t('loyalty.manageLoyalty')}
           </p>
         </div>
-        <Button icon={<Plus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)} disabled={isSuperAdmin && !businessId}>
-          {t('loyalty.createProgram')}
-        </Button>
+        <div className="flex items-center gap-3">
+          {selectedIds.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+              className="!bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100"
+            >
+              <Trash2 className="w-4 h-4" />
+              {t('common.delete', 'Delete')} ({selectedIds.length})
+            </Button>
+          )}
+          <Button icon={<Plus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)} disabled={isSuperAdmin && !businessId}>
+            {t('loyalty.createProgram')}
+          </Button>
+        </div>
       </div>
 
       {/* Super Admin: Business Selector */}
@@ -219,9 +272,15 @@ export default function LoyaltyProgramsPage() {
       ) : programs && (programs as any).length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {(programs as any[]).map((program) => (
-            <Card key={program.id}>
+            <Card key={program.id} className={selectedIds.includes(program.id) ? 'ring-2 ring-primary-500' : ''}>
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(program.id)}
+                    onChange={() => handleSelectOne(program.id)}
+                    className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
                   <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                     {program.type === 'stamp_card' || program.type === 'visit_based' ? (
                       <Coffee className="w-6 h-6 text-white" />

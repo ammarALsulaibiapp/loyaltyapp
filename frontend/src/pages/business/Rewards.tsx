@@ -1,15 +1,20 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { backendAPI } from '../../lib/api'
 import { useAuthStore } from '../../stores/authStore'
 import { isDemoMode, mockRewards } from '../../lib/mockData'
 import Card from '../../components/ui/Card'
-import { Gift, Check, Clock } from 'lucide-react'
+import Button from '../../components/ui/Button'
+import { Gift, Check, Clock, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 
 export default function RewardsPage() {
   const { t } = useTranslation()
   const { profile } = useAuthStore()
+  const queryClient = useQueryClient()
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   const { data: rewards, isLoading } = useQuery({
     queryKey: ['rewards', profile?.business_id],
@@ -40,6 +45,44 @@ export default function RewardsPage() {
     },
   })
 
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (rewardIds: string[]) => {
+      if (isDemoMode()) return { success: true }
+      return await backendAPI.bulkDeleteRewards(rewardIds)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rewards'] })
+      setSelectedIds([])
+      alert(`✅ ${selectedIds.length} reward(s) deleted permanently!`)
+    },
+    onError: (error: any) => {
+      alert(`❌ Error: ${error.message}`)
+    },
+  })
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === rewards?.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(rewards?.map(r => r.id) || [])
+    }
+  }
+
+  const handleSelectOne = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id))
+    } else {
+      setSelectedIds([...selectedIds, id])
+    }
+  }
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return
+    if (confirm(`⚠️ Delete ${selectedIds.length} reward(s) permanently?\n\nThis action CANNOT be undone!`)) {
+      bulkDeleteMutation.mutate(selectedIds)
+    }
+  }
+
   const availableRewards = rewards?.filter((r) => !r.is_redeemed) || []
   const redeemedRewards = rewards?.filter((r) => r.is_redeemed) || []
 
@@ -53,11 +96,24 @@ export default function RewardsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('rewards.title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          {t('rewards.trackRewards')}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('rewards.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            {t('rewards.trackRewards')}
+          </p>
+        </div>
+        {selectedIds.length > 0 && (
+          <Button
+            variant="outline"
+            onClick={handleBulkDelete}
+            disabled={bulkDeleteMutation.isPending}
+            className="!bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100"
+          >
+            <Trash2 className="w-4 h-4" />
+            {t('common.delete', 'Delete')} ({selectedIds.length})
+          </Button>
+        )}
       </div>
 
       {/* Summary Cards */}
@@ -149,6 +205,14 @@ export default function RewardsPage() {
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
                 <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.length === rewards?.length && rewards?.length > 0}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                </th>
+                <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
                   {t('rewards.reward')}
                 </th>
                 <th className="text-start py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
@@ -169,8 +233,16 @@ export default function RewardsPage() {
               {redeemedRewards.map((reward) => (
                 <tr
                   key={reward.id}
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${selectedIds.includes(reward.id) ? 'bg-primary-50/50 dark:bg-primary-900/10' : ''}`}
                 >
+                  <td className="py-3 px-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(reward.id)}
+                      onChange={() => handleSelectOne(reward.id)}
+                      className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                  </td>
                   <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">
                     {reward.reward_name}
                   </td>
