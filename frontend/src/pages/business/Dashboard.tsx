@@ -12,6 +12,21 @@ export default function BusinessDashboard() {
   const { profile } = useAuthStore()
   const { t } = useTranslation()
 
+  // Fetch business info for currency
+  const { data: business } = useQuery({
+    queryKey: ['business-info', profile?.business_id],
+    queryFn: async () => {
+      if (!profile?.business_id || isDemoMode()) return null
+      const { data } = await supabase
+        .from('businesses')
+        .select('currency')
+        .eq('id', profile.business_id)
+        .single()
+      return data
+    },
+    enabled: !!profile?.business_id,
+  })
+
   // Fetch dashboard stats
   const { data: stats, isLoading } = useQuery({
     queryKey: ['business-stats', profile?.business_id],
@@ -293,14 +308,18 @@ export default function BusinessDashboard() {
             <div className="p-2.5 bg-indigo-50/50 dark:bg-indigo-900/30 rounded-lg">
               <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <TrendingUp className="w-4 h-4 text-green-500" />
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+              {business?.currency || 'USD'}
+            </span>
           </div>
           <div>
             <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              {t('nav.loyaltyPrograms')}
+              {t('dashboard.totalRevenue', 'Total Revenue')}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">3</p>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium">{t('dashboard.activeCampaigns', 'Active campaigns')}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              {business?.currency || 'USD'} 0.00
+            </p>
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium">{t('dashboard.allTime', 'All time')}</p>
           </div>
         </div>
       </div>
