@@ -94,7 +94,7 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <Card>
           <div className="flex items-center justify-between">
             <div>
@@ -184,8 +184,9 @@ export default function SuperAdminDashboard() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.monthlyRevenue', 'Monthly Revenue')}</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                $8,500
+                8,500 {t('dashboard.mixed', 'Mixed')}
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Multi-currency</p>
             </div>
             <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
               <DollarSign className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
@@ -198,8 +199,9 @@ export default function SuperAdminDashboard() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.annualRevenue', 'Annual Revenue')}</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                $68,300
+                68,300 {t('dashboard.mixed', 'Mixed')}
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Multi-currency</p>
             </div>
             <div className="p-3 bg-teal-100 dark:bg-teal-900 rounded-lg">
               <TrendingUp className="w-6 h-6 text-teal-600 dark:text-teal-400" />
