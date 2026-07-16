@@ -592,41 +592,62 @@ export default function CustomerLookup() {
               <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Gift className="w-5 h-5 text-yellow-600" />
-                  {t('lookup.availableRewards')} ({rewards.length})
+                  {t('lookup.availableRewards')} 
+                  <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full text-sm font-black shadow-md">
+                    {rewards.length} {rewards.length > 1 ? t('lookup.stacked', 'Stacked') : t('lookup.available', 'Available')}
+                  </span>
                 </h3>
                 <div className="space-y-4">
                   {rewards.map((reward: any) => (
                     <div
                       key={reward.id}
-                      className="group p-5 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 border-2 border-yellow-200/50 dark:border-yellow-700/50 rounded-2xl shadow-sm hover:shadow-md transition-all"
+                      className="group p-6 bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-yellow-900/30 dark:via-orange-900/30 dark:to-red-900/30 border-2 border-yellow-300 dark:border-yellow-700 rounded-2xl shadow-lg hover:shadow-xl transition-all"
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                          <Gift className="w-6 h-6 text-yellow-500 dark:text-yellow-400" />
+                      <div className="flex items-center gap-6">
+                        {/* Icon */}
+                        <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                          <Gift className="w-10 h-10 text-white" />
                         </div>
+                        
+                        {/* Content */}
                         <div className="flex-1">
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">{reward.reward_name}</p>
+                          <p className="text-2xl font-black text-gray-900 dark:text-white mb-1">
+                            {reward.reward_name}
+                          </p>
                           {reward.reward_description && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-base text-gray-700 dark:text-gray-300 mb-3">
                               {reward.reward_description}
                             </p>
                           )}
-                          <div className="mt-3 flex items-center gap-2">
-                            <div className="inline-block px-3 py-1 bg-yellow-100 dark:bg-yellow-900/50 rounded-full">
-                              <p className="text-xs text-yellow-800 dark:text-yellow-300 font-bold uppercase tracking-wider">
-                                ✨ {t('lookup.readyToRedeem')}
-                              </p>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => redeemMutation.mutate(reward.id)}
-                              disabled={redeemMutation.isPending}
-                              className="bg-green-600 text-white"
-                            >
-                              {redeemMutation.isPending ? t('common.loading') : t('lookup.redeem')}
-                            </Button>
+                          <div className="inline-block px-4 py-1.5 bg-yellow-200 dark:bg-yellow-800/50 rounded-full">
+                            <p className="text-sm text-yellow-900 dark:text-yellow-200 font-black uppercase tracking-wider">
+                              ✨ {t('lookup.readyToRedeem')}
+                            </p>
                           </div>
                         </div>
+
+                        {/* HUGE REDEEM BUTTON */}
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`🎁 Redeem "${reward.reward_name}" for ${selectedCustomer.full_name || 'this customer'}?\n\nThis action cannot be undone.`)) {
+                              redeemMutation.mutate(reward.id)
+                            }
+                          }}
+                          disabled={redeemMutation.isPending}
+                          className="px-8 py-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-2xl font-black text-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center gap-2 min-w-[140px]"
+                        >
+                          {redeemMutation.isPending ? (
+                            <>
+                              <div className="animate-spin rounded-full h-8 w-8 border-4 border-white border-t-transparent" />
+                              <span className="text-sm">{t('common.loading')}</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-3xl">✓</span>
+                              <span>{t('lookup.redeem')}</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   ))}
