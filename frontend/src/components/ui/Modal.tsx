@@ -70,8 +70,15 @@ export default function Modal({
             </div>
           )}
 
-          {/* Content - Always scrollable */}
-          <div className="px-6 py-4 overflow-y-scroll flex-1 min-h-0">
+          {/* Content - Always scrollable with visible scrollbar */}
+          <div 
+            className="px-6 py-4 flex-1 min-h-0"
+            style={{ 
+              overflowY: 'scroll',
+              scrollbarWidth: 'auto',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
             {children}
           </div>
         </div>
