@@ -984,7 +984,7 @@ export default function BusinessesPage() {
         title={`📱 Notification Settings - ${editingBusiness?.name || ''}`}
         size="lg"
       >
-        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+        <div className="space-y-6">
           {/* WhatsApp Settings */}
           <Card title="💬 WhatsApp Notifications">
             <div className="space-y-4">
@@ -1141,7 +1141,7 @@ export default function BusinessesPage() {
             </p>
           </div>
 
-          <div className="flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
             <Button variant="outline" onClick={() => setIsNotificationSettingsModal(false)}>
               Cancel
             </Button>

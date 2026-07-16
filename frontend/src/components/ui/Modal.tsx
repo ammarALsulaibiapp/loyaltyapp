@@ -71,7 +71,7 @@ export default function Modal({
           )}
 
           {/* Content - Always scrollable */}
-          <div className="px-6 py-4 overflow-y-auto flex-1 min-h-0">
+          <div className="px-6 py-4 overflow-y-scroll flex-1 min-h-0">
             {children}
           </div>
         </div>
