@@ -239,6 +239,19 @@ export default function BusinessesPage() {
   // Toggle self-service
   const toggleSelfServiceMutation = useMutation({
     mutationFn: async ({ businessId, enabled }: { businessId: string; enabled: boolean }) => {
+      console.log('=== TOGGLE SELF-SERVICE DEBUG ===')
+      console.log('Profile:', profile)
+      console.log('Profile role:', profile?.role)
+      console.log('Enabled:', enabled)
+      
+      if (!profile?.role) {
+        throw new Error('Profile not loaded. Please refresh and try again.')
+      }
+      
+      if (profile.role !== 'super_admin') {
+        throw new Error(`Access denied. Your role is '${profile.role}' but 'super_admin' is required.`)
+      }
+      
       if (isDemoMode()) {
         // Demo mode: just show success
         if (enabled) {
