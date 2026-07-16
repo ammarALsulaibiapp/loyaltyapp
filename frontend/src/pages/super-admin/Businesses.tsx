@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import Toggle from '../../components/ui/Toggle'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield, Bell, MessageSquare, Send } from 'lucide-react'
 import { format } from 'date-fns'
 import { isDemoMode, mockBusinesses } from '../../lib/mockData'
@@ -36,6 +37,10 @@ export default function BusinessesPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isEditBusinessDataModal, setIsEditBusinessDataModal] = useState(false)
   const [isNotificationSettingsModal, setIsNotificationSettingsModal] = useState(false)
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
+  const [isBulkDeleteConfirmOpen, setIsBulkDeleteConfirmOpen] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [businessToDelete, setBusinessToDelete] = useState<Business | null>(null)
   const [editingBusiness, setEditingBusiness] = useState<Business | null>(null)
   const [generatedPassword, setGeneratedPassword] = useState('')
   const [ownerEmail, setOwnerEmail] = useState('')
@@ -190,13 +195,27 @@ export default function BusinessesPage() {
 
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return
-    if (confirm(`⚠️ DELETE ${selectedIds.length} BUSINESS(ES) PERMANENTLY?\n\nThis will CASCADE DELETE:\n• All businesses\n• All staff accounts\n• All loyalty programs\n• All customers\n• All visits & rewards\n\n🚨 THIS ACTION CANNOT BE UNDONE! 🚨\n\nType "DELETE" in the next prompt to confirm.`)) {
-      const confirmation = prompt('Type "DELETE" to confirm:')
-      if (confirmation === 'DELETE') {
-        bulkDeleteMutation.mutate(selectedIds)
-      } else {
-        alert('Deletion cancelled')
-      }
+    setIsBulkDeleteConfirmOpen(true)
+  }
+
+  const confirmBulkDelete = () => {
+    if (deleteConfirmText === 'DELETE') {
+      bulkDeleteMutation.mutate(selectedIds)
+      setIsBulkDeleteConfirmOpen(false)
+      setDeleteConfirmText('')
+    }
+  }
+
+  const handleSingleDelete = (business: Business) => {
+    setBusinessToDelete(business)
+    setIsDeleteConfirmOpen(true)
+  }
+
+  const confirmSingleDelete = () => {
+    if (businessToDelete) {
+      deleteMutation.mutate(businessToDelete.id)
+      setIsDeleteConfirmOpen(false)
+      setBusinessToDelete(null)
     }
   }
 
@@ -621,11 +640,7 @@ export default function BusinessesPage() {
                         <Bell className="w-4 h-4 text-blue-600" />
                       </button>
                       <button 
-                        onClick={() => {
-                          if (confirm(`⚠️ Delete ${business.name}?\n\nThis will permanently delete:\n• The business\n• All customers\n• All loyalty programs\n• All visits and rewards\n• All staff accounts\n\nThis action CANNOT be undone!`)) {
-                            deleteMutation.mutate(business.id)
-                          }
-                        }}
+                        onClick={() => handleSingleDelete(business)}
                         className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
                         title="Delete Business"
                       >
@@ -1136,6 +1151,37 @@ export default function BusinessesPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => {
+          setIsDeleteConfirmOpen(false)
+          setBusinessToDelete(null)
+        }}
+        onConfirm={confirmSingleDelete}
+        title="Delete Business"
+        message={`⚠️ Delete ${businessToDelete?.name}?\n\nThis will permanently delete:\n• The business\n• All customers\n• All loyalty programs\n• All visits and rewards\n• All staff accounts\n\nThis action CANNOT be undone!`}
+        confirmText="Delete"
+        type="danger"
+      />
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={isBulkDeleteConfirmOpen}
+        onClose={() => {
+          setIsBulkDeleteConfirmOpen(false)
+          setDeleteConfirmText('')
+        }}
+        onConfirm={confirmBulkDelete}
+        title="Delete Multiple Businesses"
+        message={`⚠️ DELETE ${selectedIds.length} BUSINESS(ES) PERMANENTLY?\n\nThis will CASCADE DELETE:\n• All businesses\n• All staff accounts\n• All loyalty programs\n• All customers\n• All visits & rewards\n\n🚨 THIS ACTION CANNOT BE UNDONE! 🚨`}
+        confirmText="Delete All"
+        type="danger"
+        requireTyping="DELETE"
+        onTypingChange={setDeleteConfirmText}
+        typingValue={deleteConfirmText}
+      />
     </div>
   )
 }
