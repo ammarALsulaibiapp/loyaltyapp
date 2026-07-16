@@ -44,7 +44,6 @@ export default function BusinessLayout() {
     { name: 'Shop QR', href: '/business/qr-generator', icon: QrCode },
     { name: 'Wallet QR', href: '/business/wallet-qr', icon: Wallet },
     { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
-    { name: t('nav.settings'), href: '/business/settings', icon: Settings },
   ]
 
   const staffNavigation = [
