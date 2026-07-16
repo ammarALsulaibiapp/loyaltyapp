@@ -50,9 +50,10 @@ export default function Modal({
       <div className="flex min-h-full items-center justify-center p-4">
         <div
           className={clsx(
-            'relative w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl max-h-[90vh] flex flex-col',
+            'relative w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl max-h-[85vh] flex flex-col',
             sizes[size]
           )}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           {title && (
@@ -69,8 +70,10 @@ export default function Modal({
             </div>
           )}
 
-          {/* Content - Scrollable */}
-          <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
+          {/* Content - Always scrollable */}
+          <div className="px-6 py-4 overflow-y-auto flex-1 min-h-0">
+            {children}
+          </div>
         </div>
       </div>
     </div>
