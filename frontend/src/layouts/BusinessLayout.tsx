@@ -85,7 +85,7 @@ export default function BusinessLayout() {
           <div className="p-5 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2.5">
               {business?.logo_url ? (
-                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm p-1">
                   <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
                 </div>
               ) : (
@@ -206,7 +206,7 @@ export default function BusinessLayout() {
           <div className="p-5 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2.5">
               {business?.logo_url ? (
-                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm p-1">
                   <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
                 </div>
               ) : (
