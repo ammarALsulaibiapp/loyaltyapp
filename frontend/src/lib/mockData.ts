@@ -50,6 +50,7 @@ export const mockBusinesses = [
     email: 'contact@coffeeparadise.com',
     address: 'Muscat, Oman',
     description: 'Best coffee in town',
+    currency: 'OMR',
     is_active: true,
     self_service_enabled: false,
     owner_user_id: null,
@@ -66,6 +67,7 @@ export const mockBusinesses = [
     email: 'info@freshbakery.com',
     address: 'Salalah, Oman',
     description: 'Fresh bread daily',
+    currency: 'OMR',
     is_active: true,
     self_service_enabled: false,
     owner_user_id: null,
@@ -82,6 +84,7 @@ export const mockBusinesses = [
     email: 'booking@stylesalon.com',
     address: 'Nizwa, Oman',
     description: 'Hair and beauty services',
+    currency: 'OMR',
     is_active: false,
     self_service_enabled: false,
     owner_user_id: null,
@@ -253,6 +256,7 @@ export const mockInvoices = [
     updated_at: '2024-06-05T00:00:00Z',
     businesses: {
       name: 'Coffee Paradise',
+      currency: 'OMR',
     },
   },
   {
@@ -270,6 +274,7 @@ export const mockInvoices = [
     updated_at: '2024-06-01T00:00:00Z',
     businesses: {
       name: 'Fresh Bakery',
+      currency: 'OMR',
     },
   },
 ]

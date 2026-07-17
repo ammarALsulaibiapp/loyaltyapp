@@ -279,7 +279,9 @@ export default function InvoicesPage() {
       const invoiceNumber = `INV-${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`
       
       if (isDemoMode()) {
-        const businessName = businesses?.find(b => b.id === newInvoice.business_id)?.name || 'Unknown Business'
+        const business = businesses?.find(b => b.id === newInvoice.business_id)
+        const businessName = business?.name || 'Unknown Business'
+        const businessCurrency = (business as any)?.currency || 'OMR'
         ;(mockInvoices as any).unshift({
           id: Math.random().toString(),
           business_id: newInvoice.business_id,
@@ -290,7 +292,8 @@ export default function InvoicesPage() {
           due_date: newInvoice.due_date,
           paid_date: null,
           businesses: {
-            name: businessName
+            name: businessName,
+            currency: businessCurrency,
           }
         })
         return
