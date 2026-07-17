@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { backendAPI } from '../../lib/api'
@@ -9,7 +9,7 @@ import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import Toggle from '../../components/ui/Toggle'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
-import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield, Bell, MessageSquare, Send, CreditCard } from 'lucide-react'
+import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield, Bell, MessageSquare, Send, CreditCard, Search } from 'lucide-react'
 import { format } from 'date-fns'
 import { isDemoMode, mockBusinesses } from '../../lib/mockData'
 import { useTranslation } from 'react-i18next'
@@ -59,6 +59,7 @@ export default function BusinessesPage() {
   const [newOwnerPassword, setNewOwnerPassword] = useState('')
   const [copied, setCopied] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [notificationSettings, setNotificationSettings] = useState({
     whatsapp_enabled: false,
     whatsapp_provider: 'twilio',

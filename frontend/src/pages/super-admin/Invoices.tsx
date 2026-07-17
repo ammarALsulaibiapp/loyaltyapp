@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { isDemoMode, mockInvoices, mockBusinesses } from '../../lib/mockData'
@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import { useTranslation } from 'react-i18next'
-import { Plus, FileText, CheckCircle } from 'lucide-react'
+import { Plus, FileText, CheckCircle, Search, Trash2, Filter } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface Invoice {
@@ -30,6 +30,8 @@ export default function InvoicesPage() {
   const queryClient = useQueryClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedInvoiceForPrint, setSelectedInvoiceForPrint] = useState<Invoice | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
   const [formData, setFormData] = useState({
     business_id: '',
     amount: '',
@@ -304,6 +306,43 @@ export default function InvoicesPage() {
     },
   })
 
+  // Delete invoice mutation
+  const deleteInvoiceMutation = useMutation({
+    mutationFn: async (invoiceId: string) => {
+      if (isDemoMode()) {
+        const index = mockInvoices.findIndex(inv => inv.id === invoiceId)
+        if (index > -1) mockInvoices.splice(index, 1)
+        return
+      }
+
+      const { error } = await supabase
+        .from('invoices')
+        .delete()
+        .eq('id', invoiceId)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invoices'] })
+      alert('✅ Invoice deleted successfully!')
+    },
+  })
+
+  // Filtered invoices
+  const filteredInvoices = useMemo(() => {
+    if (!invoices) return []
+    
+    return invoices.filter(invoice => {
+      const matchesSearch = 
+        invoice.invoice_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        invoice.businesses.name.toLowerCase().includes(searchQuery.toLowerCase())
+      
+      const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter
+      
+      return matchesSearch && matchesStatus
+    })
+  }, [invoices, searchQuery, statusFilter])
+
   // Create invoice mutation
   const createInvoiceMutation = useMutation({
     mutationFn: async (newInvoice: typeof formData) => {
@@ -398,6 +437,39 @@ export default function InvoicesPage() {
         </Button>
       </div>
 
+      {/* Search and Filter */}
+      <Card>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search by invoice number or business name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="text-gray-400 w-5 h-5" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="overdue">Overdue</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          Showing {filteredInvoices.length} of {invoices?.length || 0} invoices
+        </div>
+      </Card>
+
       <Card>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -427,7 +499,7 @@ export default function InvoicesPage() {
               </tr>
             </thead>
             <tbody>
-              {invoices?.map((invoice) => (
+              {filteredInvoices?.map((invoice) => (
                 <tr
                   key={invoice.id}
                   className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
@@ -489,6 +561,17 @@ export default function InvoicesPage() {
                         title={t('invoices.printInvoice', 'Print Invoice')}
                       >
                         <FileText className="w-4 h-4 text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Delete this invoice? This cannot be undone.')) {
+                            deleteInvoiceMutation.mutate(invoice.id)
+                          }
+                        }}
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                        title="Delete Invoice"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
                       </button>
                     </div>
                   </td>
