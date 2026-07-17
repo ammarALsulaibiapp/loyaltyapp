@@ -9,7 +9,7 @@ import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import Toggle from '../../components/ui/Toggle'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
-import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield, Bell, MessageSquare, Send } from 'lucide-react'
+import { Plus, Edit, Trash2, Pause, Play, Key, Mail, Copy, Check, Shield, Bell, MessageSquare, Send, CreditCard } from 'lucide-react'
 import { format } from 'date-fns'
 import { isDemoMode, mockBusinesses } from '../../lib/mockData'
 import { useTranslation } from 'react-i18next'
@@ -37,11 +37,23 @@ export default function BusinessesPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isEditBusinessDataModal, setIsEditBusinessDataModal] = useState(false)
   const [isNotificationSettingsModal, setIsNotificationSettingsModal] = useState(false)
+  const [isSubscriptionModal, setIsSubscriptionModal] = useState(false)
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
   const [isBulkDeleteConfirmOpen, setIsBulkDeleteConfirmOpen] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const [businessToDelete, setBusinessToDelete] = useState<Business | null>(null)
   const [editingBusiness, setEditingBusiness] = useState<Business | null>(null)
+  const [currentSubscription, setCurrentSubscription] = useState<any>(null)
+  const [subscriptionData, setSubscriptionData] = useState({
+    plan_name: 'Standard',
+    monthly_price: '10',
+    annual_price: '100',
+    max_customers: '1000',
+    max_staff: '10',
+    start_date: new Date().toISOString().split('T')[0],
+    expiry_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    status: 'active',
+  })
   const [generatedPassword, setGeneratedPassword] = useState('')
   const [ownerEmail, setOwnerEmail] = useState('')
   const [newOwnerPassword, setNewOwnerPassword] = useState('')
@@ -97,13 +109,32 @@ export default function BusinessesPage() {
   // Create business mutation
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await (supabase.from('businesses') as any).insert(data)
+      const { data: newBusiness, error } = await (supabase.from('businesses') as any).insert(data).select().single()
       if (error) throw error
+      
+      // Auto-create default subscription
+      const { error: subError } = await (supabase.from('subscriptions') as any).insert([{
+        business_id: newBusiness.id,
+        plan_name: 'Standard',
+        monthly_price: 10,
+        annual_price: 100,
+        max_customers: 1000,
+        max_staff: 10,
+        start_date: new Date().toISOString().split('T')[0],
+        expiry_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        status: 'active',
+      }])
+      if (subError) console.error('Failed to create subscription:', subError)
+      
+      return newBusiness
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['businesses'] })
+      queryClient.invalidateQueries({ queryKey: ['super-admin-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['expiring-subscriptions'] })
       setIsModalOpen(false)
       resetForm()
+      alert('✅ Business created with active subscription!')
     },
   })
 
@@ -457,6 +488,94 @@ export default function BusinessesPage() {
     }
   }
 
+  const openSubscriptionModal = async (business: Business) => {
+    setEditingBusiness(business)
+    
+    // Fetch existing subscription
+    const { data } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('business_id', business.id)
+      .maybeSingle()
+    
+    if (data) {
+      setCurrentSubscription(data)
+      setSubscriptionData({
+        plan_name: (data as any).plan_name || 'Standard',
+        monthly_price: (data as any).monthly_price?.toString() || '10',
+        annual_price: (data as any).annual_price?.toString() || '100',
+        max_customers: (data as any).max_customers?.toString() || '1000',
+        max_staff: (data as any).max_staff?.toString() || '10',
+        start_date: (data as any).start_date || new Date().toISOString().split('T')[0],
+        expiry_date: (data as any).expiry_date || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        status: (data as any).status || 'active',
+      })
+    } else {
+      setCurrentSubscription(null)
+      setSubscriptionData({
+        plan_name: 'Standard',
+        monthly_price: '10',
+        annual_price: '100',
+        max_customers: '1000',
+        max_staff: '10',
+        start_date: new Date().toISOString().split('T')[0],
+        expiry_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        status: 'active',
+      })
+    }
+    
+    setIsSubscriptionModal(true)
+  }
+
+  const saveSubscription = async () => {
+    if (!editingBusiness) return
+
+    try {
+      if (currentSubscription) {
+        // Update existing
+        const { error } = await (supabase
+          .from('subscriptions') as any)
+          .update([{
+            plan_name: subscriptionData.plan_name,
+            monthly_price: parseFloat(subscriptionData.monthly_price),
+            annual_price: parseFloat(subscriptionData.annual_price),
+            max_customers: parseInt(subscriptionData.max_customers),
+            max_staff: parseInt(subscriptionData.max_staff),
+            start_date: subscriptionData.start_date,
+            expiry_date: subscriptionData.expiry_date,
+            status: subscriptionData.status,
+          }])
+          .eq('id', (currentSubscription as any).id)
+        
+        if (error) throw error
+      } else {
+        // Create new
+        const { error } = await (supabase
+          .from('subscriptions') as any)
+          .insert([{
+            business_id: editingBusiness.id,
+            plan_name: subscriptionData.plan_name,
+            monthly_price: parseFloat(subscriptionData.monthly_price),
+            annual_price: parseFloat(subscriptionData.annual_price),
+            max_customers: parseInt(subscriptionData.max_customers),
+            max_staff: parseInt(subscriptionData.max_staff),
+            start_date: subscriptionData.start_date,
+            expiry_date: subscriptionData.expiry_date,
+            status: subscriptionData.status,
+          }])
+        
+        if (error) throw error
+      }
+      
+      alert('✅ Subscription saved!')
+      setIsSubscriptionModal(false)
+      queryClient.invalidateQueries({ queryKey: ['super-admin-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['expiring-subscriptions'] })
+    } catch (error: any) {
+      alert('❌ Error: ' + error.message)
+    }
+  }
+
   const handleGeneratePasswordForEdit = () => {
     const newPassword = generateRandomPassword()
     setEditFormData({ ...editFormData, password: newPassword } as any)
@@ -653,6 +772,13 @@ export default function BusinessesPage() {
                         title="Notification Settings"
                       >
                         <Bell className="w-4 h-4 text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => openSubscriptionModal(business)}
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                        title="Manage Subscription"
+                      >
+                        <CreditCard className="w-4 h-4 text-green-600" />
                       </button>
                       <button 
                         onClick={() => handleSingleDelete(business)}
@@ -1241,6 +1367,123 @@ export default function BusinessesPage() {
         onTypingChange={setDeleteConfirmText}
         typingValue={deleteConfirmText}
       />
+
+      {/* Subscription Modal */}
+      <Modal
+        isOpen={isSubscriptionModal}
+        onClose={() => setIsSubscriptionModal(false)}
+        title={`💳 Subscription - ${editingBusiness?.name || ''}`}
+        size="lg"
+      >
+        <div className="space-y-4">
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-sm text-blue-900 dark:text-blue-100">
+              <strong>💡 Info:</strong> {currentSubscription ? 'Editing existing subscription' : 'Creating new subscription for this business'}
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Plan Name
+            </label>
+            <select
+              value={subscriptionData.plan_name}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, plan_name: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="Basic">Basic</option>
+              <option value="Standard">Standard</option>
+              <option value="Premium">Premium</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Monthly Price"
+              type="number"
+              value={subscriptionData.monthly_price}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, monthly_price: e.target.value })}
+              placeholder="10"
+            />
+            <Input
+              label="Annual Price"
+              type="number"
+              value={subscriptionData.annual_price}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, annual_price: e.target.value })}
+              placeholder="100"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Max Customers"
+              type="number"
+              value={subscriptionData.max_customers}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, max_customers: e.target.value })}
+              placeholder="1000"
+            />
+            <Input
+              label="Max Staff"
+              type="number"
+              value={subscriptionData.max_staff}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, max_staff: e.target.value })}
+              placeholder="10"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Start Date"
+              type="date"
+              value={subscriptionData.start_date}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, start_date: e.target.value })}
+            />
+            <Input
+              label="Expiry Date"
+              type="date"
+              value={subscriptionData.expiry_date}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, expiry_date: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Status
+            </label>
+            <select
+              value={subscriptionData.status}
+              onChange={(e) => setSubscriptionData({ ...subscriptionData, status: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="active">Active</option>
+              <option value="paused">Paused</option>
+              <option value="expired">Expired</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          {currentSubscription && (
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <p className="text-sm text-green-900 dark:text-green-100">
+                <strong>✅ Current Status:</strong> {currentSubscription.status}
+              </p>
+              <p className="text-xs text-green-800 dark:text-green-200 mt-1">
+                Created: {new Date(currentSubscription.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
+            <Button variant="outline" onClick={() => setIsSubscriptionModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={saveSubscription}>
+              {currentSubscription ? 'Update Subscription' : 'Create Subscription'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

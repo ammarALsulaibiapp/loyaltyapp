@@ -83,8 +83,8 @@ export default function SuperAdminDashboard() {
           )
         `)
         .eq('status', 'active')
-        .lte('end_date', thirtyDaysFromNow.toISOString())
-        .order('end_date', { ascending: true })
+        .lte('expiry_date', thirtyDaysFromNow.toISOString())
+        .order('expiry_date', { ascending: true })
       
       if (error) throw error
       return data || []
@@ -275,7 +275,7 @@ export default function SuperAdminDashboard() {
                 </thead>
                 <tbody>
                   {expiringSoon.map((sub: any) => {
-                    const daysLeft = Math.ceil((new Date(sub.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                    const daysLeft = Math.ceil((new Date(sub.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
                     return (
                       <tr key={sub.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="py-3 px-4">
@@ -289,10 +289,10 @@ export default function SuperAdminDashboard() {
                           </div>
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {sub.plan_type || 'Standard'}
+                          {sub.plan_name || 'Standard'}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {new Date(sub.end_date).toLocaleDateString()}
+                          {new Date(sub.expiry_date).toLocaleDateString()}
                         </td>
                         <td className="py-3 px-4">
                           <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
