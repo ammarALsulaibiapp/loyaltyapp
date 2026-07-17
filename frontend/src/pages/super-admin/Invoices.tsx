@@ -21,6 +21,7 @@ interface Invoice {
   paid_date: string | null
   businesses: {
     name: string
+    currency?: string
   }
 }
 
@@ -45,6 +46,7 @@ export default function InvoicesPage() {
     const amountVal = typeof invoice?.amount === 'number' ? invoice.amount : parseFloat(invoice?.amount || '0') || 0
     const invoiceNum = invoice?.invoice_number || 'N/A'
     const businessName = invoice?.businesses?.name || 'Unknown Business'
+    const currency = invoice?.businesses?.currency || 'USD'
 
     const statusLabels = {
       paid: isAr ? 'مدفوع' : 'PAID',
@@ -173,7 +175,7 @@ export default function InvoicesPage() {
                     ${labels.platformFee}
                   </td>
                   <td class="py-4 px-4 text-end font-semibold text-gray-900">
-                    $${amountVal.toFixed(2)}
+                    ${amountVal.toFixed(2)} ${currency}
                   </td>
                 </tr>
               </tbody>
@@ -184,7 +186,7 @@ export default function InvoicesPage() {
             <div class="w-full md:w-64 border-t border-gray-200 pt-4">
               <div class="flex justify-between items-center text-gray-900">
                 <span class="font-bold text-[14px]">${labels.total}</span>
-                <span class="text-xl font-extrabold text-[#ff6b9d]">$${amountVal.toFixed(2)}</span>
+                <span class="text-xl font-extrabold text-[#ff6b9d]">${amountVal.toFixed(2)} ${currency}</span>
               </div>
             </div>
           </div>
@@ -222,7 +224,8 @@ export default function InvoicesPage() {
         .select(`
           *,
           businesses (
-            name
+            name,
+            currency
           )
         `)
         .order('issue_date', { ascending: false })
@@ -402,7 +405,7 @@ export default function InvoicesPage() {
                     {invoice.businesses.name}
                   </td>
                   <td className="py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    ${invoice.amount.toFixed(2)}
+                    {invoice.amount.toFixed(2)} {invoice.businesses.currency || 'USD'}
                   </td>
                   <td className="py-3 px-4">
                     <span
