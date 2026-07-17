@@ -22,7 +22,7 @@ export default function BusinessDashboard() {
         .select('currency')
         .eq('id', profile.business_id)
         .single()
-      return data
+      return data as { currency: string } | null
     },
     enabled: !!profile?.business_id,
   })

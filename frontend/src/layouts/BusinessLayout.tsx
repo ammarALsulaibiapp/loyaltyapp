@@ -48,7 +48,7 @@ export default function BusinessLayout() {
         .select('name, logo_url, brand_color')
         .eq('id', profile.business_id)
         .single()
-      return data
+      return data as { name: string; logo_url: string | null; brand_color: string } | null
     },
     enabled: !!profile?.business_id,
   })
