@@ -56,11 +56,38 @@ export default function SuperAdminDashboard() {
         totalBusinesses: businesses.length,
         activeBusinesses: businesses.filter((b) => b.is_active).length,
         activeSubscriptions: subscriptions.filter((s) => s.status === 'active').length,
-        expiredSubscriptions: subscriptions.filter((s) => s.status === 'expired').length,
+        expiredSubscriptions: subscriptions.filter((s) => s.status === 'expired' || s.status === 'inactive').length,
         totalCustomers: customersResult.data?.length || 0,
         totalVisits: visitsResult.data?.length || 0,
         totalRewardsRedeemed: (rewardsResult.data as any[])?.filter((r) => r.is_redeemed).length || 0,
       }
+    },
+  })
+
+  // Fetch expiring subscriptions (< 30 days)
+  const { data: expiringSoon } = useQuery({
+    queryKey: ['expiring-subscriptions'],
+    queryFn: async () => {
+      if (isDemoMode()) return []
+      
+      const thirtyDaysFromNow = new Date()
+      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
+      
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select(`
+          *,
+          businesses (
+            name,
+            email
+          )
+        `)
+        .eq('status', 'active')
+        .lte('end_date', thirtyDaysFromNow.toISOString())
+        .order('end_date', { ascending: true })
+      
+      if (error) throw error
+      return data || []
     },
   })
 
@@ -209,6 +236,84 @@ export default function SuperAdminDashboard() {
           </div>
         </Card>
       </div>
+
+      {/* Expiring Subscriptions Warning */}
+      {expiringSoon && expiringSoon.length > 0 && (
+        <Card>
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                <XCircle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  ⚠️ Expiring Soon ({expiringSoon.length})
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Businesses with subscriptions expiring in next 30 days
+                </p>
+              </div>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                      Business
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                      Plan
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                      Expires
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                      Days Left
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {expiringSoon.map((sub: any) => {
+                    const daysLeft = Math.ceil((new Date(sub.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                    return (
+                      <tr key={sub.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <td className="py-3 px-4">
+                          <div>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {sub.businesses?.name || 'Unknown'}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {sub.businesses?.email}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                          {sub.plan_type || 'Standard'}
+                        </td>
+                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                          {new Date(sub.end_date).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                            daysLeft <= 7
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                              : daysLeft <= 14
+                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                          }`}>
+                            {daysLeft} days
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Revenue Chart */}
       <Card title={t('dashboard.monthlyRevenue', 'Monthly Revenue')} subtitle={t('dashboard.revenueTrend', 'Revenue trend over the last 6 months')}>
