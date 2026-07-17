@@ -122,6 +122,7 @@ export default function BusinessesPage() {
           phone_number: data.phone_number,
           brand_color: data.brand_color,
           logo_url: data.logo_url,
+          currency: data.currency,
         })
         .eq('id', data.id)
 
@@ -711,6 +712,28 @@ export default function BusinessesPage() {
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('businesses.currency', 'Currency')}
+            </label>
+            <select
+              value={formData.currency}
+              onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="OMR">OMR - Omani Rial</option>
+              <option value="SAR">SAR - Saudi Riyal</option>
+              <option value="AED">AED - UAE Dirham</option>
+              <option value="KWD">KWD - Kuwaiti Dinar</option>
+              <option value="BHD">BHD - Bahraini Dinar</option>
+              <option value="QAR">QAR - Qatari Riyal</option>
+              <option value="USD">USD - US Dollar</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="GBP">GBP - British Pound</option>
+              <option value="EGP">EGP - Egyptian Pound</option>
+              <option value="JOD">JOD - Jordanian Dinar</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('businesses.brandColor', 'Brand Color')}
             </label>
             <input
@@ -771,6 +794,28 @@ export default function BusinessesPage() {
             value={editFormData.phone_number}
             onChange={(e) => setEditFormData({ ...editFormData, phone_number: e.target.value })}
           />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('businesses.currency', 'Currency')}
+            </label>
+            <select
+              value={editFormData.currency}
+              onChange={(e) => setEditFormData({ ...editFormData, currency: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="OMR">OMR - Omani Rial</option>
+              <option value="SAR">SAR - Saudi Riyal</option>
+              <option value="AED">AED - UAE Dirham</option>
+              <option value="KWD">KWD - Kuwaiti Dinar</option>
+              <option value="BHD">BHD - Bahraini Dinar</option>
+              <option value="QAR">QAR - Qatari Riyal</option>
+              <option value="USD">USD - US Dollar</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="GBP">GBP - British Pound</option>
+              <option value="EGP">EGP - Egyptian Pound</option>
+              <option value="JOD">JOD - Jordanian Dinar</option>
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('businesses.brandColor', 'Brand Color')}

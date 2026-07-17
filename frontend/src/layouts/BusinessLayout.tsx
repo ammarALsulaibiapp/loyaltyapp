@@ -3,6 +3,9 @@ import { useAuthStore } from '../stores/authStore'
 import { useLanguageStore } from '../stores/languageStore'
 import { useThemeStore } from '../stores/themeStore'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '../lib/supabase'
+import { isDemoMode } from '../lib/mockData'
 import {
   LayoutDashboard,
   Users,
@@ -35,6 +38,21 @@ export default function BusinessLayout() {
   const isAdmin = profile?.role === 'business_admin'
   const isStaff = profile?.role === 'staff'
 
+  // Fetch business info for logo
+  const { data: business } = useQuery({
+    queryKey: ['business-logo', profile?.business_id],
+    queryFn: async () => {
+      if (!profile?.business_id || isDemoMode()) return null
+      const { data } = await supabase
+        .from('businesses')
+        .select('name, logo_url, brand_color')
+        .eq('id', profile.business_id)
+        .single()
+      return data
+    },
+    enabled: !!profile?.business_id,
+  })
+
   const adminNavigation = [
     { name: t('nav.dashboard'), href: '/business', icon: LayoutDashboard },
     { name: t('nav.customers'), href: '/business/customers', icon: Users },
@@ -66,10 +84,18 @@ export default function BusinessLayout() {
           {/* Logo */}
           <div className="p-5 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
-                L
-              </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
+              {business?.logo_url ? (
+                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
+                  {business?.name?.charAt(0)?.toUpperCase() || 'L'}
+                </div>
+              )}
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">
+                {business?.name || 'Mahfazaty'}
+              </h1>
             </div>
           </div>
 
@@ -179,10 +205,18 @@ export default function BusinessLayout() {
           {/* Logo */}
           <div className="p-5 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
-                L
-              </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
+              {business?.logo_url ? (
+                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
+                  {business?.name?.charAt(0)?.toUpperCase() || 'L'}
+                </div>
+              )}
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">
+                {business?.name || 'Mahfazaty'}
+              </h1>
             </div>
           </div>
 
