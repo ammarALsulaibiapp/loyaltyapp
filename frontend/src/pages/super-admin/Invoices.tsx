@@ -48,8 +48,8 @@ export default function InvoicesPage() {
     const businessName = invoice?.businesses?.name || 'Unknown Business'
     const currencyCode = invoice?.businesses?.currency || 'USD'
     
-    // Currency symbols
-    const currencySymbols: Record<string, string> = {
+    // Currency symbols - different for English vs Arabic
+    const currencySymbolsAr: Record<string, string> = {
       'OMR': 'ر.ع.',
       'SAR': 'ر.س',
       'AED': 'د.إ',
@@ -63,7 +63,21 @@ export default function InvoicesPage() {
       'JOD': 'د.ا',
     }
     
-    const currency = currencySymbols[currencyCode] || currencyCode
+    const currencySymbolsEn: Record<string, string> = {
+      'OMR': 'OMR',
+      'SAR': 'SAR',
+      'AED': 'AED',
+      'KWD': 'KWD',
+      'BHD': 'BHD',
+      'QAR': 'QAR',
+      'USD': 'USD',
+      'EUR': 'EUR',
+      'GBP': 'GBP',
+      'EGP': 'EGP',
+      'JOD': 'JOD',
+    }
+    
+    const currency = isAr ? (currencySymbolsAr[currencyCode] || currencyCode) : (currencySymbolsEn[currencyCode] || currencyCode)
 
     const statusLabels = {
       paid: isAr ? 'مدفوع' : 'PAID',
@@ -427,7 +441,7 @@ export default function InvoicesPage() {
                   <td className="py-3 px-4 font-semibold text-gray-900 dark:text-white">
                     {invoice.amount.toFixed(2)} {(() => {
                       const currencyCode = invoice.businesses.currency || 'USD'
-                      const symbols: Record<string, string> = {
+                      const symbolsAr: Record<string, string> = {
                         'OMR': 'ر.ع.',
                         'SAR': 'ر.س',
                         'AED': 'د.إ',
@@ -440,7 +454,7 @@ export default function InvoicesPage() {
                         'EGP': 'ج.م',
                         'JOD': 'د.ا',
                       }
-                      return symbols[currencyCode] || currencyCode
+                      return symbolsAr[currencyCode] || currencyCode
                     })()}
                   </td>
                   <td className="py-3 px-4">
