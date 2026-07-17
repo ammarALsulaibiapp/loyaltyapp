@@ -32,6 +32,8 @@ export default function SuperAdminDashboard() {
           totalCustomers: mockCustomers.length,
           totalVisits: mockCustomers.reduce((acc, c) => acc + c.total_visits, 0),
           totalRewardsRedeemed: mockRewards.filter((r) => r.is_redeemed).length,
+          monthlyRevenue: 0,
+          annualRevenue: 0,
         }
       }
 
@@ -41,16 +43,40 @@ export default function SuperAdminDashboard() {
         customersResult,
         visitsResult,
         rewardsResult,
+        invoicesResult,
       ] = await Promise.all([
         supabase.from('businesses').select('id, is_active'),
         supabase.from('subscriptions').select('id, status'),
         supabase.from('customers').select('id'),
         supabase.from('visits').select('id'),
         supabase.from('rewards').select('id, is_redeemed'),
+        supabase.from('invoices').select('amount, status, issue_date'),
       ])
 
       const businesses = (businessesResult.data || []) as any[]
       const subscriptions = (subscriptionsResult.data || []) as any[]
+      const invoices = (invoicesResult.data || []) as any[]
+
+      // Calculate revenue
+      const now = new Date()
+      const currentMonth = now.getMonth()
+      const currentYear = now.getFullYear()
+      
+      const monthlyRevenue = invoices
+        .filter(inv => {
+          const invDate = new Date(inv.issue_date)
+          return invDate.getMonth() === currentMonth && 
+                 invDate.getFullYear() === currentYear &&
+                 inv.status === 'paid'
+        })
+        .reduce((sum, inv) => sum + parseFloat(inv.amount || 0), 0)
+      
+      const annualRevenue = invoices
+        .filter(inv => {
+          const invDate = new Date(inv.issue_date)
+          return invDate.getFullYear() === currentYear && inv.status === 'paid'
+        })
+        .reduce((sum, inv) => sum + parseFloat(inv.amount || 0), 0)
 
       return {
         totalBusinesses: businesses.length,
@@ -60,6 +86,8 @@ export default function SuperAdminDashboard() {
         totalCustomers: customersResult.data?.length || 0,
         totalVisits: visitsResult.data?.length || 0,
         totalRewardsRedeemed: (rewardsResult.data as any[])?.filter((r) => r.is_redeemed).length || 0,
+        monthlyRevenue,
+        annualRevenue,
       }
     },
   })
@@ -211,9 +239,9 @@ export default function SuperAdminDashboard() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.monthlyRevenue', 'Monthly Revenue')}</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                8,500 {t('dashboard.mixed', 'Mixed')}
+                {stats?.monthlyRevenue?.toFixed(2) || '0.00'}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Multi-currency</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Paid invoices this month</p>
             </div>
             <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
               <DollarSign className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
@@ -226,9 +254,9 @@ export default function SuperAdminDashboard() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.annualRevenue', 'Annual Revenue')}</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                68,300 {t('dashboard.mixed', 'Mixed')}
+                {stats?.annualRevenue?.toFixed(2) || '0.00'}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Multi-currency</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Paid invoices this year</p>
             </div>
             <div className="p-3 bg-teal-100 dark:bg-teal-900 rounded-lg">
               <TrendingUp className="w-6 h-6 text-teal-600 dark:text-teal-400" />
