@@ -46,7 +46,24 @@ export default function InvoicesPage() {
     const amountVal = typeof invoice?.amount === 'number' ? invoice.amount : parseFloat(invoice?.amount || '0') || 0
     const invoiceNum = invoice?.invoice_number || 'N/A'
     const businessName = invoice?.businesses?.name || 'Unknown Business'
-    const currency = invoice?.businesses?.currency || 'USD'
+    const currencyCode = invoice?.businesses?.currency || 'USD'
+    
+    // Currency symbols
+    const currencySymbols: Record<string, string> = {
+      'OMR': 'ر.ع.',
+      'SAR': 'ر.س',
+      'AED': 'د.إ',
+      'KWD': 'د.ك',
+      'BHD': 'د.ب',
+      'QAR': 'ر.ق',
+      'USD': '$',
+      'EUR': '€',
+      'GBP': '£',
+      'EGP': 'ج.م',
+      'JOD': 'د.ا',
+    }
+    
+    const currency = currencySymbols[currencyCode] || currencyCode
 
     const statusLabels = {
       paid: isAr ? 'مدفوع' : 'PAID',
@@ -408,7 +425,23 @@ export default function InvoicesPage() {
                     {invoice.businesses.name}
                   </td>
                   <td className="py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    {invoice.amount.toFixed(2)} {invoice.businesses.currency || 'USD'}
+                    {invoice.amount.toFixed(2)} {(() => {
+                      const currencyCode = invoice.businesses.currency || 'USD'
+                      const symbols: Record<string, string> = {
+                        'OMR': 'ر.ع.',
+                        'SAR': 'ر.س',
+                        'AED': 'د.إ',
+                        'KWD': 'د.ك',
+                        'BHD': 'د.ب',
+                        'QAR': 'ر.ق',
+                        'USD': '$',
+                        'EUR': '€',
+                        'GBP': '£',
+                        'EGP': 'ج.م',
+                        'JOD': 'د.ا',
+                      }
+                      return symbols[currencyCode] || currencyCode
+                    })()}
                   </td>
                   <td className="py-3 px-4">
                     <span
