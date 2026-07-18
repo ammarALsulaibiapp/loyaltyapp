@@ -1,9 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// AI Retention Engine - Business logic only, NO database imports
+// Database calls are handled by the routes layer
 
 interface Customer {
   id: string
@@ -14,6 +10,7 @@ interface Customer {
   total_spent: number
   created_at: string
   last_visit_date?: string
+  visits?: any[]
 }
 
 interface ChurnAnalysis {
@@ -36,73 +33,8 @@ interface ChurnAnalysis {
 
 export class AIRetentionEngine {
   /**
-   * Main function: Analyze all customers for all businesses
-   */
-  async analyzeAllBusinesses() {
-    console.log('🤖 AI Retention Engine: Starting analysis...')
-    
-    const { data: businesses } = await supabase
-      .from('businesses')
-      .select('id')
-      .eq('is_active', true)
-    
-    if (!businesses) return
-    
-    for (const business of businesses) {
-      await this.analyzeBusinessCustomers(business.id)
-    }
-    
-    console.log('✅ AI Retention Engine: Analysis complete')
-  }
-
-  /**
-   * Analyze all customers for a single business
-   */
-  async analyzeBusinessCustomers(businessId: string) {
-    // Get retention settings
-    const { data: settings } = await supabase
-      .from('retention_settings')
-      .select('*')
-      .eq('business_id', businessId)
-      .single()
-    
-    if (!settings || !settings.auto_winback_enabled) {
-      console.log(`⏭️  Skipping business ${businessId} - auto-winback disabled`)
-      return
-    }
-    
-    // Get all customers with visit history
-    const { data: customers } = await supabase
-      .from('customers')
-      .select(`
-        *,
-        visits (
-          visit_date,
-          amount_spent
-        )
-      `)
-      .eq('business_id', businessId)
-      .gte('total_visits', settings.min_visits_before_analysis)
-    
-    if (!customers || customers.length === 0) return
-    
-    console.log(`📊 Analyzing ${customers.length} customers for business ${businessId}`)
-    
-    for (const customer of customers) {
-      const analysis = this.calculateChurnRisk(customer as any, settings)
-      
-      // Save analysis to database
-      await this.saveChurnAnalysis(analysis)
-      
-      // Trigger win-back if needed
-      if (analysis.churn_risk === 'high' || analysis.churn_risk === 'critical') {
-        await this.triggerWinBackCampaign(analysis, settings)
-      }
-    }
-  }
-
-  /**
    * Calculate churn risk for a single customer
+   * This is pure business logic - no database calls
    */
   calculateChurnRisk(customer: any, settings: any): ChurnAnalysis {
     const visits = customer.visits || []
@@ -209,71 +141,6 @@ export class AIRetentionEngine {
   }
 
   /**
-   * Save churn analysis to database
-   */
-  async saveChurnAnalysis(analysis: ChurnAnalysis) {
-    await supabase
-      .from('customer_churn_analysis')
-      .insert({
-        ...analysis,
-        key_factors: JSON.stringify(analysis.key_factors)
-      })
-  }
-
-  /**
-   * Trigger automated win-back campaign
-   */
-  async triggerWinBackCampaign(analysis: ChurnAnalysis, settings: any) {
-    // Check if customer already has recent campaign
-    const { data: recentCampaigns } = await supabase
-      .from('winback_campaigns')
-      .select('*')
-      .eq('customer_id', analysis.customer_id)
-      .gte('created_at', new Date(Date.now() - settings.days_between_campaigns * 24 * 60 * 60 * 1000).toISOString())
-    
-    if (recentCampaigns && recentCampaigns.length > 0) {
-      console.log(`⏭️  Skipping campaign for customer ${analysis.customer_id} - recent campaign exists`)
-      return
-    }
-    
-    // Get customer details
-    const { data: customer } = await supabase
-      .from('customers')
-      .select('*')
-      .eq('id', analysis.customer_id)
-      .single()
-    
-    if (!customer) return
-    
-    // Generate personalized offer
-    const offer = this.generateOffer(analysis, settings, customer)
-    
-    // Create campaign
-    const { data: campaign } = await supabase
-      .from('winback_campaigns')
-      .insert({
-        customer_id: analysis.customer_id,
-        business_id: analysis.business_id,
-        campaign_type: 'auto_winback',
-        offer_type: offer.type,
-        offer_value: offer.value,
-        offer_description_en: offer.description_en,
-        offer_description_ar: offer.description_ar,
-        channel: settings.preferred_channel,
-        message_en: offer.message_en,
-        message_ar: offer.message_ar,
-        status: 'scheduled'
-      })
-      .select()
-      .single()
-    
-    console.log(`📧 Win-back campaign created for customer ${customer.full_name || customer.phone_number}`)
-    
-    // Send notification (would integrate with notification service)
-    // await this.sendNotification(campaign, customer, settings)
-  }
-
-  /**
    * Generate personalized offer based on churn risk
    */
   generateOffer(analysis: ChurnAnalysis, settings: any, customer: any) {
@@ -318,55 +185,6 @@ export class AIRetentionEngine {
       message_en: messageEn,
       message_ar: messageAr
     }
-  }
-
-  /**
-   * Calculate retention analytics for a business
-   */
-  async calculateRetentionAnalytics(businessId: string, startDate: Date, endDate: Date) {
-    // Get all churn analyses in period
-    const { data: analyses } = await supabase
-      .from('customer_churn_analysis')
-      .select('*')
-      .eq('business_id', businessId)
-      .gte('analyzed_at', startDate.toISOString())
-      .lte('analyzed_at', endDate.toISOString())
-    
-    // Get all campaigns in period
-    const { data: campaigns } = await supabase
-      .from('winback_campaigns')
-      .select('*')
-      .eq('business_id', businessId)
-      .gte('created_at', startDate.toISOString())
-      .lte('created_at', endDate.toISOString())
-    
-    if (!analyses || !campaigns) return
-    
-    const analytics = {
-      business_id: businessId,
-      period_start: startDate.toISOString().split('T')[0],
-      period_end: endDate.toISOString().split('T')[0],
-      total_at_risk: analyses.filter(a => a.churn_risk !== 'low').length,
-      medium_risk_count: analyses.filter(a => a.churn_risk === 'medium').length,
-      high_risk_count: analyses.filter(a => a.churn_risk === 'high').length,
-      critical_risk_count: analyses.filter(a => a.churn_risk === 'critical').length,
-      campaigns_sent: campaigns.filter(c => c.status === 'sent').length,
-      campaigns_opened: campaigns.filter(c => c.opened_at).length,
-      campaigns_clicked: campaigns.filter(c => c.clicked_at).length,
-      customers_saved: campaigns.filter(c => c.resulted_in_visit).length,
-      total_revenue_at_risk: analyses.reduce((sum, a) => sum + (a.lifetime_value || 0), 0),
-      revenue_recovered: campaigns.reduce((sum, c) => sum + (c.revenue_recovered || 0), 0),
-      conversion_rate: campaigns.length > 0 
-        ? (campaigns.filter(c => c.resulted_in_visit).length / campaigns.length) * 100 
-        : 0
-    }
-    
-    // Save analytics
-    await supabase
-      .from('retention_analytics')
-      .insert(analytics)
-    
-    return analytics
   }
 }
 
