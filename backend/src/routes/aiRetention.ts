@@ -4,10 +4,19 @@ import { createClient } from '@supabase/supabase-js'
 
 const router = Router()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Create Supabase client lazily to avoid WebSocket issues
+function getSupabase() {
+  return createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      }
+    }
+  )
+}
 
 // Middleware to check API key
 const requireApiKey = (req: any, res: any, next: any) => {
@@ -28,6 +37,8 @@ router.get('/analysis/:businessId', async (req, res) => {
   try {
     const { businessId } = req.params
     const { riskLevel } = req.query // Optional filter: 'low', 'medium', 'high', 'critical'
+    
+    const supabase = getSupabase()
     
     let query = supabase
       .from('customer_churn_analysis')
@@ -62,6 +73,8 @@ router.get('/analysis/:businessId', async (req, res) => {
 router.post('/run-analysis/:businessId', async (req, res) => {
   try {
     const { businessId } = req.params
+    
+    const supabase = getSupabase()
     
     // Get retention settings
     const { data: settings, error: settingsError } = await supabase
@@ -173,6 +186,8 @@ router.get('/campaigns/:businessId', async (req, res) => {
     const { businessId } = req.params
     const { status } = req.query // Optional filter
     
+    const supabase = getSupabase()
+    
     let query = supabase
       .from('winback_campaigns')
       .select(`
@@ -207,6 +222,8 @@ router.get('/analytics/:businessId', async (req, res) => {
   try {
     const { businessId } = req.params
     const { days = 30 } = req.query
+    
+    const supabase = getSupabase()
     
     const endDate = new Date()
     const startDate = new Date(endDate.getTime() - parseInt(days as string) * 24 * 60 * 60 * 1000)
@@ -263,6 +280,8 @@ router.get('/settings/:businessId', async (req, res) => {
   try {
     const { businessId } = req.params
     
+    const supabase = getSupabase()
+    
     const { data, error } = await supabase
       .from('retention_settings')
       .select('*')
@@ -285,6 +304,8 @@ router.put('/settings/:businessId', async (req, res) => {
   try {
     const { businessId } = req.params
     const settings = req.body
+    
+    const supabase = getSupabase()
     
     const { data, error } = await supabase
       .from('retention_settings')
