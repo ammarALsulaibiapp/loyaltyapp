@@ -32,9 +32,9 @@ export default function CustomerLookup() {
 
   // Realtime subscription for visits
   useEffect(() => {
-    if (!profile?.business_id) return
+    if (!profile?.business_id || !selectedCustomer?.id) return
 
-    // Subscribe to both visits AND customers table changes
+    // Subscribe to visits changes ONLY for the selected customer
     const visitsChannel = supabase
       .channel('visits-changes')
       .on('postgres_changes', 
@@ -42,39 +42,20 @@ export default function CustomerLookup() {
           event: '*', 
           schema: 'public', 
           table: 'visits',
-          filter: `business_id=eq.${profile.business_id}`
+          filter: `customer_id=eq.${selectedCustomer.id}`
         }, 
         () => {
-          // Refresh all customer data when any visit changes
-          queryClient.invalidateQueries({ queryKey: ['all-customers'] })
-          queryClient.invalidateQueries({ queryKey: ['programs-with-counts'] })
-          queryClient.invalidateQueries({ queryKey: ['customer-rewards'] })
-        }
-      )
-      .subscribe()
-
-    const customersChannel = supabase
-      .channel('customers-changes')
-      .on('postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'customers',
-          filter: `business_id=eq.${profile.business_id}`
-        },
-        () => {
-          // Refresh customer data when customer records update
-          queryClient.invalidateQueries({ queryKey: ['all-customers'] })
-          queryClient.invalidateQueries({ queryKey: ['programs-with-counts'] })
+          // Only refresh data for selected customer
+          queryClient.invalidateQueries({ queryKey: ['programs-with-counts', profile.business_id, selectedCustomer.id] })
+          queryClient.invalidateQueries({ queryKey: ['customer-rewards', selectedCustomer.id] })
         }
       )
       .subscribe()
 
     return () => {
       supabase.removeChannel(visitsChannel)
-      supabase.removeChannel(customersChannel)
     }
-  }, [profile?.business_id, queryClient])
+  }, [profile?.business_id, selectedCustomer?.id, queryClient])
 
   useEffect(() => {
     const handler = setTimeout(() => {
