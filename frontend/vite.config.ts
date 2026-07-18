@@ -11,10 +11,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['logo.png'],
       manifest: {
-        name: 'Mahfazaty Wallet',
+        name: 'Mahfazaty',
         short_name: 'Mahfazaty',
-        description: 'Your digital loyalty wallet - Collect stamps and rewards from your favorite shops',
-        start_url: '/wallet',
+        description: 'Digital loyalty program and wallet',
+        start_url: '/',
         display: 'standalone',
         background_color: '#3B82F6',
         theme_color: '#3B82F6',
