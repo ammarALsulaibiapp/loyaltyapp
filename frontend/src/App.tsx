@@ -32,6 +32,7 @@ import ReportsPage from './pages/business/Reports'
 import SettingsPage from './pages/business/Settings'
 import QRGenerator from './pages/business/QRGenerator'
 import WalletQRGenerator from './pages/business/WalletQRGenerator'
+import AIRetentionPage from './pages/business/AIRetention'
 
 // Staff Pages
 import StaffDashboard from './pages/staff/Dashboard'
@@ -118,6 +119,7 @@ function App() {
             <Route path="staff" element={<StaffPage />} />
             <Route path="qr-generator" element={<QRGenerator />} />
             <Route path="wallet-qr" element={<WalletQRGenerator />} />
+            <Route path="ai-retention" element={<AIRetentionPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>

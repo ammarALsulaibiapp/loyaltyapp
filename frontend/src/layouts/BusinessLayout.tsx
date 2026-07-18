@@ -24,6 +24,7 @@ import {
   Kanban,
   QrCode,
   Wallet,
+  Brain,
 } from 'lucide-react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
@@ -32,8 +33,9 @@ export default function BusinessLayout() {
   const { profile, signOut } = useAuthStore()
   const { language, toggleLanguage } = useLanguageStore()
   const { theme, toggleTheme } = useThemeStore()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const isArabic = i18n.language === 'ar'
 
   const isAdmin = profile?.role === 'business_admin'
   const isStaff = profile?.role === 'staff'
@@ -61,6 +63,7 @@ export default function BusinessLayout() {
     { name: t('nav.staff'), href: '/business/staff', icon: UserCog },
     { name: 'Shop QR', href: '/business/qr-generator', icon: QrCode },
     { name: 'Wallet QR', href: '/business/wallet-qr', icon: Wallet },
+    { name: isArabic ? 'الاحتفاظ الذكي' : 'AI Retention', href: '/business/ai-retention', icon: Brain },
     { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
   ]
 
