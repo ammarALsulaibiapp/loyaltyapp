@@ -37,7 +37,7 @@ export default defineConfig({
         name: 'Mahfazaty',
         short_name: 'Mahfazaty',
         description: 'Digital loyalty program and wallet',
-        start_url: '/?source=pwa',
+        start_url: '/wallet',
         display: 'standalone',
         background_color: '#3B82F6',
         theme_color: '#3B82F6',
