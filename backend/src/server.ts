@@ -8,6 +8,7 @@ import customerAuthRoutes from './routes/customerAuth'
 import walletRoutes from './routes/wallet'
 import notificationRoutes from './routes/notifications'
 import deleteRoutes from './routes/delete'
+import aiRetentionRoutes from './routes/aiRetention'
 
 // Load environment variables
 dotenv.config()
@@ -59,6 +60,7 @@ app.use('/api/customer-auth', customerAuthRoutes)
 app.use('/api/wallet', walletRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/delete', deleteRoutes)
+app.use('/api/ai-retention', aiRetentionRoutes)
 
 // Error handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
