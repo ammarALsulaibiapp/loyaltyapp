@@ -143,7 +143,15 @@ export default function LoyaltyProgramsPage() {
   const bulkDeleteMutation = useMutation({
     mutationFn: async (programIds: string[]) => {
       if (isDemoMode()) return { success: true }
-      return await backendAPI.bulkDeleteLoyaltyPrograms(programIds)
+      try {
+        const result = await backendAPI.bulkDeleteLoyaltyPrograms(programIds)
+        if (!result || !result.success) {
+          throw new Error('Delete operation failed')
+        }
+        return result
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to delete programs')
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loyalty-programs'] })
@@ -457,7 +465,7 @@ export default function LoyaltyProgramsPage() {
               type="number"
               value={formData.required_stamps}
               onChange={(e) =>
-                setFormData({ ...formData, required_stamps: parseInt(e.target.value) })
+                setFormData({ ...formData, required_stamps: parseInt(e.target.value, 10) || 0 })
               }
               min={1}
               required
@@ -470,7 +478,7 @@ export default function LoyaltyProgramsPage() {
               type="number"
               value={formData.required_visits}
               onChange={(e) =>
-                setFormData({ ...formData, required_visits: parseInt(e.target.value) })
+                setFormData({ ...formData, required_visits: parseInt(e.target.value, 10) || 0 })
               }
               min={1}
               required
@@ -500,7 +508,7 @@ export default function LoyaltyProgramsPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    points_for_reward: parseInt(e.target.value),
+                    points_for_reward: parseInt(e.target.value, 10) || 0,
                   })
                 }
                 min={1}

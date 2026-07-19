@@ -122,7 +122,15 @@ export default function CustomersPage() {
   const bulkDeleteMutation = useMutation({
     mutationFn: async (customerIds: string[]) => {
       if (isDemoMode()) return { success: true }
-      return await backendAPI.bulkDeleteCustomers(customerIds)
+      try {
+        const result = await backendAPI.bulkDeleteCustomers(customerIds)
+        if (!result || !result.success) {
+          throw new Error('Delete operation failed')
+        }
+        return result
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to delete customers')
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] })

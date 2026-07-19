@@ -48,7 +48,15 @@ export default function RewardsPage() {
   const bulkDeleteMutation = useMutation({
     mutationFn: async (rewardIds: string[]) => {
       if (isDemoMode()) return { success: true }
-      return await backendAPI.bulkDeleteRewards(rewardIds)
+      try {
+        const result = await backendAPI.bulkDeleteRewards(rewardIds)
+        if (!result || !result.success) {
+          throw new Error('Delete operation failed')
+        }
+        return result
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to delete rewards')
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rewards'] })

@@ -198,7 +198,15 @@ export default function BusinessesPage() {
   const bulkDeleteMutation = useMutation({
     mutationFn: async (businessIds: string[]) => {
       if (isDemoMode()) return { success: true }
-      return await backendAPI.bulkDeleteBusinesses(businessIds)
+      try {
+        const result = await backendAPI.bulkDeleteBusinesses(businessIds)
+        if (!result || !result.success) {
+          throw new Error('Delete operation failed')
+        }
+        return result
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to delete businesses')
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['businesses'] })

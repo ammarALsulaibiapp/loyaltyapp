@@ -210,7 +210,15 @@ export default function StaffPage() {
   const bulkDeleteMutation = useMutation({
     mutationFn: async (profileIds: string[]) => {
       if (isDemoMode()) return { success: true }
-      return await backendAPI.bulkDeleteStaff(profileIds)
+      try {
+        const result = await backendAPI.bulkDeleteStaff(profileIds)
+        if (!result || !result.success) {
+          throw new Error('Delete operation failed')
+        }
+        return result
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to delete staff')
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staff'] })

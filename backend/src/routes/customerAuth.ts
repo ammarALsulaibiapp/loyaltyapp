@@ -26,10 +26,16 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Phone number, full name, and password are required' })
     }
 
-    // Validate phone number format (at least 8 digits)
+    // Validate phone number format (at least 8 digits, only numbers/+/spaces/dashes)
     const cleanPhone = phone_number.replace(/\s/g, '')
     if (cleanPhone.length < 8) {
       return res.status(400).json({ error: 'Phone number must be at least 8 digits' })
+    }
+    
+    // Validate phone contains only valid characters
+    const phoneRegex = /^[+]?[0-9\s\-()]+$/
+    if (!phoneRegex.test(phone_number)) {
+      return res.status(400).json({ error: 'Phone number contains invalid characters' })
     }
 
     // Validate password length
