@@ -346,13 +346,6 @@ export default function CustomerLookup() {
     e.preventDefault()
     quickRegisterMutation.mutate(quickRegData)
   }
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-      </div>
-    )
-  }
 
   return (
     <div className="space-y-6">
@@ -474,6 +467,15 @@ export default function CustomerLookup() {
             >
               {t('lookup.quickRegister', 'Quick Register')}
             </Button>
+          </div>
+        </Card>
+      )}
+      
+      {/* Loading Spinner - Only when searching */}
+      {isLoading && debouncedSearchQuery.length >= 2 && (
+        <Card>
+          <div className="flex items-center justify-center py-16">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600" />
           </div>
         </Card>
       )}

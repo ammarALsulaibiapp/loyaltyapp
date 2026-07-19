@@ -377,6 +377,15 @@ const resources = {
       'lookup.noCustomerWithPhone': 'No customer with phone:',
       'lookup.earned': 'Earned:',
       'lookup.amountOptional': 'Optional for stamp/visit programs',
+      'lookup.searchPlaceholder': 'Search by phone or name (min 2 characters)...',
+      'lookup.allTiers': 'All Tiers',
+      'lookup.phone': 'Phone',
+      'lookup.tier': 'Tier',
+      'lookup.showing': 'Showing',
+      'lookup.of': 'of',
+      'lookup.noResults': 'No results',
+      'lookup.searchToStart': 'Search to find customers',
+      'lookup.searchHint': 'Enter a phone number or name (minimum 2 characters) to search through your customers.',
 
       // Customers Modal Extended
       'customers.addNewTitle': 'Add New Customer',
@@ -1098,6 +1107,15 @@ const resources = {
       'lookup.noCustomerWithPhone': 'لا يوجد عميل بالرقم:',
       'lookup.earned': 'مكتسبة:',
       'lookup.amountOptional': 'اختياري لبرامج الطوابع/الزيارات',
+      'lookup.searchPlaceholder': 'ابحث برقم الهاتف أو الاسم (حد أدنى حرفين)...',
+      'lookup.allTiers': 'جميع المستويات',
+      'lookup.phone': 'الهاتف',
+      'lookup.tier': 'المستوى',
+      'lookup.showing': 'عرض',
+      'lookup.of': 'من',
+      'lookup.noResults': 'لا توجد نتائج',
+      'lookup.searchToStart': 'ابحث للعثور على العملاء',
+      'lookup.searchHint': 'أدخل رقم هاتف أو اسم (حد أدنى حرفين) للبحث في قاعدة عملائك.',
       
       // Customers Modal Extended
       'customers.addNewTitle': 'إضافة عميل جديد',
