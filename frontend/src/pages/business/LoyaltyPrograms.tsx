@@ -495,7 +495,7 @@ export default function LoyaltyProgramsPage() {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    points_per_currency: parseFloat(e.target.value),
+                    points_per_currency: parseFloat(e.target.value) || 0,
                   })
                 }
                 min={0}
@@ -526,7 +526,7 @@ export default function LoyaltyProgramsPage() {
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  cashback_percentage: parseFloat(e.target.value),
+                  cashback_percentage: parseFloat(e.target.value) || 0,
                 })
               }
               min={0}
@@ -558,7 +558,7 @@ export default function LoyaltyProgramsPage() {
             step="0.01"
             value={formData.reward_value}
             onChange={(e) =>
-              setFormData({ ...formData, reward_value: parseFloat(e.target.value) })
+              setFormData({ ...formData, reward_value: parseFloat(e.target.value) || 0 })
             }
             placeholder="0.00"
           />

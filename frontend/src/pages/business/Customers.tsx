@@ -143,7 +143,7 @@ export default function CustomersPage() {
   })
 
   const handleSelectAll = () => {
-    if (selectedIds.length === customers?.length) {
+    if (customers && selectedIds.length === customers.length) {
       setSelectedIds([])
     } else {
       setSelectedIds(customers?.map((c: Customer) => c.id) || [])

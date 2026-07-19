@@ -680,6 +680,7 @@ export default function CustomerLookup() {
                   label={t('lookup.amountSpent')}
                   type="number"
                   step="0.01"
+                  min="0"
                   value={visitData.amount_spent}
                   onChange={(e) => setVisitData({ ...visitData, amount_spent: e.target.value })}
                   placeholder="0.00"
