@@ -19,8 +19,8 @@ export default function PlatformSettingsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Saving settings:', settings)
-    // Save to database
+    // TODO: Save settings to database
+    // await savePlatformSettings(settings)
   }
 
   return (

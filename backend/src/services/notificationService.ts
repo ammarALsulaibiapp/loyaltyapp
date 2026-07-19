@@ -169,7 +169,6 @@ export async function sendNotification(params: SendNotificationParams): Promise<
 
     if (notificationType === 'whatsapp') {
       if (!business.whatsapp_enabled || !business.whatsapp_credentials) {
-        console.log('WhatsApp not enabled for this business')
         return false
       }
       provider = business.whatsapp_provider
@@ -181,7 +180,6 @@ export async function sendNotification(params: SendNotificationParams): Promise<
       )
     } else if (notificationType === 'sms') {
       if (!business.sms_enabled || !business.sms_credentials) {
-        console.log('SMS not enabled for this business')
         return false
       }
       provider = business.sms_provider

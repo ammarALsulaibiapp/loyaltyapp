@@ -194,8 +194,8 @@ export default function PublicSignup() {
         navigate(`/card/${(customer as any).id}`)
       }, 2000)
 
-    } catch (err: any) {
-      setError(err.message || 'Failed to create account')
+    } catch (err) {
+      setError((err as Error).message || 'Failed to create account')
     } finally {
       setSubmitting(false)
     }

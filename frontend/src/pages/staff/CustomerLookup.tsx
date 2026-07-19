@@ -9,7 +9,7 @@ import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Gift, UserPlus } from 'lucide-react'
+import { Search, Plus, Gift, UserPlus, Grid3x3, List, ChevronLeft, ChevronRight, Filter } from 'lucide-react'
 
 export default function CustomerLookup() {
   const { profile } = useAuthStore()
@@ -29,6 +29,12 @@ export default function CustomerLookup() {
     full_name: '',
     phone_number: '',
   })
+  
+  // New UI states
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list') // Default to list for better performance
+  const [currentPage, setCurrentPage] = useState(1)
+  const [tierFilter, setTierFilter] = useState<string>('all')
+  const itemsPerPage = 50
 
   // Realtime subscription for visits
   useEffect(() => {
@@ -62,6 +68,7 @@ export default function CustomerLookup() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery)
+      setCurrentPage(1) // Reset to page 1 on new search
     }, 300)
     return () => clearTimeout(handler)
   }, [searchQuery])
@@ -84,30 +91,51 @@ export default function CustomerLookup() {
     },
     enabled: !!profile?.business_id,
   })
-  // Fetch ALL customers with search filter
-  const { data: customers, isLoading } = useQuery({
-    queryKey: ['all-customers', profile?.business_id, debouncedSearchQuery],
+  // Fetch customers with pagination and filters (only when searching)
+  const { data: customersData, isLoading } = useQuery({
+    queryKey: ['all-customers', profile?.business_id, debouncedSearchQuery, currentPage, tierFilter],
     queryFn: async () => {
-      if (!profile?.business_id) return []
-      if (isDemoMode()) return []
+      if (!profile?.business_id) return { customers: [], total: 0 }
+      if (isDemoMode()) return { customers: [], total: 0 }
+      
+      // Don't load anything until user searches
+      if (!debouncedSearchQuery || debouncedSearchQuery.trim().length < 2) {
+        return { customers: [], total: 0 }
+      }
 
+      // Build query with filters
       let query = supabase
         .from('customers')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('business_id', profile.business_id)
         .order('created_at', { ascending: false })
 
+      // Search filter
       if (debouncedSearchQuery) {
         query = query.or(`phone_number.ilike.%${debouncedSearchQuery}%,full_name.ilike.%${debouncedSearchQuery}%`)
       }
+      
+      // Tier filter
+      if (tierFilter && tierFilter !== 'all') {
+        query = query.eq('membership_tier', tierFilter)
+      }
 
-      const { data, error } = await query
+      // Pagination
+      const from = (currentPage - 1) * itemsPerPage
+      const to = from + itemsPerPage - 1
+      query = query.range(from, to)
+
+      const { data, error, count } = await query
 
       if (error) throw error
-      return data
+      return { customers: data || [], total: count || 0 }
     },
     enabled: !!profile?.business_id,
   })
+  
+  const customers = customersData?.customers || []
+  const totalCustomers = customersData?.total || 0
+  const totalPages = Math.ceil(totalCustomers / itemsPerPage)
 
   // Fetch loyalty programs with visit counts for selected customer
   // Only shows programs assigned to this customer
@@ -330,76 +358,104 @@ export default function CustomerLookup() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{t('lookup.title')}</h1>
-        <div className="text-sm text-gray-600 dark:text-gray-400">
-          {customers?.length || 0} {t('dashboard.allCustomers')}
-        </div>
+        <Button
+          icon={<UserPlus className="w-4 h-4" />}
+          onClick={() => setIsQuickRegisterOpen(true)}
+          size="sm"
+        >
+          {t('lookup.quickRegister', 'Quick Register')}
+        </Button>
       </div>
 
-      {/* Search */}
+      {/* Search & Filters */}
       <Card>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder={t('lookup.enterPhone')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500"
-          />
+        <div className="space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder={t('lookup.searchPlaceholder', 'Search by phone or name (min 2 characters)...')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 text-lg"
+            />
+          </div>
+          
+          {/* Filters Row */}
+          {debouncedSearchQuery.length >= 2 && (
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              {/* Tier Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-500" />
+                <select
+                  value={tierFilter}
+                  onChange={(e) => {
+                    setTierFilter(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                  className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm"
+                >
+                  <option value="all">{t('lookup.allTiers', 'All Tiers')}</option>
+                  <option value="vip">VIP</option>
+                  <option value="gold">Gold</option>
+                  <option value="silver">Silver</option>
+                  <option value="bronze">Bronze</option>
+                </select>
+              </div>
+              
+              {/* View Toggle */}
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow' : ''}`}
+                  title="List View"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow' : ''}`}
+                  title="Grid View"
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* Results Count */}
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {totalCustomers > 0 ? (
+                  <>
+                    {t('lookup.showing', 'Showing')} {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalCustomers)} {t('lookup.of', 'of')} {totalCustomers}
+                  </>
+                ) : (
+                  t('lookup.noResults', 'No results')
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </Card>
 
-      {/* All Customers as Cards */}
-      {!selectedCustomer && customers && customers.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {customers.map((customer: any) => (
-            <Card 
-              key={customer.id}
-              className="hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => setSelectedCustomer(customer)}
-            >
-              <div className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">
-                    {customer.full_name || t('lookup.guest')}
-                  </h3>
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    customer.membership_tier === 'vip' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
-                    customer.membership_tier === 'gold' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                    customer.membership_tier === 'silver' ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200' :
-                    'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-                  }`}>
-                    {customer.membership_tier.toUpperCase()}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">📱 {customer.phone_number}</p>
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('lookup.totalVisits')}</p>
-                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{customer.total_visits}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('lookup.totalPoints')}</p>
-                    <p className="text-lg font-bold text-green-600 dark:text-green-400">{customer.total_points}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('lookup.totalSpent')}</p>
-                    <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                      {(business as any)?.currency ? formatCurrency(customer.total_spent, (business as any).currency, isArabic) : `$${customer.total_spent.toFixed(0)}`}
-                    </p>
-                  </div>
-                </div>
-                <Button size="sm" className="w-full mt-2">
-                  {t('customers.viewDetails')}
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
+      {/* Empty State - No Search */}
+      {!debouncedSearchQuery && !selectedCustomer && (
+        <Card>
+          <div className="text-center py-16">
+            <div className="w-20 h-20 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-10 h-10 text-primary-600 dark:text-primary-400" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+              {t('lookup.searchToStart', 'Search to find customers')}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+              {t('lookup.searchHint', 'Enter a phone number or name (minimum 2 characters) to search through your customers.')}
+            </p>
+          </div>
+        </Card>
       )}
-
-      {/* No customers found */}
-      {!selectedCustomer && customers && customers.length === 0 && (
+      
+      {/* Empty State - Search with No Results */}
+      {debouncedSearchQuery.length >= 2 && !selectedCustomer && customers.length === 0 && !isLoading && (
         <Card>
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -407,21 +463,180 @@ export default function CustomerLookup() {
             </div>
             <p className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{t('dashboard.noCustomers')}</p>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {searchQuery ? `${t('lookup.noCustomerWithPhone')} "${searchQuery}"` : t('dashboard.noCustomers')}
+              {t('lookup.noCustomerWithPhone', 'No customer found matching')} "{debouncedSearchQuery}"
             </p>
-            {searchQuery && (
-              <Button
-                icon={<UserPlus className="w-4 h-4" />}
-                onClick={() => {
-                  setQuickRegData({ ...quickRegData, phone_number: searchQuery })
-                  setIsQuickRegisterOpen(true)
-                }}
-              >
-                {t('lookup.quickRegister', 'Quick Register')}
-              </Button>
-            )}
+            <Button
+              icon={<UserPlus className="w-4 h-4" />}
+              onClick={() => {
+                setQuickRegData({ ...quickRegData, phone_number: searchQuery })
+                setIsQuickRegisterOpen(true)
+              }}
+            >
+              {t('lookup.quickRegister', 'Quick Register')}
+            </Button>
           </div>
         </Card>
+      )}
+
+      {/* Customer List - Grid View */}
+      {!selectedCustomer && customers.length > 0 && viewMode === 'grid' && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {customers.map((customer: any) => (
+              <Card 
+                key={customer.id}
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedCustomer(customer)}
+              >
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">
+                      {customer.full_name || t('lookup.guest')}
+                    </h3>
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      customer.membership_tier === 'vip' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                      customer.membership_tier === 'gold' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                      customer.membership_tier === 'silver' ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200' :
+                      'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                    }`}>
+                      {customer.membership_tier.toUpperCase()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">📱 {customer.phone_number}</p>
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('lookup.totalVisits')}</p>
+                      <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{customer.total_visits}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('lookup.totalPoints')}</p>
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">{customer.total_points}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('lookup.totalSpent')}</p>
+                      <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                        {(business as any)?.currency ? formatCurrency(customer.total_spent, (business as any).currency, isArabic) : `$${customer.total_spent.toFixed(0)}`}
+                      </p>
+                    </div>
+                  </div>
+                  <Button size="sm" className="w-full mt-2">
+                    {t('customers.viewDetails')}
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
+      
+      {/* Customer List - List View (Table) */}
+      {!selectedCustomer && customers.length > 0 && viewMode === 'list' && (
+        <Card>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('lookup.name')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('lookup.phone', 'Phone')}
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('lookup.tier', 'Tier')}
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('lookup.totalVisits')}
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('lookup.totalPoints')}
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('lookup.totalSpent')}
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('common.actions', 'Actions')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {customers.map((customer: any) => (
+                  <tr 
+                    key={customer.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                    onClick={() => setSelectedCustomer(customer)}
+                  >
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                      {customer.full_name || <span className="text-gray-400">{t('lookup.guest')}</span>}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      {customer.phone_number}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        customer.membership_tier === 'vip' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                        customer.membership_tier === 'gold' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                        customer.membership_tier === 'silver' ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200' :
+                        'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                      }`}>
+                        {customer.membership_tier.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm font-semibold text-blue-600 dark:text-blue-400">
+                      {customer.total_visits}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm font-semibold text-green-600 dark:text-green-400">
+                      {customer.total_points}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm font-semibold text-purple-600 dark:text-purple-400">
+                      {(business as any)?.currency ? formatCurrency(customer.total_spent, (business as any).currency, isArabic) : `$${customer.total_spent.toFixed(0)}`}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <Button 
+                        size="sm" 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedCustomer(customer)
+                        }}
+                      >
+                        {t('customers.viewDetails')}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+      
+      {/* Pagination */}
+      {!selectedCustomer && totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            icon={<ChevronLeft className="w-4 h-4" />}
+          >
+            {t('common.previous', 'Previous')}
+          </Button>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {t('common.page', 'Page')} {currentPage} {t('lookup.of', 'of')} {totalPages}
+            </span>
+          </div>
+          
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            {t('common.next', 'Next')}
+            <ChevronRight className="w-4 h-4 ml-1" />
+          </Button>
+        </div>
       )}
       {/* Selected Customer Details */}
       {selectedCustomer && (

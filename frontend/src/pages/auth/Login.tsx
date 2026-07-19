@@ -26,8 +26,8 @@ export default function Login() {
     try {
       await signIn(email, password)
       navigate('/super-admin')
-    } catch (err: any) {
-      setError(err.message || t('auth.failedToSignIn'))
+    } catch (err) {
+      setError((err as Error).message || t('auth.failedToSignIn'))
     } finally {
       setLoading(false)
     }

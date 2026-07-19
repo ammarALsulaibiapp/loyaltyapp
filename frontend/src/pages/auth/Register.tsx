@@ -23,8 +23,8 @@ export default function Register() {
     try {
       await signUp(email, password, fullName)
       navigate('/login')
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign up')
+    } catch (err) {
+      setError((err as Error).message || 'Failed to sign up')
     } finally {
       setLoading(false)
     }

@@ -15,6 +15,16 @@ import {
 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
+interface Subscription {
+  id: string
+  plan_name: string
+  expiry_date: string
+  businesses?: {
+    name: string
+    email: string
+  }
+}
+
 export default function SuperAdminDashboard() {
   const { t } = useTranslation()
 
@@ -302,7 +312,7 @@ export default function SuperAdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {expiringSoon.map((sub: any) => {
+                  {expiringSoon.map((sub: Subscription) => {
                     const daysLeft = Math.ceil((new Date(sub.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
                     return (
                       <tr key={sub.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">

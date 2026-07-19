@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from '../../stores/authStore'
 import { isDemoMode, mockBusinesses } from '../../lib/mockData'
 import { supabase } from '../../lib/supabase'
+import { UI_TIMING, QR_CONFIG } from '../../lib/constants'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import { QrCode, Download, Printer, Copy, Check } from 'lucide-react'
@@ -63,7 +64,6 @@ export default function QRGenerator() {
         }
 
         // Real mode
-        console.log('🔄 Fetching from Supabase...')
         const { data, error } = await supabase
           .from('businesses')
           .select('id, name, slug, brand_color')
@@ -104,7 +104,7 @@ export default function QRGenerator() {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(signupUrl)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), UI_TIMING.COPY_FEEDBACK_DURATION)
   }
 
   const handleDownloadQR = () => {

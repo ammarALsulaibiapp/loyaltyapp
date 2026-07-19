@@ -72,14 +72,15 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 const PORT_NUM = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001
 
 const server = app.listen(PORT_NUM, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT_NUM}`)
-  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`)
-  console.log(`✅ CORS: Allowing ALL origins`)
-  console.log(`🎯 Listening on all interfaces (0.0.0.0)`)
+  // Server started successfully
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`🚀 Server running on port ${PORT_NUM}`)
+    console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`)
+  }
 })
 
 // Handle server errors
 server.on('error', (error: any) => {
-  console.error('❌ Server error:', error)
+  console.error('Server error:', error)
   process.exit(1)
 })

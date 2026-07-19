@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { isDemoMode, mockBusinesses } from '../../lib/mockData'
 import { supabase } from '../../lib/supabase'
+import { UI_TIMING, QR_CONFIG } from '../../lib/constants'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Select from '../../components/ui/Select'
@@ -98,7 +99,7 @@ export default function SuperAdminQRGenerator() {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(signupUrl)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), UI_TIMING.COPY_FEEDBACK_DURATION)
   }
 
   const handleDownloadQR = () => {

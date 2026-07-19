@@ -98,7 +98,6 @@ class GoogleWalletService {
     } catch (error: any) {
       if (error.response?.status === 409) {
         // Class already exists, that's OK
-        console.log(`Loyalty class ${classId} already exists`)
         return { id: classId }
       }
       throw error

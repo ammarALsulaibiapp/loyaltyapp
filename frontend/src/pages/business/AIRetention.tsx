@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '../../stores/authStore'
 import { useTranslation } from 'react-i18next'
+import type { ChurnAnalysis, WinbackCampaign } from '../../types'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import { Users, TrendingDown, Send, CheckCircle, AlertTriangle, DollarSign, Settings, RefreshCw } from 'lucide-react'
@@ -255,7 +256,7 @@ export default function AIRetentionPage() {
               </tr>
             </thead>
             <tbody>
-              {atRiskCustomers?.map((customer: any) => {
+              {atRiskCustomers?.map((customer: ChurnAnalysis) => {
                 const riskBadge = getRiskBadge(customer.churn_risk)
                 return (
                   <tr
@@ -319,7 +320,7 @@ export default function AIRetentionPage() {
         }
       >
         <div className="space-y-3">
-          {campaigns?.slice(0, 10).map((campaign: any) => {
+          {campaigns?.slice(0, 10).map((campaign: WinbackCampaign) => {
             const statusBadge = getStatusBadge(campaign.status)
             return (
               <div

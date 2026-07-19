@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { UI_TIMING, QR_CONFIG } from '../../lib/constants'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import { QrCode, Download, Printer, Copy, Check, Wallet } from 'lucide-react'
@@ -41,7 +42,7 @@ export default function WalletQRGenerator() {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(walletUrl)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), UI_TIMING.COPY_FEEDBACK_DURATION)
   }
 
   const handleDownloadQR = () => {
