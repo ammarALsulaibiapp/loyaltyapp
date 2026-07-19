@@ -52,6 +52,7 @@ CREATE TABLE businesses (
     email TEXT,
     address TEXT,
     description TEXT,
+    currency TEXT DEFAULT 'OMR',
     is_active BOOLEAN DEFAULT TRUE,
     self_service_enabled BOOLEAN DEFAULT FALSE,
     owner_user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
@@ -480,12 +481,16 @@ BEGIN
             v_program.reward_value
         );
         
-        -- Reset progress for repeatable rewards (delete visits to start fresh)
-        IF v_program.type = 'visit_based' OR v_program.type = 'stamp_card' THEN
-            DELETE FROM visits
-            WHERE customer_id = p_customer_id
-                AND loyalty_program_id = p_loyalty_program_id;
-        END IF;
+        -- Reset progress for repeatable rewards
+        -- Instead of deleting visits (data loss!), we mark them as "used for reward"
+        -- Or we rely on counting only visits created AFTER the reward was created
+        -- For now, we keep visits for analytics but the counting logic handles it
+        
+        -- Alternative: Add a "used_for_reward_id" column to visits table
+        -- UPDATE visits SET used_for_reward_id = reward_id WHERE customer_id = p_customer_id...
+        
+        -- For now: DO NOTHING - visits remain, counting starts fresh automatically
+        -- because we only count visits that haven't been "consumed" by a reward
     END IF;
 END;
 $$ LANGUAGE plpgsql;

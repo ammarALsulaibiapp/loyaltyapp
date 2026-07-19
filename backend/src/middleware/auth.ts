@@ -4,7 +4,10 @@ import { Request, Response, NextFunction } from 'express'
 export const requireApiKey = (req: Request, res: Response, next: NextFunction) => {
   const apiKey = req.headers['x-api-key']
   
-  if (!apiKey || apiKey !== process.env.API_SECRET_KEY) {
+  // Support both API_KEY and API_SECRET_KEY for backwards compatibility
+  const validKey = process.env.API_SECRET_KEY || process.env.API_KEY
+  
+  if (!apiKey || apiKey !== validKey) {
     return res.status(401).json({ error: 'Unauthorized: Invalid API key' })
   }
   
