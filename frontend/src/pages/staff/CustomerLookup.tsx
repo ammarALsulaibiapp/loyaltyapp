@@ -36,7 +36,7 @@ export default function CustomerLookup() {
 
     // Subscribe to visits changes ONLY for the selected customer
     const visitsChannel = supabase
-      .channel('visits-changes')
+      .channel(`visits-changes-${selectedCustomer.id}`) // Unique channel name per customer
       .on('postgres_changes', 
         { 
           event: '*', 
@@ -53,6 +53,8 @@ export default function CustomerLookup() {
       .subscribe()
 
     return () => {
+      // Proper cleanup: unsubscribe then remove channel
+      visitsChannel.unsubscribe()
       supabase.removeChannel(visitsChannel)
     }
   }, [profile?.business_id, selectedCustomer?.id, queryClient])

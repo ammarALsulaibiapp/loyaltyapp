@@ -70,9 +70,9 @@ router.post('/create-business-owner', requireApiKey, requireSuperAdmin, async (r
       const { error: passwordError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password })
       if (passwordError) {
         console.error('Password update error:', passwordError)
-      } else {
-        console.log('Password updated successfully')
+        throw new Error('Failed to update password: ' + passwordError.message)
       }
+      console.log('Password updated successfully')
 
       // Step 3: Upsert profile
       console.log('Upserting profile...')

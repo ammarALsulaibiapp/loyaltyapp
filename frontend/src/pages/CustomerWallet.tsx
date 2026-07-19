@@ -513,7 +513,7 @@ export default function CustomerWallet() {
       refreshCards()
     }, 30000)
     return () => clearInterval(interval)
-  }, [customer]) // Removed refreshCards from dependencies
+  }, [customer, refreshCards]) // Re-added refreshCards to dependencies to fix stale closure
 
   // Generate Wallet QR Code when customer profile is loaded
   useEffect(() => {
