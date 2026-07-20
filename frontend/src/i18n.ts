@@ -649,7 +649,7 @@ const resources = {
   ar: {
     translation: {
       // Common
-      'common.brand': 'سباع باس',
+      'common.brand': 'سبأ باس',
       'common.save': 'حفظ',
       'common.cancel': 'إلغاء',
       'common.delete': 'حذف',
@@ -697,12 +697,12 @@ const resources = {
       'auth.email': 'البريد الإلكتروني',
       'auth.password': 'كلمة المرور',
       'auth.fullName': 'الاسم الكامل',
-      'auth.welcome': 'مرحباً بك في سباع باس',
+      'auth.welcome': 'مرحباً بك في سبأ باس',
       'auth.signInToAccount': 'تسجيل الدخول إلى حسابك',
       'auth.dontHaveAccount': 'ليس لديك حساب؟',
       'auth.alreadyHaveAccount': 'لديك حساب بالفعل؟',
       'auth.signIn': 'تسجيل الدخول',
-      'auth.brandName': 'سباع باس',
+      'auth.brandName': 'سبأ باس',
       'auth.signUp': 'إنشاء حساب',
       'auth.signInWithEmail': 'تسجيل الدخول بالبريد الإلكتروني',
       'auth.loginDesc': 'أنشئ مستنداً جديداً لجمع كلماتك وبياناتك وفريقك معاً. مجاناً.',
