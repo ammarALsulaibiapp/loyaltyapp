@@ -18,7 +18,7 @@ import QRCode from 'qrcode'
 function WalletAuthForm() {
   const { login, register } = useCustomerAuthStore()
   const { t, i18n } = useTranslation()
-  const { language } = useLanguageStore()
+  const { language, toggleLanguage } = useLanguageStore()
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -98,10 +98,7 @@ function WalletAuthForm() {
         {/* Language Toggle - Top Right */}
         <div className="flex justify-end mb-4">
           <button
-            onClick={() => {
-              const newLang = language === 'en' ? 'ar' : 'en'
-              useLanguageStore.setState({ language: newLang })
-            }}
+            onClick={() => toggleLanguage()}
             className="px-4 py-2 bg-white/80 backdrop-blur-xl text-gray-700 rounded-xl hover:bg-white transition-all font-semibold text-sm shadow-md border border-gray-200"
           >
             {language === 'en' ? 'ع' : 'EN'}
@@ -469,7 +466,7 @@ function QRScannerModal({ onClose, onScan }: { onClose: () => void, onScan: (slu
 
 export default function CustomerWallet() {
   const navigate = useNavigate()
-  const { language } = useLanguageStore()
+  const { language, toggleLanguage } = useLanguageStore()
   const { t, i18n } = useTranslation()
   const { customer, cards, loading, initialized, checkAuth, logout, refreshCards, addCard } = useCustomerAuthStore()
   const [showScanner, setShowScanner] = useState(false)
@@ -623,10 +620,7 @@ export default function CustomerWallet() {
             <div className="flex items-center gap-2">
               {/* Language Toggle */}
               <button
-                onClick={() => {
-                  const newLang = language === 'en' ? 'ar' : 'en'
-                  useLanguageStore.setState({ language: newLang })
-                }}
+                onClick={() => toggleLanguage()}
                 className="p-2 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all font-semibold text-sm"
                 title="Toggle Language"
               >
