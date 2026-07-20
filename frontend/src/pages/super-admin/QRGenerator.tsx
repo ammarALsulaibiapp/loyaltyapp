@@ -210,7 +210,7 @@ export default function SuperAdminQRGenerator() {
             </div>
             
             <div class="footer">
-              <p>Powered by LoyaltyPass</p>
+              <p>Powered by SabaaaPass</p>
             </div>
           </body>
         </html>

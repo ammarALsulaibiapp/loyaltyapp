@@ -9,8 +9,8 @@ import { ARAB_CURRENCIES } from '../../lib/currencies'
 export default function PlatformSettingsPage() {
   const { t } = useTranslation()
   const [settings, setSettings] = useState({
-    platformName: 'LoyaltyPass',
-    supportEmail: 'support@loyaltypass.com',
+    platformName: 'SabaaaPass',
+    supportEmail: 'support@sabaaapass.com',
     defaultCurrency: 'USD',
     defaultLanguage: 'en',
     allowSignups: true,

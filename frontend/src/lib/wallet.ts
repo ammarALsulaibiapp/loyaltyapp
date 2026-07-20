@@ -27,7 +27,7 @@ interface WalletCardData {
 export function generateAppleWalletPass(data: WalletCardData) {
   const passData = {
     formatVersion: 1,
-    passTypeIdentifier: 'pass.com.loyaltypass.card', // Register with Apple
+    passTypeIdentifier: 'pass.com.sabaaapass.card', // Register with Apple
     serialNumber: data.customerId,
     teamIdentifier: 'YOUR_TEAM_ID', // Your Apple Team ID
     organizationName: data.businessName,

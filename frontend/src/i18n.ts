@@ -5,7 +5,7 @@ const resources = {
   en: {
     translation: {
       // Common
-      'common.brand': 'LoyaltyPass',
+      'common.brand': 'SabaaaPass',
       'common.save': 'Save',
       'common.cancel': 'Cancel',
       'common.delete': 'Delete',
@@ -52,7 +52,7 @@ const resources = {
       'auth.email': 'Email',
       'auth.password': 'Password',
       'auth.fullName': 'Full Name',
-      'auth.welcome': 'Welcome to LoyaltyPass',
+      'auth.welcome': 'Welcome to SabaaaPass',
       'auth.signInToAccount': 'Sign in to your account',
       'auth.dontHaveAccount': "Don't have an account?",
       'auth.alreadyHaveAccount': 'Already have an account?',
@@ -66,7 +66,7 @@ const resources = {
       'auth.signingIn': 'Signing in...',
       'auth.getStarted': 'Get Started',
       'auth.orSignInWith': 'Or sign in with',
-      'auth.demoCredentials': 'Demo: admin@loyaltypass.com / admin123',
+      'auth.demoCredentials': 'Demo: admin@sabaaapass.com / admin123',
       'auth.failedToSignIn': 'Failed to sign in',
       
       // Navigation
@@ -710,7 +710,7 @@ const resources = {
       'auth.signingIn': 'جاري تسجيل الدخول...',
       'auth.getStarted': 'ابدأ الآن',
       'auth.orSignInWith': 'أو سجل الدخول بواسطة',
-      'auth.demoCredentials': 'نسخة تجريبية: admin@loyaltypass.com / admin123',
+      'auth.demoCredentials': 'نسخة تجريبية: admin@sabaaapass.com / admin123',
       'auth.failedToSignIn': 'فشل في تسجيل الدخول',
       
       // Navigation

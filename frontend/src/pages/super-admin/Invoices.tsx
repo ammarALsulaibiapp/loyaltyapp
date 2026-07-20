@@ -104,7 +104,7 @@ export default function InvoicesPage() {
       amount: isAr ? 'المبلغ' : 'Amount',
       status: isAr ? 'الحالة' : 'Status',
       description: isAr ? 'الوصف' : 'Description',
-      platformFee: isAr ? 'اشتراك منصة لويالتي باس للولاء الرقمي' : 'LoyaltyPass Digital Loyalty Platform Subscription',
+      platformFee: isAr ? 'اشتراك منصة سباع باس للولاء الرقمي' : 'SabaaaPass Digital Loyalty Platform Subscription',
       total: isAr ? 'المجموع الإجمالي' : 'Total Amount',
       thankYou: isAr ? 'شكراً لتعاملكم معنا!' : 'Thank you for your business!',
       billedBy: isAr ? 'الجهة المصدرة' : 'Billed By',

@@ -59,7 +59,7 @@ export default function Register() {
           <div className="text-center mb-8">
             <h1 className="text-[26px] font-semibold text-gray-900 mb-2 tracking-tight">{t('auth.register', 'Create Account')}</h1>
             <p className="text-[13px] text-gray-500 leading-relaxed">
-              {t('auth.registerSubtitle', 'Join LoyaltyPass to get started')}
+              {t('auth.registerSubtitle', 'Join SabaaaPass to get started')}
             </p>
           </div>
 

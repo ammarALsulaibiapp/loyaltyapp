@@ -3,7 +3,7 @@
 // Super Admin Profile
 export const mockProfileSuperAdmin = {
   id: 'demo-user-super',
-  email: 'admin@loyaltypass.com',
+  email: 'admin@sabaaapass.com',
   full_name: 'Super Admin',
   role: 'super_admin' as const,
   business_id: null,
