@@ -97,7 +97,7 @@ export default function BusinessLayout() {
                 </div>
               )}
               <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">
-                {business?.name || 'Mahfazaty'}
+                {business?.name || 'SabaaaPass'}
               </h1>
             </div>
           </div>
@@ -218,7 +218,7 @@ export default function BusinessLayout() {
                 </div>
               )}
               <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">
-                {business?.name || 'Mahfazaty'}
+                {business?.name || 'SabaaaPass'}
               </h1>
             </div>
           </div>
@@ -306,7 +306,7 @@ export default function BusinessLayout() {
           >
             <Menu className="w-5 h-5" />
           </button>
-          <h1 className="text-sm font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
+          <h1 className="text-sm font-semibold text-gray-900 dark:text-white">SabaaaPass</h1>
           <div className="w-9" /> {/* Spacer for centering */}
         </div>
 

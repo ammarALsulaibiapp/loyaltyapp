@@ -39,8 +39,8 @@ export default function Register() {
       {/* Logo */}
       <div className="absolute top-8 start-8">
         <div className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="Mahfazaty" className="w-9 h-9 rounded-xl" />
-          <span className="text-black font-semibold text-lg">Mahfazaty</span>
+          <img src="/logo.png" alt="SabaaaPass" className="w-9 h-9 rounded-xl" />
+          <span className="text-black font-semibold text-lg">SabaaaPass</span>
         </div>
       </div>
 

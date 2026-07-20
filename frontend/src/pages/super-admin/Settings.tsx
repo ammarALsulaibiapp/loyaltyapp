@@ -117,7 +117,7 @@ export default function SuperAdminSettings() {
               <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                 Platform Name
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Mahfazaty</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">SabaaaPass</p>
             </div>
             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">

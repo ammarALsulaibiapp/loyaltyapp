@@ -56,9 +56,9 @@ export default function SuperAdminLayout() {
           <div className="p-5 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center">
-                <img src="/logo.png" alt="Mahfazaty Logo" className="w-full h-full object-contain" />
+                <img src="/logo.png" alt="SabaaaPass Logo" className="w-full h-full object-contain" />
               </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">SabaaaPass</h1>
               <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md text-[10px] font-bold">{t('common.adminBadge')}</span>
             </div>
           </div>
@@ -159,9 +159,9 @@ export default function SuperAdminLayout() {
           <div className="p-5 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center">
-                <img src="/logo.png" alt="Mahfazaty Logo" className="w-full h-full object-contain" />
+                <img src="/logo.png" alt="SabaaaPass Logo" className="w-full h-full object-contain" />
               </div>
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">Mahfazaty</h1>
+              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">SabaaaPass</h1>
               <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md text-[10px] font-bold">{t('common.adminBadge')}</span>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function SuperAdminLayout() {
           >
             <Menu className="w-5 h-5" />
           </button>
-          <h1 className="text-sm font-semibold">Mahfazaty</h1>
+          <h1 className="text-sm font-semibold">SabaaaPass</h1>
           <div className="w-9" />
         </div>
 

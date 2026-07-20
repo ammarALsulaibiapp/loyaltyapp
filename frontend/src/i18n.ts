@@ -57,6 +57,7 @@ const resources = {
       'auth.dontHaveAccount': "Don't have an account?",
       'auth.alreadyHaveAccount': 'Already have an account?',
       'auth.signIn': 'Sign In',
+      'auth.brandName': 'SabaaaPass',
       'auth.signUp': 'Sign Up',
       'auth.signInWithEmail': 'Sign in with email',
       'auth.loginDesc': 'Make a new doc to bring your words, data, and teams together. For free.',
@@ -648,7 +649,7 @@ const resources = {
   ar: {
     translation: {
       // Common
-      'common.brand': 'لويالتي باس',
+      'common.brand': 'سباع باس',
       'common.save': 'حفظ',
       'common.cancel': 'إلغاء',
       'common.delete': 'حذف',
@@ -696,11 +697,12 @@ const resources = {
       'auth.email': 'البريد الإلكتروني',
       'auth.password': 'كلمة المرور',
       'auth.fullName': 'الاسم الكامل',
-      'auth.welcome': 'مرحباً بك في لويالتي باس',
+      'auth.welcome': 'مرحباً بك في سباع باس',
       'auth.signInToAccount': 'تسجيل الدخول إلى حسابك',
       'auth.dontHaveAccount': 'ليس لديك حساب؟',
       'auth.alreadyHaveAccount': 'لديك حساب بالفعل؟',
       'auth.signIn': 'تسجيل الدخول',
+      'auth.brandName': 'سباع باس',
       'auth.signUp': 'إنشاء حساب',
       'auth.signInWithEmail': 'تسجيل الدخول بالبريد الإلكتروني',
       'auth.loginDesc': 'أنشئ مستنداً جديداً لجمع كلماتك وبياناتك وفريقك معاً. مجاناً.',
