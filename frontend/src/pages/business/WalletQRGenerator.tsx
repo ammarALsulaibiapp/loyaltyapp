@@ -121,15 +121,15 @@ export default function WalletQRGenerator() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          💳 Wallet QR Generator
+          {t('walletQR.title', '💳 Wallet QR Generator')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Generate a QR code for customers to register their digital wallet
+          {t('walletQR.subtitle', 'Generate a QR code for customers to register their digital wallet')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card title="Wallet Registration QR Code">
+        <Card title={t('walletQR.qrCodeTitle', 'Wallet Registration QR Code')}>
           <div className="text-center space-y-6">
             <div className="flex justify-center">
               <div className="p-6 rounded-2xl inline-block bg-white dark:bg-slate-800/80 shadow-md border-4 border-purple-600">
@@ -149,10 +149,10 @@ export default function WalletQRGenerator() {
 
             <div>
               <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                📱 Digital Loyalty Wallet
+                {t('walletQR.digitalWallet', '📱 Digital Loyalty Wallet')}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Customers scan this to create their wallet account
+                {t('walletQR.scanToCreate', 'Customers scan this to create their wallet account')}
               </p>
             </div>
 
@@ -162,25 +162,25 @@ export default function WalletQRGenerator() {
                 onClick={handleDownloadQR}
                 variant="outline"
               >
-                Download
+                {t('common.download', 'Download')}
               </Button>
               <Button
                 icon={<Printer className="w-4 h-4" />}
                 onClick={handlePrintQR}
                 variant="outline"
               >
-                Print
+                {t('common.print', 'Print')}
               </Button>
             </div>
           </div>
         </Card>
 
         <div className="space-y-6">
-          <Card title="Wallet Link">
+          <Card title={t('walletQR.walletLink', 'Wallet Link')}>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Share this registration link:
+                  {t('walletQR.shareLink', 'Share this registration link:')}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -194,29 +194,29 @@ export default function WalletQRGenerator() {
                     onClick={handleCopyLink}
                     variant={copied ? 'primary' : 'outline'}
                   >
-                    {copied ? 'Copied!' : 'Copy'}
+                    {copied ? t('common.copied', 'Copied!') : t('common.copy', 'Copy')}
                   </Button>
                 </div>
               </div>
 
               <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
                 <p className="text-sm text-purple-900 dark:text-purple-100">
-                  <strong>💡 Tip:</strong> Share via WhatsApp, SMS, or display at your counter!
+                  <strong>{t('common.tip', '💡 Tip:')}</strong> {t('walletQR.shareTip', 'Share via WhatsApp, SMS, or display at your counter!')}
                 </p>
               </div>
             </div>
           </Card>
 
-          <Card title="How It Works">
+          <Card title={t('walletQR.howItWorks', 'How It Works')}>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">1</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">Customer Scans Wallet QR</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('walletQR.step1Title', 'Customer Scans Wallet QR')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Opens wallet registration page
+                    {t('walletQR.step1Desc', 'Opens wallet registration page')}
                   </p>
                 </div>
               </div>
@@ -226,9 +226,9 @@ export default function WalletQRGenerator() {
                   <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">2</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">Register Account</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('walletQR.step2Title', 'Register Account')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Enter phone, name, and create password
+                    {t('walletQR.step2Desc', 'Enter phone, name, and create password')}
                   </p>
                 </div>
               </div>
@@ -238,9 +238,9 @@ export default function WalletQRGenerator() {
                   <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">3</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">Scan Shop QR Codes</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('walletQR.step3Title', 'Scan Shop QR Codes')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Use wallet scanner to add shops
+                    {t('walletQR.step3Desc', 'Use wallet scanner to add shops')}
                   </p>
                 </div>
               </div>
@@ -250,9 +250,9 @@ export default function WalletQRGenerator() {
                   <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">4</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">All Cards in One Place</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('walletQR.step4Title', 'All Cards in One Place')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    View stamps from multiple shops in wallet
+                    {t('walletQR.step4Desc', 'View stamps from multiple shops in wallet')}
                   </p>
                 </div>
               </div>
@@ -263,13 +263,13 @@ export default function WalletQRGenerator() {
             <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
               <h4 className="font-bold text-green-900 dark:text-green-100 mb-2 flex items-center gap-2">
                 <Wallet className="w-5 h-5" />
-                Multi-Shop Wallet Benefits
+                {t('walletQR.benefits', 'Multi-Shop Wallet Benefits')}
               </h4>
               <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
-                <li>✓ One wallet for all participating shops</li>
-                <li>✓ Customers login with password (secure)</li>
-                <li>✓ Access from any device</li>
-                <li>✓ Easy to add new shops via QR scanner</li>
+                <li>✓ {t('walletQR.benefit1', 'One wallet for all participating shops')}</li>
+                <li>✓ {t('walletQR.benefit2', 'Customers login with password (secure)')}</li>
+                <li>✓ {t('walletQR.benefit3', 'Access from any device')}</li>
+                <li>✓ {t('walletQR.benefit4', 'Easy to add new shops via QR scanner')}</li>
               </ul>
             </div>
           </Card>
