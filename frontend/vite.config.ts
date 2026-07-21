@@ -8,8 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['logo.png'],
+      registerType: 'prompt',
       workbox: {
         cleanupOutdatedCaches: true,
         skipWaiting: true,
@@ -24,7 +23,7 @@ export default defineConfig({
               cacheName: 'supabase-api',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60
+                maxAgeSeconds: 60 * 5 // Only 5 minutes
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -34,8 +33,8 @@ export default defineConfig({
         ]
       },
       manifest: {
-        name: 'Mahfazaty',
-        short_name: 'Mahfazaty',
+        name: 'SabaaaPass',
+        short_name: 'SabaaaPass',
         description: 'Digital loyalty program and wallet',
         start_url: '/wallet',
         display: 'standalone',

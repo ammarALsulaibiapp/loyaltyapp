@@ -1,39 +1,11 @@
 {
-  "rewrites": [
-    {
-      "source": "/((?!assets|logo.png|manifest.webmanifest|sw.js|workbox-.*).*)",
-      "destination": "/index.html"
-    }
-  ],
   "headers": [
-    {
-      "source": "/sw.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0"
-        },
-        {
-          "key": "Service-Worker-Allowed",
-          "value": "/"
-        }
-      ]
-    },
-    {
-      "source": "/manifest.webmanifest",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0"
-        }
-      ]
-    },
     {
       "source": "/index.html",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0"
+          "value": "no-cache, no-store, must-revalidate"
         }
       ]
     },
@@ -41,25 +13,16 @@
       "source": "/(.*)",
       "headers": [
         {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
-          "key": "Pragma",
-          "value": "no-cache"
+          "key": "X-Frame-Options",
+          "value": "DENY"
         },
         {
-          "key": "Expires",
-          "value": "0"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
         }
       ]
     }
