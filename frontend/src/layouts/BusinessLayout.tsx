@@ -65,6 +65,7 @@ export default function BusinessLayout() {
     { name: 'Wallet QR', href: '/business/wallet-qr', icon: Wallet },
     { name: isArabic ? 'الاحتفاظ الذكي' : 'AI Retention', href: '/business/ai-retention', icon: Brain },
     { name: isArabic ? 'تحليل الإيرادات' : 'Revenue Attribution', href: '/business/revenue-attribution', icon: BarChart3 },
+    { name: isArabic ? 'وسوم العملاء' : 'Customer Tags', href: '/business/customer-tags', icon: Users },
     { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
   ]
 

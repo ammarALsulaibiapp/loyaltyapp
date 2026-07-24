@@ -34,6 +34,7 @@ import QRGenerator from './pages/business/QRGenerator'
 import WalletQRGenerator from './pages/business/WalletQRGenerator'
 import AIRetentionPage from './pages/business/AIRetention'
 import RevenueAttribution from './pages/business/RevenueAttribution'
+import CustomerTags from './pages/business/CustomerTags'
 
 // Staff Pages
 import StaffDashboard from './pages/staff/Dashboard'
@@ -122,6 +123,7 @@ function App() {
             <Route path="wallet-qr" element={<WalletQRGenerator />} />
             <Route path="ai-retention" element={<AIRetentionPage />} />
             <Route path="revenue-attribution" element={<RevenueAttribution />} />
+            <Route path="customer-tags" element={<CustomerTags />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
