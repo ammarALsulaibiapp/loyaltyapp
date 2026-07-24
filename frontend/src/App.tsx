@@ -35,6 +35,7 @@ import WalletQRGenerator from './pages/business/WalletQRGenerator'
 import AIRetentionPage from './pages/business/AIRetention'
 import RevenueAttribution from './pages/business/RevenueAttribution'
 import CustomerTags from './pages/business/CustomerTags'
+import BulkMessaging from './pages/business/BulkMessaging'
 
 // Staff Pages
 import StaffDashboard from './pages/staff/Dashboard'
@@ -124,6 +125,7 @@ function App() {
             <Route path="ai-retention" element={<AIRetentionPage />} />
             <Route path="revenue-attribution" element={<RevenueAttribution />} />
             <Route path="customer-tags" element={<CustomerTags />} />
+            <Route path="bulk-messaging" element={<BulkMessaging />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>

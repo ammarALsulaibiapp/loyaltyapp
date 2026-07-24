@@ -66,6 +66,7 @@ export default function BusinessLayout() {
     { name: isArabic ? 'الاحتفاظ الذكي' : 'AI Retention', href: '/business/ai-retention', icon: Brain },
     { name: isArabic ? 'تحليل الإيرادات' : 'Revenue Attribution', href: '/business/revenue-attribution', icon: BarChart3 },
     { name: isArabic ? 'وسوم العملاء' : 'Customer Tags', href: '/business/customer-tags', icon: Users },
+    { name: isArabic ? 'المراسلة الجماعية' : 'Bulk Messaging', href: '/business/bulk-messaging', icon: Users },
     { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
   ]
 
