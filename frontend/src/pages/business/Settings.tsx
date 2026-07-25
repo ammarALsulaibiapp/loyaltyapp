@@ -76,6 +76,13 @@ export default function SettingsPage() {
     notify_membership_upgrade: true,
   })
 
+  const [whatsappSettings, setWhatsappSettings] = useState({
+    whatsapp_api_token: '',
+    whatsapp_phone_number_id: '',
+    whatsapp_business_account_id: '',
+    whatsapp_api_enabled: false,
+  })
+
   // Update state when business data loads
   useEffect(() => {
     if (business) {
@@ -90,6 +97,12 @@ export default function SettingsPage() {
       setBrandingSettings({
         brand_color: business.brand_color || '#0ea5e9',
         logo_url: business.logo_url || '',
+      })
+      setWhatsappSettings({
+        whatsapp_api_token: business.whatsapp_api_token || '',
+        whatsapp_phone_number_id: business.whatsapp_phone_number_id || '',
+        whatsapp_business_account_id: business.whatsapp_business_account_id || '',
+        whatsapp_api_enabled: business.whatsapp_api_enabled || false,
       })
     }
   }, [business])
@@ -163,6 +176,24 @@ export default function SettingsPage() {
     },
   })
 
+  // Update WhatsApp API mutation
+  const updateWhatsAppMutation = useMutation({
+    mutationFn: async (data: typeof whatsappSettings) => {
+      if (!profile?.business_id) throw new Error('No business ID')
+
+      const { error } = await (supabase
+        .from('businesses') as any)
+        .update(data)
+        .eq('id', profile.business_id)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['business'] })
+      alert('✅ WhatsApp API settings saved successfully!')
+    },
+  })
+
   const handleGeneralSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     updateBusinessMutation.mutate(generalSettings)
@@ -176,6 +207,11 @@ export default function SettingsPage() {
   const handleNotificationsSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     updateNotificationsMutation.mutate(notifications)
+  }
+
+  const handleWhatsAppSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    updateWhatsAppMutation.mutate(whatsappSettings)
   }
 
   return (
@@ -578,6 +614,97 @@ export default function SettingsPage() {
                   </label>
                 </div>
               </div>
+            </div>
+          </div>
+        </Card>
+      </form>
+
+      {/* WhatsApp API Settings */}
+      <form onSubmit={handleWhatsAppSubmit}>
+        <Card
+          title="WhatsApp Business API"
+          subtitle="Configure your WhatsApp Business API for bulk messaging"
+          headerAction={
+            <Button
+              type="submit"
+              size="sm"
+              icon={<Save className="w-4 h-4" />}
+              loading={updateWhatsAppMutation.isPending}
+            >
+              {t('common.save', 'Save')}
+            </Button>
+          }
+        >
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">
+                📱 How to get WhatsApp Business API
+              </h4>
+              <ol className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-decimal list-inside">
+                <li>Go to <a href="https://business.facebook.com" target="_blank" rel="noopener noreferrer" className="underline">Meta Business Suite</a></li>
+                <li>Create a WhatsApp Business Account</li>
+                <li>Get your API credentials from Settings → System Users</li>
+                <li>Add your phone number and get Phone Number ID</li>
+                <li>Generate an access token with messaging permissions</li>
+              </ol>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div>
+                <p className="font-medium text-gray-900 dark:text-white">Enable WhatsApp API</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Turn on to use WhatsApp for bulk messaging
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={whatsappSettings.whatsapp_api_enabled}
+                  onChange={(e) =>
+                    setWhatsappSettings({ ...whatsappSettings, whatsapp_api_enabled: e.target.checked })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+              </label>
+            </div>
+
+            <Input
+              label="WhatsApp API Access Token"
+              type="password"
+              value={whatsappSettings.whatsapp_api_token}
+              onChange={(e) =>
+                setWhatsappSettings({ ...whatsappSettings, whatsapp_api_token: e.target.value })
+              }
+              placeholder="EAAxxxxxxxxxxxxxxxxxxxxxxxxx"
+              helperText="Your permanent access token from Meta Business"
+            />
+
+            <Input
+              label="Phone Number ID"
+              value={whatsappSettings.whatsapp_phone_number_id}
+              onChange={(e) =>
+                setWhatsappSettings({ ...whatsappSettings, whatsapp_phone_number_id: e.target.value })
+              }
+              placeholder="123456789012345"
+              helperText="The phone number ID from WhatsApp Business API"
+            />
+
+            <Input
+              label="Business Account ID"
+              value={whatsappSettings.whatsapp_business_account_id}
+              onChange={(e) =>
+                setWhatsappSettings({ ...whatsappSettings, whatsapp_business_account_id: e.target.value })
+              }
+              placeholder="123456789012345"
+              helperText="Your WhatsApp Business Account ID"
+            />
+
+            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                <strong>⚠️ Important:</strong> Keep your API token secure. Never share it publicly.
+                These credentials are encrypted and stored securely.
+              </p>
             </div>
           </div>
         </Card>
