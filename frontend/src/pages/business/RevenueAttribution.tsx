@@ -268,7 +268,7 @@ export default function RevenueAttribution() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={false}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -282,6 +282,32 @@ export default function RevenueAttribution() {
                 />
               </PieChart>
             </ResponsiveContainer>
+          </div>
+          
+          {/* Legend */}
+          <div className="mt-4 space-y-2">
+            {revenueBreakdown.map((entry, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-4 h-4 rounded"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {entry.name}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    {formatCurrency(entry.value, currency, isArabic)}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {revenueData?.thisMonthRevenue ? 
+                      ((entry.value / revenueData.thisMonthRevenue) * 100).toFixed(0) : 0}%
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </Card>
 
