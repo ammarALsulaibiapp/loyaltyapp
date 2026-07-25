@@ -3,10 +3,9 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 import './i18n'
-import { registerSW } from 'virtual:pwa-register'
 
 // App version - INCREMENT THIS ON EVERY DEPLOY
-const APP_VERSION = '1.0.6'
+const APP_VERSION = '1.0.7'
 
 // Check and clear cache if version changed
 const storedVersion = localStorage.getItem('app_version')
@@ -38,22 +37,16 @@ if (storedVersion !== APP_VERSION) {
     })
   }
   
+  // Unregister all service workers
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => registration.unregister())
+    })
+  }
+  
   // Force reload
   window.location.reload()
 }
-
-// Register service worker with auto-update
-const updateSW = registerSW({
-  onNeedRefresh() {
-    if (confirm('🔄 New version available! Click OK to update now.')) {
-      updateSW(true)
-    }
-  },
-  onOfflineReady() {
-    console.log('✅ App ready to work offline')
-  },
-  immediate: true,
-})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

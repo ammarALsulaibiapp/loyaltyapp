@@ -7,52 +7,8 @@ import path from 'path'
 export default defineConfig({
   plugins: [
     react(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
-        navigateFallback: null,
-        // DISABLE ALL CACHING - NO MORE CACHE ISSUES
-        runtimeCaching: []
-      },
-      manifest: {
-        name: 'SabaaaPass',
-        short_name: 'SabaaaPass',
-        description: 'Digital loyalty program and wallet',
-        start_url: '/wallet',
-        display: 'standalone',
-        background_color: '#3B82F6',
-        theme_color: '#3B82F6',
-        orientation: 'portrait',
-        scope: '/',
-        icons: [
-          {
-            src: '/logo.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/logo.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/logo.png',
-            sizes: '384x384',
-            type: 'image/png',
-            purpose: 'any'
-          }
-        ]
-      },
-      devOptions: {
-        enabled: false
-      }
-    })
+    // DISABLE PWA COMPLETELY - NO MORE CACHE ISSUES
+    // VitePWA removed
   ],
   resolve: {
     alias: {
