@@ -6,7 +6,7 @@ import './i18n'
 import { registerSW } from 'virtual:pwa-register'
 
 // App version - INCREMENT THIS ON EVERY DEPLOY
-const APP_VERSION = '1.0.5'
+const APP_VERSION = '1.0.6'
 
 // Check and clear cache if version changed
 const storedVersion = localStorage.getItem('app_version')
