@@ -8,13 +8,13 @@ const router = Router()
 // GET /api/notifications/settings/:businessId
 // Get notification settings for a business
 // =====================================================
-router.get('/settings/:businessId', requireApiKey, requireSuperAdmin, async (req, res) => {
+router.get('/settings/:businessId', requireApiKey, async (req, res) => {
   try {
     const { businessId } = req.params
 
     const { data: business, error } = await supabaseAdmin
       .from('businesses')
-      .select('id, name, whatsapp_enabled, whatsapp_provider, whatsapp_credentials, sms_enabled, sms_provider, sms_credentials')
+      .select('id, name, whatsapp_api_token, whatsapp_phone_number_id, whatsapp_business_account_id, whatsapp_api_enabled')
       .eq('id', businessId)
       .single()
 
@@ -25,12 +25,11 @@ router.get('/settings/:businessId', requireApiKey, requireSuperAdmin, async (req
     res.json({
       success: true,
       settings: {
-        whatsapp_enabled: business.whatsapp_enabled || false,
-        whatsapp_provider: business.whatsapp_provider || null,
-        whatsapp_configured: !!business.whatsapp_credentials,
-        sms_enabled: business.sms_enabled || false,
-        sms_provider: business.sms_provider || null,
-        sms_configured: !!business.sms_credentials
+        whatsapp_api_enabled: business.whatsapp_api_enabled || false,
+        whatsapp_api_token: business.whatsapp_api_token || '',
+        whatsapp_phone_number_id: business.whatsapp_phone_number_id || '',
+        whatsapp_business_account_id: business.whatsapp_business_account_id || '',
+        whatsapp_configured: !!(business.whatsapp_api_token && business.whatsapp_phone_number_id),
       }
     })
   } catch (error: any) {
@@ -47,25 +46,18 @@ router.put('/settings/:businessId', requireApiKey, requireSuperAdmin, async (req
   try {
     const { businessId } = req.params
     const {
-      whatsapp_enabled,
-      whatsapp_provider,
-      whatsapp_credentials,
-      sms_enabled,
-      sms_provider,
-      sms_credentials
+      whatsapp_api_enabled,
+      whatsapp_api_token,
+      whatsapp_phone_number_id,
+      whatsapp_business_account_id,
     } = req.body
 
     const updateData: any = {}
 
-    // WhatsApp settings
-    if (whatsapp_enabled !== undefined) updateData.whatsapp_enabled = whatsapp_enabled
-    if (whatsapp_provider !== undefined) updateData.whatsapp_provider = whatsapp_provider
-    if (whatsapp_credentials !== undefined) updateData.whatsapp_credentials = whatsapp_credentials
-
-    // SMS settings
-    if (sms_enabled !== undefined) updateData.sms_enabled = sms_enabled
-    if (sms_provider !== undefined) updateData.sms_provider = sms_provider
-    if (sms_credentials !== undefined) updateData.sms_credentials = sms_credentials
+    if (whatsapp_api_enabled !== undefined) updateData.whatsapp_api_enabled = whatsapp_api_enabled
+    if (whatsapp_api_token !== undefined) updateData.whatsapp_api_token = whatsapp_api_token
+    if (whatsapp_phone_number_id !== undefined) updateData.whatsapp_phone_number_id = whatsapp_phone_number_id
+    if (whatsapp_business_account_id !== undefined) updateData.whatsapp_business_account_id = whatsapp_business_account_id
 
     const { error } = await supabaseAdmin
       .from('businesses')
@@ -77,7 +69,7 @@ router.put('/settings/:businessId', requireApiKey, requireSuperAdmin, async (req
       return res.status(500).json({ error: 'Failed to update settings' })
     }
 
-    res.json({ success: true, message: 'Notification settings updated' })
+    res.json({ success: true, message: 'WhatsApp settings updated successfully' })
   } catch (error: any) {
     console.error('Update notification settings error:', error)
     res.status(500).json({ error: 'Internal server error' })

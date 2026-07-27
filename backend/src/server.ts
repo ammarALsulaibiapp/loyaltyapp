@@ -9,6 +9,7 @@ import walletRoutes from './routes/wallet'
 import notificationRoutes from './routes/notifications'
 import deleteRoutes from './routes/delete'
 import aiRetentionRoutes from './routes/aiRetention'
+import bulkMessagingRoutes from './routes/bulkMessaging'
 
 // Load environment variables
 dotenv.config()
@@ -61,6 +62,7 @@ app.use('/api/wallet', walletRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/delete', deleteRoutes)
 app.use('/api/ai-retention', aiRetentionRoutes)
+app.use('/api/bulk-messaging', bulkMessagingRoutes)
 
 // Error handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

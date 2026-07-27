@@ -61,9 +61,10 @@ export default function BusinessesPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [notificationSettings, setNotificationSettings] = useState({
-    whatsapp_enabled: false,
-    whatsapp_provider: 'twilio',
-    whatsapp_credentials: { account_sid: '', auth_token: '', phone_number: '' },
+    whatsapp_api_enabled: false,
+    whatsapp_api_token: '',
+    whatsapp_phone_number_id: '',
+    whatsapp_business_account_id: '',
     sms_enabled: false,
     sms_provider: 'twilio',
     sms_credentials: { account_sid: '', auth_token: '', phone_number: '' },
@@ -455,9 +456,10 @@ export default function BusinessesPage() {
       
       if (data.settings) {
         setNotificationSettings({
-          whatsapp_enabled: data.settings.whatsapp_enabled || false,
-          whatsapp_provider: 'twilio',
-          whatsapp_credentials: { account_sid: '', auth_token: '', phone_number: '' },
+          whatsapp_api_enabled: data.settings.whatsapp_api_enabled || false,
+          whatsapp_api_token: data.settings.whatsapp_api_token || '',
+          whatsapp_phone_number_id: data.settings.whatsapp_phone_number_id || '',
+          whatsapp_business_account_id: data.settings.whatsapp_business_account_id || '',
           sms_enabled: data.settings.sms_enabled || false,
           sms_provider: 'twilio',
           sms_credentials: { account_sid: '', auth_token: '', phone_number: '' },
@@ -480,7 +482,10 @@ export default function BusinessesPage() {
           'Content-Type': 'application/json',
           'x-api-key': import.meta.env.VITE_API_KEY
         },
-        body: JSON.stringify(notificationSettings)
+        body: JSON.stringify({
+          ...notificationSettings,
+          requester_role: 'super_admin'
+        })
       })
 
       const data = await response.json()
@@ -1211,75 +1216,51 @@ export default function BusinessesPage() {
       >
         <div className="space-y-6">
           {/* WhatsApp Settings */}
-          <Card title="💬 WhatsApp Notifications">
+          <Card title="💬 WhatsApp Business Cloud API">
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Provider
-                </label>
-                <select
-                  value={notificationSettings.whatsapp_provider}
-                  onChange={(e) => setNotificationSettings({
-                    ...notificationSettings,
-                    whatsapp_provider: e.target.value
-                  })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
-                >
-                  <option value="twilio">Twilio</option>
-                  <option value="meta">Meta Business API</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
               <Input
-                label="Account SID / API Key"
-                value={notificationSettings.whatsapp_credentials.account_sid}
-                onChange={(e) => setNotificationSettings({
-                  ...notificationSettings,
-                  whatsapp_credentials: {
-                    ...notificationSettings.whatsapp_credentials,
-                    account_sid: e.target.value
-                  }
-                })}
-                placeholder="Enter Account SID"
-              />
-
-              <Input
-                label="Auth Token / Secret"
+                label="WhatsApp API Access Token"
                 type="password"
-                value={notificationSettings.whatsapp_credentials.auth_token}
+                value={notificationSettings.whatsapp_api_token}
                 onChange={(e) => setNotificationSettings({
                   ...notificationSettings,
-                  whatsapp_credentials: {
-                    ...notificationSettings.whatsapp_credentials,
-                    auth_token: e.target.value
-                  }
+                  whatsapp_api_token: e.target.value
                 })}
-                placeholder="Enter Auth Token"
+                placeholder="EAAxxxxxxxxxxxxxxxxxxxxxxxxx"
+                helperText="Permanent Access Token from Meta Developer Console"
               />
 
               <Input
-                label="WhatsApp Phone Number (with country code)"
-                value={notificationSettings.whatsapp_credentials.phone_number}
+                label="Phone Number ID"
+                value={notificationSettings.whatsapp_phone_number_id}
                 onChange={(e) => setNotificationSettings({
                   ...notificationSettings,
-                  whatsapp_credentials: {
-                    ...notificationSettings.whatsapp_credentials,
-                    phone_number: e.target.value
-                  }
+                  whatsapp_phone_number_id: e.target.value
                 })}
-                placeholder="+96812345678"
+                placeholder="123456789012345"
+                helperText="WhatsApp Phone Number ID from Meta"
+              />
+
+              <Input
+                label="Business Account ID"
+                value={notificationSettings.whatsapp_business_account_id}
+                onChange={(e) => setNotificationSettings({
+                  ...notificationSettings,
+                  whatsapp_business_account_id: e.target.value
+                })}
+                placeholder="123456789012345"
+                helperText="WhatsApp Business Account ID"
               />
 
               <div className="pt-3">
                 <Toggle
-                  enabled={notificationSettings.whatsapp_enabled}
+                  enabled={notificationSettings.whatsapp_api_enabled}
                   onChange={(enabled) => setNotificationSettings({
                     ...notificationSettings,
-                    whatsapp_enabled: enabled
+                    whatsapp_api_enabled: enabled
                   })}
-                  label="Enable WhatsApp Notifications"
-                  description="Business can toggle this on/off"
+                  label="Enable WhatsApp API for this Business"
+                  description="Allows this business to send bulk messages via WhatsApp"
                 />
               </div>
             </div>
