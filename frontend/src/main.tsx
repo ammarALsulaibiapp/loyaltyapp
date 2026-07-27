@@ -5,7 +5,17 @@ import './index.css'
 import './i18n'
 
 // App version - INCREMENT THIS ON EVERY DEPLOY
-const APP_VERSION = '1.0.7'
+const APP_VERSION = '1.0.8'
+
+// FORCE UNREGISTER SERVICE WORKERS - DO THIS IMMEDIATELY
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => {
+      console.log('🗑️ Unregistering service worker:', registration.scope)
+      registration.unregister()
+    })
+  })
+}
 
 // Check and clear cache if version changed
 const storedVersion = localStorage.getItem('app_version')
@@ -33,19 +43,15 @@ if (storedVersion !== APP_VERSION) {
   // Clear all caches
   if ('caches' in window) {
     caches.keys().then(names => {
-      names.forEach(name => caches.delete(name))
-    })
-  }
-  
-  // Unregister all service workers
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-      registrations.forEach(registration => registration.unregister())
+      names.forEach(name => {
+        console.log('🗑️ Deleting cache:', name)
+        caches.delete(name)
+      })
     })
   }
   
   // Force reload
-  window.location.reload()
+  setTimeout(() => window.location.reload(), 500)
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
