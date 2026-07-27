@@ -1,14 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    // DISABLE PWA COMPLETELY - NO MORE CACHE ISSUES
-    // VitePWA removed
   ],
   resolve: {
     alias: {
@@ -17,11 +14,19 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true, // Expose to network
-    // OR use: host: '0.0.0.0' 
+    host: true,
   },
   build: {
     outDir: 'dist',
     sourcemap: false,
+    // Content-hashed filenames ensure cache busting on every deploy
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
+    },
   },
 })
+

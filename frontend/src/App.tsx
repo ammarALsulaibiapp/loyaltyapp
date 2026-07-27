@@ -151,6 +151,9 @@ function App() {
 
           {/* Default redirect */}
           <Route path="/" element={<RootRedirect />} />
+
+          {/* Catch-all: redirect unknown routes to root */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </QueryClientProvider>
