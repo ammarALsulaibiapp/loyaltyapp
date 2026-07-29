@@ -203,33 +203,72 @@ export default function ReportsPage() {
     )
   }, [reportData?.rewards, searchQuery])
 
-  // Export CSV Handler (Exports full real records)
+  // Export CSV Handler (Exports full real records with bilingual filenames and localized headers)
   const handleExportCSV = () => {
     if (!reportData) return
     let csvRows: string[] = []
-    let filename = `report-${activeReport}-${startDate}-to-${endDate}.csv`
+    let filename = ''
 
     if (activeReport === 'activity') {
-      csvRows.push('Customer Name,Phone Number,Tier,Period Visits,Total Visits,Period Spent,Total Spent,Points')
+      filename = isArabic
+        ? `تقرير-نشاط-العملاء_${startDate}_إلى_${endDate}.csv`
+        : `Customer-Activity-Report_${startDate}_to_${endDate}.csv`
+
+      if (isArabic) {
+        csvRows.push('اسم العميل,رقم الهاتف,المستوى,زيارات الفترة,إجمالي الزيارات,الإنفاق بالفترة,إجمالي الإنفاق,النقاط')
+      } else {
+        csvRows.push('Customer Name,Phone Number,Tier,Period Visits,Total Visits,Period Spent,Total Spent,Points')
+      }
+
       filteredCustomerActivity.forEach((c: any) => {
         csvRows.push(`"${c.name}","${c.phone}","${c.tier}",${c.periodVisits},${c.totalVisits},${c.periodSpent},${c.totalSpent},${c.points}`)
       })
     } else if (activeReport === 'revenue') {
-      csvRows.push('Visit Date,Customer Name,Phone Number,Amount Spent,Points Earned,Notes')
+      filename = isArabic
+        ? `تقرير-الإيرادات-والمبيعات_${startDate}_إلى_${endDate}.csv`
+        : `Revenue-Sales-Report_${startDate}_to_${endDate}.csv`
+
+      if (isArabic) {
+        csvRows.push('تاريخ الزيارة,اسم العميل,رقم الهاتف,المبلغ المستلم,النقاط المكتسبة,ملاحظات')
+      } else {
+        csvRows.push('Visit Date,Customer Name,Phone Number,Amount Spent,Points Earned,Notes')
+      }
+
       filteredVisits.forEach((v: any) => {
         csvRows.push(`"${v.visit_date}","${v.customers?.full_name || ''}","${v.customers?.phone_number || ''}",${v.amount_spent || 0},${v.points_earned || 0},"${v.notes || ''}"`)
       })
     } else if (activeReport === 'rewards') {
-      csvRows.push('Reward Name,Customer Name,Phone Number,Redeemed Date')
+      filename = isArabic
+        ? `تقرير-استرداد-المكافآت_${startDate}_إلى_${endDate}.csv`
+        : `Rewards-Redemption-Report_${startDate}_to_${endDate}.csv`
+
+      if (isArabic) {
+        csvRows.push('اسم المكافأة,اسم العميل,رقم الهاتف,تاريخ الاسترداد')
+      } else {
+        csvRows.push('Reward Name,Customer Name,Phone Number,Redeemed Date')
+      }
+
       filteredRewards.forEach((r: any) => {
         csvRows.push(`"${r.reward_name}","${r.customers?.full_name || ''}","${r.customers?.phone_number || ''}","${r.redeemed_date || r.created_at}"`)
       })
     } else if (activeReport === 'retention') {
-      csvRows.push('Metric,Value')
-      csvRows.push(`Total Customers,${reportData.summary.totalCustomers}`)
-      csvRows.push(`Active Customers (Selected Period),${reportData.summary.activeCustomers}`)
-      csvRows.push(`Retention Rate,${reportData.summary.retentionRate}%`)
-      csvRows.push(`Total Visits,${reportData.summary.periodVisits}`)
+      filename = isArabic
+        ? `تقرير-الاحتفاظ-بالعملاء_${startDate}_إلى_${endDate}.csv`
+        : `Customer-Retention-Report_${startDate}_to_${endDate}.csv`
+
+      if (isArabic) {
+        csvRows.push('المؤشر,القيمة')
+        csvRows.push(`إجمالي العملاء,${reportData.summary.totalCustomers}`)
+        csvRows.push(`العملاء النشطون بالفترة,${reportData.summary.activeCustomers}`)
+        csvRows.push(`معدل العملاء العائدين,${reportData.summary.retentionRate}%`)
+        csvRows.push(`إجمالي الزيارات بالفترة,${reportData.summary.periodVisits}`)
+      } else {
+        csvRows.push('Metric,Value')
+        csvRows.push(`Total Customers,${reportData.summary.totalCustomers}`)
+        csvRows.push(`Active Customers (Selected Period),${reportData.summary.activeCustomers}`)
+        csvRows.push(`Retention Rate,${reportData.summary.retentionRate}%`)
+        csvRows.push(`Total Visits,${reportData.summary.periodVisits}`)
+      }
     }
 
     const csvContent = '\uFEFF' + csvRows.join('\n')
