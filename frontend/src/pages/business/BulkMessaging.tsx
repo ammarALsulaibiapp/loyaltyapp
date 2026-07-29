@@ -276,17 +276,17 @@ export default function BulkMessaging() {
             </h2>
             <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
               {isArabic
-                ? 'لاستخدام المراسلة الجماعية، يجب تفعيل واتساب بيزنس API. تواصل مع المسؤول لإعداد بيانات API الخاصة بك.'
-                : 'To use bulk messaging, WhatsApp Business API must be configured. Contact your admin to set up your API credentials, or configure them in Settings.'}
+                ? 'لاستخدام المراسلة الجماعية، يجب تفعيل واتساب بيزنس API من قبل المسؤول الفائق (Super Admin). تواصل مع مدير النظام لتفعيل الخدمة لك.'
+                : 'To use bulk messaging, WhatsApp Business API must be enabled by your Super Admin. Contact your Super Admin to enable the service for your business.'}
             </p>
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-left max-w-lg mx-auto">
               <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">
                 📱 {isArabic ? 'كيفية الإعداد:' : 'How to set up:'}
               </h4>
               <ol className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-decimal list-inside">
-                <li>{isArabic ? 'اذهب إلى الإعدادات → واتساب بيزنس API' : 'Go to Settings → WhatsApp Business API'}</li>
-                <li>{isArabic ? 'أدخل بيانات API الخاصة بك من Meta Business Suite' : 'Enter your API credentials from Meta Business Suite'}</li>
-                <li>{isArabic ? 'فعّل API واحفظ' : 'Enable the API and Save'}</li>
+                <li>{isArabic ? 'تواصل مع المسؤول الفائق (Super Admin)' : 'Contact your Super Admin'}</li>
+                <li>{isArabic ? 'يقوم المسؤول بإدخال بيانات Meta WhatsApp API وتفعيل الخدمة لمتجرك' : 'Super Admin configures your Meta WhatsApp API credentials and enables access'}</li>
+                <li>{isArabic ? 'ابدأ بإرسال الرسائل الجماعية فور التفعيل' : 'Start sending bulk messages once enabled'}</li>
               </ol>
             </div>
           </div>

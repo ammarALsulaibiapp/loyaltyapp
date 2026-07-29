@@ -29,7 +29,6 @@ import LoyaltyProgramsPage from './pages/business/LoyaltyPrograms'
 import RewardsPage from './pages/business/Rewards'
 import StaffPage from './pages/business/Staff'
 import ReportsPage from './pages/business/Reports'
-import SettingsPage from './pages/business/Settings'
 import QRGenerator from './pages/business/QRGenerator'
 import WalletQRGenerator from './pages/business/WalletQRGenerator'
 import AIRetentionPage from './pages/business/AIRetention'
@@ -127,7 +126,6 @@ function App() {
             <Route path="customer-tags" element={<CustomerTags />} />
             <Route path="bulk-messaging" element={<BulkMessaging />} />
             <Route path="reports" element={<ReportsPage />} />
-            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Staff Routes */}

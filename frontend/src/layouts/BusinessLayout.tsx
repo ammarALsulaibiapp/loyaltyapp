@@ -86,7 +86,6 @@ export default function BusinessLayout() {
       items: [
         { name: t('nav.staff'), href: '/business/staff', icon: UserCog },
         { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
-        { name: t('nav.settings', 'Settings'), href: '/business/settings', icon: Settings },
       ]
     }
   ]
