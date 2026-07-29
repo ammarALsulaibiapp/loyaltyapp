@@ -7,6 +7,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'Cairo', 'system-ui', '-apple-system', 'sans-serif'],
+        cairo: ['Cairo', 'sans-serif'],
+      },
       colors: {
         primary: {
           50: '#f0f9ff',
