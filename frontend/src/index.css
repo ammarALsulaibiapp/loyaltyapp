@@ -47,6 +47,13 @@ html[dir="rtl"] h6 {
 }
 
 @layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
   .glass-panel {
     @apply bg-white/70 backdrop-blur-xl border border-white/40;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);

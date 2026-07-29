@@ -109,31 +109,31 @@ export default function BusinessLayout() {
       <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-purple-600/10 via-pink-600/5 to-transparent pointer-events-none" />
 
       {/* Brand Header */}
-      <div className="p-5 border-b border-slate-800/80 relative z-10">
-        <div className="flex items-center gap-3">
+      <div className="p-3.5 border-b border-slate-800/80 relative z-10 shrink-0">
+        <div className="flex items-center gap-2.5">
           <div className="relative group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center overflow-hidden p-1">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 p-0.5 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-full h-full bg-slate-900 rounded-[6px] flex items-center justify-center overflow-hidden p-0.5">
                 {business?.logo_url ? (
                   <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
                 ) : (
-                  <Sparkles className="w-5 h-5 text-blue-400" />
+                  <Sparkles className="w-4 h-4 text-blue-400" />
                 )}
               </div>
             </div>
-            <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full" />
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="text-sm font-bold text-white tracking-wide truncate">
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-xs font-bold text-white tracking-wide truncate">
                 {business?.name || 'SabaaaPass'}
               </h1>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase">
+              <span className="px-1 py-0.2 rounded text-[9px] font-extrabold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase">
                 {isAdmin ? 'BUSINESS' : 'STAFF'}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 truncate">
+            <p className="text-[10px] text-slate-400 truncate">
               {isAdmin ? 'Loyalty Hub 2027' : 'Staff Scanner'}
             </p>
           </div>
@@ -141,10 +141,10 @@ export default function BusinessLayout() {
       </div>
 
       {/* Categorized Navigation */}
-      <div className="flex-1 px-3 py-4 space-y-6 overflow-y-auto custom-scrollbar relative z-10">
+      <div className="flex-1 px-2.5 py-2.5 space-y-3 overflow-y-auto no-scrollbar relative z-10">
         {navigationGroups.map((group, idx) => (
-          <div key={idx} className="space-y-1.5">
-            <h3 className="text-[10px] font-bold tracking-widest text-slate-500 uppercase px-3 mb-1 flex items-center gap-2">
+          <div key={idx} className="space-y-1">
+            <h3 className="text-[10px] font-bold tracking-widest text-slate-500 uppercase px-2 mb-0.5 flex items-center gap-2">
               <span>{group.title}</span>
               <span className="flex-1 h-[1px] bg-slate-800/60" />
             </h3>
@@ -157,38 +157,38 @@ export default function BusinessLayout() {
                 onClick={() => setSidebarOpen(false)}
                 className={({ isActive }) =>
                   clsx(
-                    'group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-300',
+                    'group relative flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-300',
                     isActive
-                      ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-blue-500/25 font-semibold scale-[1.02]'
+                      ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 font-semibold'
                       : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <div className={clsx(
-                        'w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300',
+                        'w-6 h-6 rounded-md flex items-center justify-center transition-all duration-300',
                         isActive
                           ? 'bg-white/20 text-white shadow-inner backdrop-blur-md'
                           : 'bg-slate-800/50 text-slate-400 group-hover:bg-slate-700/80 group-hover:text-blue-400'
                       )}>
-                        <item.icon className="w-4 h-4" />
+                        <item.icon className="w-3.5 h-3.5" />
                       </div>
                       <span className="truncate">{item.name}</span>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       {item.badge && (
                         <span className={clsx(
-                          'px-1.5 py-0.5 text-[9px] font-bold text-white rounded-full shadow-sm',
+                          'px-1.5 py-0.2 text-[8px] font-bold text-white rounded-full shadow-sm',
                           item.badgeColor
                         )}>
                           {item.badge}
                         </span>
                       )}
                       {isActive && (
-                        <ChevronRight className={clsx('w-3.5 h-3.5 text-white/80', isArabic && 'rotate-180')} />
+                        <ChevronRight className={clsx('w-3 h-3 text-white/80', isArabic && 'rotate-180')} />
                       )}
                     </div>
                   </>
@@ -200,37 +200,37 @@ export default function BusinessLayout() {
       </div>
 
       {/* User Controls & Profile Footer */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-md relative z-10 space-y-3">
+      <div className="p-2.5 border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-md relative z-10 space-y-2 shrink-0">
         {/* Quick Toggles */}
-        <div className="flex items-center gap-2 p-1 bg-slate-900/90 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-900/90 rounded-lg border border-slate-800">
           <button
             onClick={toggleTheme}
-            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-xs font-medium"
+            className="flex-1 flex items-center justify-center gap-1 py-1 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px] font-medium"
             title="Toggle Mode"
           >
-            {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />}
+            {theme === 'dark' ? <Sun className="w-3 h-3 text-amber-400" /> : <Moon className="w-3 h-3 text-blue-400" />}
             <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
           </button>
-          <div className="w-[1px] h-4 bg-slate-800" />
+          <div className="w-[1px] h-3.5 bg-slate-800" />
           <button
             onClick={toggleLanguage}
-            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-xs font-medium"
+            className="flex-1 flex items-center justify-center gap-1 py-1 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px] font-medium"
             title="Toggle Language"
           >
-            <Languages className="w-3.5 h-3.5 text-indigo-400" />
+            <Languages className="w-3 h-3 text-indigo-400" />
             <span>{language === 'ar' ? 'English' : 'العربية'}</span>
           </button>
         </div>
 
         {/* User Info Card */}
-        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/80 border border-slate-800/80">
+        <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-900/80 border border-slate-800/80">
           <div className="relative">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-0.5 shadow-md">
-              <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-xs">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-0.5 shadow-md">
+              <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-[11px]">
                 {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
             </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full" />
+            <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border-2 border-slate-900 rounded-full" />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -244,10 +244,9 @@ export default function BusinessLayout() {
 
           <button
             onClick={() => signOut()}
-            className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="p-1.5 rounded-md text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
             title="Logout"
           >
-            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>
