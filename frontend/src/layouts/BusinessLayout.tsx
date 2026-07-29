@@ -21,10 +21,14 @@ import {
   Menu,
   X,
   Search,
-  Kanban,
   QrCode,
   Wallet,
   Brain,
+  MessageSquare,
+  Tag,
+  Sparkles,
+  ChevronRight,
+  TrendingUp,
 } from 'lucide-react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
@@ -55,138 +59,224 @@ export default function BusinessLayout() {
     enabled: !!profile?.business_id,
   })
 
-  const adminNavigation = [
-    { name: t('nav.dashboard'), href: '/business', icon: LayoutDashboard },
-    { name: t('nav.customers'), href: '/business/customers', icon: Users },
-    { name: t('nav.loyaltyPrograms'), href: '/business/loyalty-programs', icon: Gift },
-    { name: t('nav.rewards'), href: '/business/rewards', icon: Award },
-    { name: t('nav.staff'), href: '/business/staff', icon: UserCog },
-    { name: 'Shop QR', href: '/business/qr-generator', icon: QrCode },
-    { name: 'Wallet QR', href: '/business/wallet-qr', icon: Wallet },
-    { name: isArabic ? 'الاحتفاظ الذكي' : 'AI Retention', href: '/business/ai-retention', icon: Brain },
-    { name: isArabic ? 'تحليل الإيرادات' : 'Revenue Attribution', href: '/business/revenue-attribution', icon: BarChart3 },
-    { name: isArabic ? 'وسوم العملاء' : 'Customer Tags', href: '/business/customer-tags', icon: Users },
-    { name: isArabic ? 'المراسلة الجماعية' : 'Bulk Messaging', href: '/business/bulk-messaging', icon: Users },
-    { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
+  // Categorized Navigation items
+  const adminNavigationGroups = [
+    {
+      title: isArabic ? 'الرئيسية' : 'OVERVIEW',
+      items: [
+        { name: t('nav.dashboard'), href: '/business', icon: LayoutDashboard },
+        { name: t('nav.customers'), href: '/business/customers', icon: Users },
+        { name: t('nav.loyaltyPrograms'), href: '/business/loyalty-programs', icon: Gift },
+        { name: t('nav.rewards'), href: '/business/rewards', icon: Award },
+      ]
+    },
+    {
+      title: isArabic ? 'أدوات النمو والذكاء' : 'AI & GROWTH',
+      items: [
+        { name: isArabic ? 'الاحتفاظ الذكي' : 'AI Retention', href: '/business/ai-retention', icon: Brain, badge: 'AI', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
+        { name: isArabic ? 'تحليل الإيرادات' : 'Revenue Attribution', href: '/business/revenue-attribution', icon: TrendingUp },
+        { name: isArabic ? 'المراسلة الجماعية' : 'Bulk Messaging', href: '/business/bulk-messaging', icon: MessageSquare, badge: 'PRO', badgeColor: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
+        { name: isArabic ? 'وسوم العملاء' : 'Customer Tags', href: '/business/customer-tags', icon: Tag },
+        { name: 'Shop QR', href: '/business/qr-generator', icon: QrCode },
+        { name: 'Wallet QR', href: '/business/wallet-qr', icon: Wallet },
+      ]
+    },
+    {
+      title: isArabic ? 'الإدارة والتقارير' : 'MANAGEMENT',
+      items: [
+        { name: t('nav.staff'), href: '/business/staff', icon: UserCog },
+        { name: t('nav.reports'), href: '/business/reports', icon: BarChart3 },
+        { name: t('nav.settings', 'Settings'), href: '/business/settings', icon: Settings },
+      ]
+    }
   ]
 
-  const staffNavigation = [
-    { name: t('nav.dashboard'), href: '/staff', icon: LayoutDashboard },
-    { name: t('nav.customerLookup'), href: '/staff/customer-lookup', icon: Search },
+  const staffNavigationGroups = [
+    {
+      title: isArabic ? 'الرئيسية' : 'OVERVIEW',
+      items: [
+        { name: t('nav.dashboard'), href: '/staff', icon: LayoutDashboard },
+        { name: t('nav.customerLookup'), href: '/staff/customer-lookup', icon: Search },
+      ]
+    }
   ]
 
-  const navigation = isStaff ? staffNavigation : adminNavigation
+  const navigationGroups = isStaff ? staffNavigationGroups : adminNavigationGroups
+
+  const renderNavContent = () => (
+    <div className="flex flex-col h-full bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-2xl text-slate-100 border-r border-slate-800/80 shadow-2xl relative overflow-hidden">
+      {/* Background ambient lighting */}
+      <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-blue-600/10 via-indigo-600/5 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-purple-600/10 via-pink-600/5 to-transparent pointer-events-none" />
+
+      {/* Brand Header */}
+      <div className="p-5 border-b border-slate-800/80 relative z-10">
+        <div className="flex items-center gap-3">
+          <div className="relative group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center overflow-hidden p-1">
+                {business?.logo_url ? (
+                  <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <Sparkles className="w-5 h-5 text-blue-400" />
+                )}
+              </div>
+            </div>
+            <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full" />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm font-bold text-white tracking-wide truncate">
+                {business?.name || 'SabaaaPass'}
+              </h1>
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase">
+                {isAdmin ? 'BUSINESS' : 'STAFF'}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 truncate">
+              {isAdmin ? 'Loyalty Hub 2027' : 'Staff Scanner'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Categorized Navigation */}
+      <div className="flex-1 px-3 py-4 space-y-6 overflow-y-auto custom-scrollbar relative z-10">
+        {navigationGroups.map((group, idx) => (
+          <div key={idx} className="space-y-1.5">
+            <h3 className="text-[10px] font-bold tracking-widest text-slate-500 uppercase px-3 mb-1 flex items-center gap-2">
+              <span>{group.title}</span>
+              <span className="flex-1 h-[1px] bg-slate-800/60" />
+            </h3>
+
+            {group.items.map((item: any) => (
+              <NavLink
+                key={item.name}
+                to={item.href}
+                end
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  clsx(
+                    'group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-300',
+                    isActive
+                      ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-blue-500/25 font-semibold scale-[1.02]'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={clsx(
+                        'w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300',
+                        isActive
+                          ? 'bg-white/20 text-white shadow-inner backdrop-blur-md'
+                          : 'bg-slate-800/50 text-slate-400 group-hover:bg-slate-700/80 group-hover:text-blue-400'
+                      )}>
+                        <item.icon className="w-4 h-4" />
+                      </div>
+                      <span className="truncate">{item.name}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {item.badge && (
+                        <span className={clsx(
+                          'px-1.5 py-0.5 text-[9px] font-bold text-white rounded-full shadow-sm',
+                          item.badgeColor
+                        )}>
+                          {item.badge}
+                        </span>
+                      )}
+                      {isActive && (
+                        <ChevronRight className={clsx('w-3.5 h-3.5 text-white/80', isArabic && 'rotate-180')} />
+                      )}
+                    </div>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* User Controls & Profile Footer */}
+      <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-md relative z-10 space-y-3">
+        {/* Quick Toggles */}
+        <div className="flex items-center gap-2 p-1 bg-slate-900/90 rounded-xl border border-slate-800">
+          <button
+            onClick={toggleTheme}
+            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-xs font-medium"
+            title="Toggle Mode"
+          >
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />}
+            <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          </button>
+          <div className="w-[1px] h-4 bg-slate-800" />
+          <button
+            onClick={toggleLanguage}
+            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-xs font-medium"
+            title="Toggle Language"
+          >
+            <Languages className="w-3.5 h-3.5 text-indigo-400" />
+            <span>{language === 'ar' ? 'English' : 'العربية'}</span>
+          </button>
+        </div>
+
+        {/* User Info Card */}
+        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/80 border border-slate-800/80">
+          <div className="relative">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-0.5 shadow-md">
+              <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-xs">
+                {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
+            </div>
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full" />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-white truncate">
+              {profile?.full_name || 'User'}
+            </p>
+            <p className="text-[10px] text-slate-400 truncate">
+              {isAdmin ? t('common.admin') : t('staff.staff')}
+            </p>
+          </div>
+
+          <button
+            onClick={() => signOut()}
+            className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            title="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Animated Background Blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/20 dark:bg-blue-600/20 blur-[100px] animate-blob" />
-      <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] rounded-full bg-purple-400/20 dark:bg-purple-600/20 blur-[100px] animate-blob" style={{ animationDelay: '2s' }} />
-      <div className="absolute bottom-[-10%] left-[20%] w-[35%] h-[35%] rounded-full bg-pink-400/20 dark:bg-pink-600/20 blur-[100px] animate-blob" style={{ animationDelay: '4s' }} />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/20 dark:bg-blue-600/20 blur-[100px] animate-blob pointer-events-none" />
+      <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] rounded-full bg-purple-400/20 dark:bg-purple-600/20 blur-[100px] animate-blob pointer-events-none" style={{ animationDelay: '2s' }} />
+      <div className="absolute bottom-[-10%] left-[20%] w-[35%] h-[35%] rounded-full bg-pink-400/20 dark:bg-pink-600/20 blur-[100px] animate-blob pointer-events-none" style={{ animationDelay: '4s' }} />
 
-      {/* Sidebar - Desktop */}
+      {/* Desktop Sidebar */}
       <aside className={`hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[280px] lg:flex-col ${language === 'ar' ? 'lg:right-0' : 'lg:left-0'} z-30`}>
-        <div className="flex flex-col flex-grow glass-panel dark:glass-panel-dark border-r border-white/20 dark:border-slate-700/50 overflow-y-auto">
-          {/* Logo */}
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-2.5">
-              {business?.logo_url ? (
-                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm p-1">
-                  <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
-                </div>
-              ) : (
-                <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
-                  {business?.name?.charAt(0)?.toUpperCase() || 'L'}
-                </div>
-              )}
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">
-                {business?.name || 'SabaaaPass'}
-              </h1>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex-1 px-3 py-4">
-            <nav className="space-y-0.5">
-              {navigation.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.href}
-                  end
-                  className={({ isActive }) =>
-                    clsx(
-                      'group flex items-center gap-3 px-3 py-2.5 text-[13px] font-medium rounded-lg transition-all',
-                      isActive
-                        ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    )
-                  }
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.name}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
-
-          {/* User Profile & Actions */}
-          <div className="px-4 py-4 border-t border-gray-100 dark:border-gray-700">
-            {/* Theme & Language Toggle */}
-            <div className="flex items-center gap-2 mb-4">
-              <button
-                onClick={toggleTheme}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 transition-all text-[13px] font-medium text-gray-700 dark:text-gray-300"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-3.5 h-3.5" />
-                ) : (
-                  <Moon className="w-3.5 h-3.5" />
-                )}
-              </button>
-              <button
-                onClick={toggleLanguage}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 transition-all text-[13px] font-medium text-gray-700 dark:text-gray-300"
-              >
-                <Languages className="w-3.5 h-3.5" />
-                <span>{language === 'ar' ? 'EN' : 'AR'}</span>
-              </button>
-            </div>
-
-            {/* User Info */}
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#ff6b9d] to-[#ff8eb3] flex items-center justify-center text-white font-semibold text-sm shadow-sm">
-                {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-gray-900 dark:text-white truncate">
-                  {profile?.full_name}
-                </p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                  {isAdmin ? t('common.admin') : t('staff.staff')}
-                </p>
-              </div>
-              <button
-                onClick={() => signOut()}
-                className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 dark:text-red-400 transition-all"
-                title="Logout"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
+        {renderNavContent()}
       </aside>
 
-      {/* Mobile sidebar backdrop */}
+      {/* Mobile Backdrop */}
       <div
         className={clsx(
-          'fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300',
+          'fixed inset-0 bg-slate-950/70 backdrop-blur-md z-40 lg:hidden transition-opacity duration-300',
           sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
         onClick={() => setSidebarOpen(false)}
       />
 
-      {/* Mobile sidebar drawer */}
+      {/* Mobile Sidebar Drawer */}
       <div
         className={clsx(
           'fixed inset-y-0 z-50 w-[280px] max-w-[85vw] lg:hidden transition-transform duration-300 ease-in-out',
@@ -198,119 +288,33 @@ export default function BusinessLayout() {
               : '-translate-x-full'
         )}
       >
-        <div className="flex flex-col h-full glass-panel dark:glass-panel-dark shadow-2xl">
-          <div className={`absolute top-4 ${language === 'ar' ? 'left-4' : 'right-4'}`}>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Logo */}
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-2.5">
-              {business?.logo_url ? (
-                <div className="w-9 h-9 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm p-1">
-                  <img src={business.logo_url} alt="Logo" className="w-full h-full object-contain" />
-                </div>
-              ) : (
-                <div className="w-9 h-9 bg-gradient-to-br from-[#ff5757] to-[#ff7b7b] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
-                  {business?.name?.charAt(0)?.toUpperCase() || 'L'}
-                </div>
-              )}
-              <h1 className="text-[15px] font-semibold text-gray-900 dark:text-white">
-                {business?.name || 'SabaaaPass'}
-              </h1>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex-1 px-3 py-4 overflow-y-auto">
-            <nav className="space-y-0.5">
-              {navigation.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.href}
-                  end
-                  onClick={() => setSidebarOpen(false)}
-                  className={({ isActive }) =>
-                    clsx(
-                      'group flex items-center gap-3 px-3 py-2.5 text-[13px] font-medium rounded-lg transition-all',
-                      isActive
-                        ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    )
-                  }
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.name}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
-
-          {/* User Profile & Actions */}
-          <div className="px-4 py-4 border-t border-gray-100 dark:border-gray-700">
-            {/* Theme & Language Toggle */}
-            <div className="flex items-center gap-2 mb-4">
-              <button
-                onClick={toggleTheme}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 transition-all text-[13px] font-medium text-gray-700 dark:text-gray-300"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-3.5 h-3.5" />
-                ) : (
-                  <Moon className="w-3.5 h-3.5" />
-                )}
-              </button>
-              <button
-                onClick={toggleLanguage}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 transition-all text-[13px] font-medium text-gray-700 dark:text-gray-300"
-              >
-                <Languages className="w-3.5 h-3.5" />
-                <span>{language === 'ar' ? 'EN' : 'AR'}</span>
-              </button>
-            </div>
-
-            {/* User Info */}
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#ff6b9d] to-[#ff8eb3] flex items-center justify-center text-white font-semibold text-sm shadow-sm">
-                {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-gray-900 dark:text-white truncate">
-                  {profile?.full_name}
-                </p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                  {isAdmin ? t('common.admin') : t('staff.staff')}
-                </p>
-              </div>
-              <button
-                onClick={() => signOut()}
-                className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 dark:text-red-400 transition-all"
-                title="Logout"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+        <div className="relative h-full">
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className={`absolute top-4 ${language === 'ar' ? 'left-4' : 'right-4'} z-20 p-2 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-all`}
+          >
+            <X className="w-5 h-5" />
+          </button>
+          {renderNavContent()}
         </div>
       </div>
 
-      {/* Main content */}
+      {/* Main Content Area */}
       <div className={`relative z-10 flex flex-col flex-1 min-h-screen ${language === 'ar' ? 'lg:pr-[280px]' : 'lg:pl-[280px]'}`}>
-        {/* Mobile header */}
-        <div className="sticky top-0 z-10 lg:hidden glass-panel dark:glass-panel-dark border-b border-white/20 dark:border-slate-700/50 px-4 py-3 flex items-center justify-between">
+        {/* Mobile Header Bar */}
+        <div className="sticky top-0 z-20 lg:hidden bg-slate-900/90 dark:bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-xl bg-slate-800/80 text-slate-200 hover:bg-slate-700 transition-all"
           >
             <Menu className="w-5 h-5" />
           </button>
-          <h1 className="text-sm font-semibold text-gray-900 dark:text-white">SabaaaPass</h1>
-          <div className="w-9" /> {/* Spacer for centering */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-white tracking-wide">
+              {business?.name || 'SabaaaPass'}
+            </span>
+          </div>
+          <div className="w-9" />
         </div>
 
         <main className="flex-1 overflow-y-auto">
