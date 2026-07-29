@@ -97,15 +97,6 @@ export default function CustomerCard() {
       }
       manifestLink.href = manifestURL
 
-      // Add apple-mobile-web-app-capable for iOS
-      let appleMeta = document.querySelector('meta[name="apple-mobile-web-app-capable"]') as HTMLMetaElement
-      if (!appleMeta) {
-        appleMeta = document.createElement('meta')
-        appleMeta.name = 'apple-mobile-web-app-capable'
-        appleMeta.content = 'yes'
-        document.head.appendChild(appleMeta)
-      }
-
       // Update theme color
       let themeColor = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement
       if (!themeColor) {

@@ -5,7 +5,7 @@ import './index.css'
 import './i18n'
 
 // App version - INCREMENT THIS ON EVERY DEPLOY
-const APP_VERSION = '1.0.9'
+const APP_VERSION = '1.1.0'
 
 // Unregister any leftover service workers (one-time cleanup)
 if ('serviceWorker' in navigator) {
@@ -27,7 +27,7 @@ if (storedVersion !== APP_VERSION) {
   }
 
   // Clear localStorage except auth data
-  const keysToKeep = ['customer_token', 'auth_token', 'language']
+  const keysToKeep = ['customerToken', 'auth_token', 'language-storage', 'theme-storage', 'sb-auth-token']
   const tempData: Record<string, string> = {}
   keysToKeep.forEach(key => {
     const value = localStorage.getItem(key)
