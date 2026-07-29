@@ -161,114 +161,114 @@ export default function SuperAdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('nav.businesses', 'Total Businesses')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.totalBusinesses || 0}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('nav.businesses', 'Total Businesses')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.totalBusinesses || 0).toLocaleString()}>
+                {(stats?.totalBusinesses || 0).toLocaleString()}
               </p>
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg shrink-0">
               <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.activeSubscriptions', 'Active Subscriptions')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.activeSubscriptions || 0}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('dashboard.activeSubscriptions', 'Active Subscriptions')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.activeSubscriptions || 0).toLocaleString()}>
+                {(stats?.activeSubscriptions || 0).toLocaleString()}
               </p>
             </div>
-            <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+            <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg shrink-0">
               <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.expiredSubscriptions', 'Expired Subscriptions')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.expiredSubscriptions || 0}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('dashboard.expiredSubscriptions', 'Expired Subscriptions')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.expiredSubscriptions || 0).toLocaleString()}>
+                {(stats?.expiredSubscriptions || 0).toLocaleString()}
               </p>
             </div>
-            <div className="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
+            <div className="p-3 bg-red-100 dark:bg-red-900 rounded-lg shrink-0">
               <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.totalCustomers', 'Total Customers')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.totalCustomers || 0}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('dashboard.totalCustomers', 'Total Customers')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.totalCustomers || 0).toLocaleString()}>
+                {(stats?.totalCustomers || 0).toLocaleString()}
               </p>
             </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+            <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg shrink-0">
               <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.totalVisits', 'Total Visits')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.totalVisits || 0}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('dashboard.totalVisits', 'Total Visits')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.totalVisits || 0).toLocaleString()}>
+                {(stats?.totalVisits || 0).toLocaleString()}
               </p>
             </div>
-            <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+            <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg shrink-0">
               <Activity className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.rewardsRedeemed', 'Rewards Redeemed')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.totalRewardsRedeemed || 0}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('dashboard.rewardsRedeemed', 'Rewards Redeemed')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.totalRewardsRedeemed || 0).toLocaleString()}>
+                {(stats?.totalRewardsRedeemed || 0).toLocaleString()}
               </p>
             </div>
-            <div className="p-3 bg-pink-100 dark:bg-pink-900 rounded-lg">
+            <div className="p-3 bg-pink-100 dark:bg-pink-900 rounded-lg shrink-0">
               <Gift className="w-6 h-6 text-pink-600 dark:text-pink-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.monthlyRevenue', 'Monthly Revenue')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.monthlyRevenue?.toFixed(2) || '0.00'}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('dashboard.monthlyRevenue', 'Monthly Revenue')}</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.monthlyRevenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}>
+                {(stats?.monthlyRevenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Paid invoices this month</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 truncate">Paid invoices this month</p>
             </div>
-            <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
+            <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg shrink-0">
               <DollarSign className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.annualRevenue', 'Annual Revenue')}</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                {stats?.annualRevenue?.toFixed(2) || '0.00'}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{t('dashboard.annualRevenue', 'Annual Revenue')}</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.annualRevenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}>
+                {(stats?.annualRevenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Paid invoices this year</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 truncate">Paid invoices this year</p>
             </div>
-            <div className="p-3 bg-teal-100 dark:bg-teal-900 rounded-lg">
+            <div className="p-3 bg-teal-100 dark:bg-teal-900 rounded-lg shrink-0">
               <TrendingUp className="w-6 h-6 text-teal-600 dark:text-teal-400" />
             </div>
           </div>

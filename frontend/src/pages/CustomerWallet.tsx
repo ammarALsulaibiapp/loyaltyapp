@@ -723,11 +723,11 @@ export default function CustomerWallet() {
                     <h3 className="font-bold text-gray-900 text-sm mb-1 truncate">{card.businesses.name}</h3>
                     
                     {/* Offer/Stats */}
-                    <p className="text-xs font-semibold text-blue-600 mb-1">
+                    <p className="text-xs font-semibold text-blue-600 mb-1 truncate">
                       {card.next_reward || t('wallet.buyOneGetOne', 'Buy 1 Get 1 Free')}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {card.visits_to_reward ? `${card.visits_to_reward} ${t('wallet.stampsToGo', 'stamps to go')}` : `${card.total_visits} ${t('wallet.visits', 'visits')}`}
+                    <p className="text-xs text-gray-500 truncate">
+                      {card.visits_to_reward ? `${(card.visits_to_reward || 0).toLocaleString()} ${t('wallet.stampsToGo', 'stamps to go')}` : `${(card.total_visits || 0).toLocaleString()} ${t('wallet.visits', 'visits')}`}
                     </p>
                   </div>
                 )

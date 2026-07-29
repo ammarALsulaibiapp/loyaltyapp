@@ -216,15 +216,15 @@ export default function BusinessDashboard() {
             </div>
             <TrendingUp className="w-4 h-4 text-green-500" />
           </div>
-          <div>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
               {t('dashboard.totalCustomers')}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {stats?.totalCustomers || 0}
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.totalCustomers || 0).toLocaleString()}>
+              {(stats?.totalCustomers || 0).toLocaleString()}
             </p>
-            <p className="text-[12px] text-green-600 dark:text-green-400 mt-1 font-medium">
-              +{stats?.newCustomers || 0} {t('dashboard.thisWeek', 'this week')}
+            <p className="text-[12px] text-green-600 dark:text-green-400 mt-1 font-medium truncate">
+              +{(stats?.newCustomers || 0).toLocaleString()} {t('dashboard.thisWeek', 'this week')}
             </p>
           </div>
         </div>
@@ -236,15 +236,15 @@ export default function BusinessDashboard() {
             </div>
             <TrendingUp className="w-4 h-4 text-green-500" />
           </div>
-          <div>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
               {t('dashboard.visitsToday')}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {stats?.visitsToday || 0}
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.visitsToday || 0).toLocaleString()}>
+              {(stats?.visitsToday || 0).toLocaleString()}
             </p>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium">
-              {stats?.totalVisits || 0} {t('dashboard.totalVisits').toLowerCase()}
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium truncate">
+              {(stats?.totalVisits || 0).toLocaleString()} {t('dashboard.totalVisits').toLowerCase()}
             </p>
           </div>
         </div>
@@ -256,14 +256,14 @@ export default function BusinessDashboard() {
             </div>
             <TrendingUp className="w-4 h-4 text-green-500" />
           </div>
-          <div>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
               {t('dashboard.newCustomers')}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {stats?.newCustomers || 0}
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.newCustomers || 0).toLocaleString()}>
+              {(stats?.newCustomers || 0).toLocaleString()}
             </p>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium">{t('dashboard.last7Days', 'Last 7 days')}</p>
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium truncate">{t('dashboard.last7Days', 'Last 7 days')}</p>
           </div>
         </div>
 
@@ -274,14 +274,14 @@ export default function BusinessDashboard() {
             </div>
             <TrendingUp className="w-4 h-4 text-green-500" />
           </div>
-          <div>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
               {t('dashboard.rewardsRedeemed')}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {stats?.rewardsRedeemed || 0}
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.rewardsRedeemed || 0).toLocaleString()}>
+              {(stats?.rewardsRedeemed || 0).toLocaleString()}
             </p>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium">{t('dashboard.allTime', 'All time')}</p>
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium truncate">{t('dashboard.allTime', 'All time')}</p>
           </div>
         </div>
 
@@ -292,14 +292,14 @@ export default function BusinessDashboard() {
             </div>
             <TrendingUp className="w-4 h-4 text-green-500" />
           </div>
-          <div>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
               {t('dashboard.activeRewards')}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-              {stats?.activeRewards || 0}
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(stats?.activeRewards || 0).toLocaleString()}>
+              {(stats?.activeRewards || 0).toLocaleString()}
             </p>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium">{t('dashboard.readyToRedeem', 'Ready to redeem')}</p>
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium truncate">{t('dashboard.readyToRedeem', 'Ready to redeem')}</p>
           </div>
         </div>
 
@@ -312,11 +312,11 @@ export default function BusinessDashboard() {
               {business?.currency || 'USD'}
             </span>
           </div>
-          <div>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
               {t('dashboard.totalRevenue', 'Total Revenue')}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">
               {business?.currency || 'USD'} 0.00
             </p>
             <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 font-medium">{t('dashboard.allTime', 'All time')}</p>

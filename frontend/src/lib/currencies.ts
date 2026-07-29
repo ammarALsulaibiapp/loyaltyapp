@@ -49,7 +49,21 @@ export const getCurrencyName = (code: string, isArabic: boolean = false): string
   return isArabic ? currency.nameAr : currency.name
 }
 
-export const formatCurrency = (amount: number, currencyCode: string, isArabic: boolean = false): string => {
+export const formatNumber = (amount: number, isArabic: boolean = false): string => {
+  if (amount === undefined || amount === null || isNaN(amount)) return '0'
+  return amount.toLocaleString(isArabic ? 'ar-SA' : 'en-US')
+}
+
+export const formatCompactNumber = (amount: number, isArabic: boolean = false): string => {
+  if (amount === undefined || amount === null || isNaN(amount)) return '0'
+  return new Intl.NumberFormat(isArabic ? 'ar-SA' : 'en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(amount)
+}
+
+export const formatCurrency = (amount: number, currencyCode: string = 'OMR', isArabic: boolean = false): string => {
+  if (amount === undefined || amount === null || isNaN(amount)) amount = 0
   const symbol = getCurrencySymbol(currencyCode)
   const formatted = amount.toLocaleString(isArabic ? 'ar-SA' : 'en-US', {
     minimumFractionDigits: 2,
@@ -59,3 +73,4 @@ export const formatCurrency = (amount: number, currencyCode: string, isArabic: b
   // In Arabic, symbol comes after number
   return isArabic ? `${formatted} ${symbol}` : `${symbol}${formatted}`
 }
+

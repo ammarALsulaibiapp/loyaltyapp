@@ -175,82 +175,82 @@ export default function RevenueAttribution() {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                 {isArabic ? 'إيرادات هذا الشهر' : 'This Month Revenue'}
               </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={formatCurrency(revenueData?.thisMonthRevenue || 0, currency, isArabic)}>
                 {formatCurrency(revenueData?.thisMonthRevenue || 0, currency, isArabic)}
               </p>
               {revenueData?.growthRate !== undefined && (
-                <p className={`text-sm mt-1 ${revenueData.growthRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-sm mt-1 truncate ${revenueData.growthRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {revenueData.growthRate >= 0 ? '↑' : '↓'} {Math.abs(revenueData.growthRate).toFixed(1)}% 
                   {isArabic ? ' من الشهر الماضي' : ' vs last month'}
                 </p>
               )}
             </div>
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center shrink-0">
               <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                 {isArabic ? 'متوسط قيمة الطلب' : 'Average Order Value'}
               </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={formatCurrency(revenueData?.averageOrderValue || 0, currency, isArabic)}>
                 {formatCurrency(revenueData?.averageOrderValue || 0, currency, isArabic)}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {revenueData?.thisMonthVisits || 0} {isArabic ? 'زيارة' : 'visits'}
+              <p className="text-sm text-gray-500 mt-1 truncate">
+                {(revenueData?.thisMonthVisits || 0).toLocaleString()} {isArabic ? 'زيارة' : 'visits'}
               </p>
             </div>
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center shrink-0">
               <Target className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                 {isArabic ? 'إيرادات مدفوعة بالمكافآت' : 'Reward-Driven Revenue'}
               </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={formatCurrency(revenueData?.rewardDrivenRevenue || 0, currency, isArabic)}>
                 {formatCurrency(revenueData?.rewardDrivenRevenue || 0, currency, isArabic)}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 mt-1 truncate">
                 {revenueData?.thisMonthRevenue ? 
                   ((revenueData.rewardDrivenRevenue / revenueData.thisMonthRevenue) * 100).toFixed(0) : 0}%
                 {isArabic ? ' من الإجمالي' : ' of total'}
               </p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center shrink-0">
               <Award className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                 {isArabic ? 'العملاء النشطون' : 'Active Customers'}
               </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                {revenueData?.totalCustomers || 0}
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate" title={(revenueData?.totalCustomers || 0).toLocaleString()}>
+                {(revenueData?.totalCustomers || 0).toLocaleString()}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 mt-1 truncate">
                 {isArabic ? 'هذا الشهر' : 'this month'}
               </p>
             </div>
-            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center shrink-0">
+              <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
           </div>
         </Card>
