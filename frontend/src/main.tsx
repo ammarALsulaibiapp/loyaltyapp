@@ -5,7 +5,7 @@ import './index.css'
 import './i18n'
 
 // App version - INCREMENT THIS ON EVERY DEPLOY
-const APP_VERSION = '1.2.0'
+const APP_VERSION = '1.3.0'
 
 // Unregister any leftover service workers (one-time cleanup)
 if ('serviceWorker' in navigator) {
@@ -41,6 +41,8 @@ if (storedVersion !== APP_VERSION) {
   })
 
   localStorage.setItem('app_version', APP_VERSION)
+  // Force a single location reload so standalone PWAs immediately fetch new bundles
+  window.location.reload()
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
