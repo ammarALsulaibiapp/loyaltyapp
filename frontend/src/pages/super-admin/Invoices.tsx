@@ -162,7 +162,7 @@ export default function InvoicesPage() {
 
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-6 mb-8 gap-4">
             <div class="flex items-center gap-3">
-              <img src="https://mahfazaty.sabaasoul.com/logo.png" alt="SabaaaPass" style="width: 48px; height: 48px; border-radius: 12px;">
+              <img src="/logo.png" alt="SabaaaPass" style="width: 48px; height: 48px; border-radius: 12px;">
               <div>
                 <h1 class="text-3xl font-extrabold text-[#3B82F6]">${labels.invoice}</h1>
                 <p class="text-sm text-gray-500 mt-1">${labels.invoiceNumber}: <span class="font-bold text-gray-700">${invoiceNum}</span></p>

@@ -42,7 +42,7 @@
 
 ### Then Test:
 
-1. **Go to:** https://mahfazaty.sabaasoul.com
+1. **Go to:** https://sabaasoul.com
 2. **Login as Business Admin**
 3. **Click:** "الاحتفاظ الذكي" in sidebar
 4. **You should see:** AI Retention page loaded
