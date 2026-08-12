@@ -412,7 +412,9 @@ export default function CustomerCard() {
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <Coffee className="w-6 h-6 text-slate-900" />
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                    {customer.businesses.name?.charAt(0)?.toUpperCase() || 'S'}
+                  </div>
                 )}
               </div>
               <div className="min-w-0">
@@ -517,9 +519,25 @@ export default function CustomerCard() {
                           }`}
                         >
                           {isStamped ? (
-                            <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+                            customer.businesses.logo_url ? (
+                              <img 
+                                src={customer.businesses.logo_url}
+                                alt="stamp"
+                                className="w-6 h-6 object-contain"
+                              />
+                            ) : (
+                              <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+                            )
                           ) : (
-                            <Coffee className="w-5 h-5 opacity-60" />
+                            customer.businesses.logo_url ? (
+                              <img 
+                                src={customer.businesses.logo_url}
+                                alt="stamp"
+                                className="w-5 h-5 object-contain opacity-30 grayscale"
+                              />
+                            ) : (
+                              <div className="w-5 h-5 rounded-full border-2 border-dashed border-slate-600" />
+                            )
                           )}
                         </div>
                       )
