@@ -523,7 +523,7 @@ export default function CustomerCard() {
                               <img 
                                 src={customer.businesses.logo_url}
                                 alt="stamp"
-                                className="w-6 h-6 object-contain"
+                                className="w-full h-full object-cover p-1.5"
                               />
                             ) : (
                               <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
@@ -533,7 +533,7 @@ export default function CustomerCard() {
                               <img 
                                 src={customer.businesses.logo_url}
                                 alt="stamp"
-                                className="w-5 h-5 object-contain opacity-30 grayscale"
+                                className="w-full h-full object-cover p-2 opacity-30 grayscale"
                               />
                             ) : (
                               <div className="w-5 h-5 rounded-full border-2 border-dashed border-slate-600" />
