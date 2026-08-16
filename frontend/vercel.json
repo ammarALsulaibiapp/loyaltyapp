@@ -17,6 +17,10 @@
         {
           "key": "Expires",
           "value": "0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
         }
       ]
     },

@@ -5,7 +5,7 @@ import './index.css'
 import './i18n'
 
 // App version - INCREMENT THIS ON EVERY DEPLOY
-const APP_VERSION = '1.3.0'
+const APP_VERSION = '1.4.0'
 
 // Unregister any leftover service workers (one-time cleanup)
 if ('serviceWorker' in navigator) {
