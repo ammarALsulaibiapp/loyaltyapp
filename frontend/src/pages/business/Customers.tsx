@@ -47,22 +47,25 @@ export default function CustomersPage() {
     return () => clearTimeout(handler)
   }, [searchQuery])
 
-  // Fetch customers
+  // Fetch customers - only when search query exists
   const { data: customers, isLoading } = useQuery({
     queryKey: ['customers', profile?.business_id, debouncedSearchQuery],
     queryFn: async () => {
       if (!profile?.business_id) return []
+      
+      // Don't fetch anything if no search query
+      if (!debouncedSearchQuery || debouncedSearchQuery.length < 2) {
+        return []
+      }
 
       if (isDemoMode()) {
         let filtered = mockCustomers.filter(c => c.business_id === profile.business_id)
         
-        if (debouncedSearchQuery) {
-          const query = debouncedSearchQuery.toLowerCase()
-          filtered = filtered.filter(c => 
-            c.phone_number.toLowerCase().includes(query) ||
-            c.full_name?.toLowerCase().includes(query)
-          )
-        }
+        const query = debouncedSearchQuery.toLowerCase()
+        filtered = filtered.filter(c => 
+          c.phone_number.toLowerCase().includes(query) ||
+          c.full_name?.toLowerCase().includes(query)
+        )
         
         return filtered as Customer[]
       }
@@ -71,16 +74,15 @@ export default function CustomersPage() {
         .from('customers')
         .select('*')
         .eq('business_id', profile.business_id)
+        .or(`phone_number.ilike.%${debouncedSearchQuery}%,full_name.ilike.%${debouncedSearchQuery}%`)
         .order('created_at', { ascending: false })
-
-      if (debouncedSearchQuery) {
-        query = query.or(`phone_number.ilike.%${debouncedSearchQuery}%,full_name.ilike.%${debouncedSearchQuery}%`)
-      }
+        .limit(50) // Limit results for performance
 
       const { data, error } = await query
       if (error) throw error
       return data as Customer[]
     },
+    enabled: !!profile?.business_id,
   })
 
   const createMutation = useMutation({
@@ -226,49 +228,86 @@ export default function CustomersPage() {
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-gray-800 dark:to-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <div className="flex-1 relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
             <input
               type="text"
-              placeholder={t('customers.searchPlaceholder')}
+              placeholder={t('customers.searchPlaceholder') || 'Search by name or phone number...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-transparent rounded-lg text-[13px] focus:outline-none focus:bg-white focus:border-gray-300 dark:focus:bg-gray-600 transition-all"
+              className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-sm placeholder:text-gray-400"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                ✕
+              </button>
+            )}
           </div>
           {selectedIds.length > 0 && (
             <button
               onClick={handleBulkDelete}
               disabled={bulkDeleteMutation.isPending}
-              className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[13px] font-medium flex items-center gap-2 transition-all disabled:opacity-50"
+              className="px-5 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all disabled:opacity-50 shadow-lg shadow-red-500/30"
             >
               <Trash2 className="w-4 h-4" />
               {t('common.delete', 'Delete')} ({selectedIds.length})
             </button>
           )}
-          <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-lg p-1">
+          <div className="flex items-center gap-1.5 bg-white dark:bg-gray-700 rounded-xl p-1.5 shadow-sm border border-gray-200 dark:border-gray-600">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-1.5 text-[12px] font-medium rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-600 shadow-sm' : ''}`}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${viewMode === 'grid' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
             >
               {t('common.grid', 'Grid')}
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`px-3 py-1.5 text-[12px] font-medium rounded-md transition-all ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 shadow-sm' : ''}`}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${viewMode === 'table' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
             >
               {t('common.table', 'Table')}
             </button>
           </div>
         </div>
+        
+        {/* Search hint */}
+        {searchQuery.length > 0 && searchQuery.length < 2 && (
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+            <Search className="w-3.5 h-3.5" />
+            Type at least 2 characters to search...
+          </p>
+        )}
       </div>
 
       {/* Customer Grid */}
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ff6b9d]" />
+      {!searchQuery || searchQuery.length < 2 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center mb-4">
+            <Search className="w-10 h-10 text-blue-500 dark:text-blue-400" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Search for Customers</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
+            Type a customer's name or phone number in the search box above to find their profile
+          </p>
+        </div>
+      ) : isLoading ? (
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 mb-4" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">Searching...</p>
+        </div>
+      ) : !customers || customers.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mb-4">
+            <Users className="w-10 h-10 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No Results Found</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
+            No customers match "{searchQuery}". Try a different search term.
+          </p>
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

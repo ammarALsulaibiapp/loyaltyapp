@@ -247,6 +247,7 @@ export default function BusinessLayout() {
             className="p-1.5 rounded-md text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
             title="Logout"
           >
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>
