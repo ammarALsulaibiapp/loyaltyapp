@@ -42,7 +42,16 @@ export default function CustomerTags() {
   const [newTagName, setNewTagName] = useState('')
   const [newTagColor, setNewTagColor] = useState(TAG_COLORS[0].value)
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [selectedTagFilter, setSelectedTagFilter] = useState<string | null>(null)
+
+  // Debounce search
+  useState(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery)
+    }, 300)
+    return () => clearTimeout(handler)
+  })
 
   // Fetch all tags
   const { data: tags = [], isLoading: tagsLoading } = useQuery({
@@ -61,11 +70,21 @@ export default function CustomerTags() {
     enabled: !!profile?.business_id,
   })
 
-  // Fetch customers with their tags
+  // Fetch customers with their tags - ONLY when searching or filtering
   const { data: customers = [], isLoading: customersLoading } = useQuery({
-    queryKey: ['customers-with-tags', profile?.business_id, searchQuery, selectedTagFilter],
+    queryKey: ['customers-with-tags', profile?.business_id, debouncedSearchQuery, selectedTagFilter],
     queryFn: async () => {
       if (!profile?.business_id) return []
+      
+      // Don't fetch if no search query AND no tag filter
+      if (!debouncedSearchQuery && !selectedTagFilter) {
+        return []
+      }
+
+      // Require at least 2 characters for search
+      if (debouncedSearchQuery && debouncedSearchQuery.length < 2 && !selectedTagFilter) {
+        return []
+      }
       
       let query = supabase
         .from('customers')
@@ -81,10 +100,11 @@ export default function CustomerTags() {
           )
         `)
         .eq('business_id', profile.business_id)
+        .limit(100) // Limit to 100 results for performance
 
       // Apply search filter
-      if (searchQuery) {
-        query = query.or(`phone_number.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`)
+      if (debouncedSearchQuery) {
+        query = query.or(`phone_number.ilike.%${debouncedSearchQuery}%,full_name.ilike.%${debouncedSearchQuery}%`)
       }
 
       const { data, error } = await query.order('created_at', { ascending: false })
@@ -412,10 +432,46 @@ export default function CustomerTags() {
 
         {/* Customers List */}
         <div className="space-y-3">
-          {customers.length === 0 ? (
-            <p className="text-center py-8 text-gray-500">
-              {isArabic ? 'لا يوجد عملاء' : 'No customers found'}
-            </p>
+          {!searchQuery && !selectedTagFilter ? (
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center mb-4">
+                <Search className="w-10 h-10 text-blue-500 dark:text-blue-400" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                {isArabic ? 'ابحث عن العملاء' : 'Search for Customers'}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
+                {isArabic 
+                  ? 'اكتب اسم العميل أو رقم هاتفه للعثور عليه وإضافة وسوم' 
+                  : 'Type a customer name or phone to find them and add tags'}
+              </p>
+            </div>
+          ) : searchQuery.length > 0 && searchQuery.length < 2 && !selectedTagFilter ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                <Search className="w-4 h-4" />
+                {isArabic ? 'اكتب حرفين على الأقل للبحث...' : 'Type at least 2 characters to search...'}
+              </p>
+            </div>
+          ) : customersLoading ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 mb-4" />
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {isArabic ? 'جاري البحث...' : 'Searching...'}
+              </p>
+            </div>
+          ) : customers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mb-4">
+                <Users className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">
+                {isArabic ? 'لم يتم العثور على نتائج' : 'No Results Found'}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                {isArabic ? 'لا يوجد عملاء مطابقون لبحثك' : 'No customers match your search'}
+              </p>
+            </div>
           ) : (
             customers.map((customer: any) => {
               const customerTags = getCustomerTags(customer)

@@ -640,21 +640,19 @@ export default function LoyaltyProgramsPage() {
                 { id: 'visit_based', label: isArabic ? 'زيارات مكررة' : 'Visit Based', icon: Award, color: 'border-purple-500 bg-purple-50/50 text-purple-700' },
                 { id: 'cashback', label: isArabic ? 'كاش باك' : 'Cashback', icon: DollarSign, color: 'border-emerald-500 bg-emerald-50/50 text-emerald-700' },
               ].map((tItem) => {
-                const Icon = tItem.icon
                 const isSelected = formData.type === tItem.id
                 return (
                   <button
                     key={tItem.id}
                     type="button"
                     onClick={() => setFormData({ ...formData, type: tItem.id as ProgramType })}
-                    className={`p-3 rounded-2xl border-2 text-center transition-all flex flex-col items-center gap-1.5 ${
+                    className={`p-3 rounded-2xl border-2 text-center transition-all ${
                       isSelected
                         ? `${tItem.color} font-bold shadow-md`
                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-600 dark:text-gray-400'
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-xs">{tItem.label}</span>
+                    <span className="text-sm">{tItem.label}</span>
                   </button>
                 )
               })}

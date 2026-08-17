@@ -406,6 +406,14 @@ const resources = {
       'customers.viewQRCode': 'View QR Code',
       'customers.viewWallet': 'View Wallet Card',
       'customers.viewRewards': 'View Rewards',
+      'customers.searchForCustomers': 'Search for Customers',
+      'customers.searchTypeHint': 'Type a customer\'s name or phone number in the search box above to find their profile',
+      'customers.typeToSearch': 'Type at least 2 characters to search...',
+      'customers.searching': 'Searching...',
+      'customers.noResultsFound': 'No Results Found',
+      'customers.noMatch': 'No customers match "{{query}}". Try a different search term.',
+      'customers.unknown': 'Unknown',
+      'customers.qr': 'QR',
 
       // Staff
       'staff.title': 'Staff',
@@ -1161,6 +1169,14 @@ const resources = {
       'customers.viewQRCode': 'عرض رمز QR',
       'customers.viewWallet': 'عرض بطاقة المحفظة',
       'customers.viewRewards': 'عرض المكافآت',
+      'customers.searchForCustomers': 'ابحث عن العملاء',
+      'customers.searchTypeHint': 'اكتب اسم العميل أو رقم هاتفه في مربع البحث أعلاه للعثور على ملفه الشخصي',
+      'customers.typeToSearch': 'اكتب حرفين على الأقل للبحث...',
+      'customers.searching': 'جاري البحث...',
+      'customers.noResultsFound': 'لم يتم العثور على نتائج',
+      'customers.noMatch': 'لا يوجد عملاء مطابقون لـ "{{query}}". جرب مصطلح بحث مختلف.',
+      'customers.unknown': 'غير معروف',
+      'customers.qr': 'رمز QR',
       
       // Dashboard
       'dashboard.title': 'لوحة التحكم',
@@ -1215,6 +1231,11 @@ const resources = {
       'dashboard.monthlyRevenue': 'الإيرادات الشهرية',
       'dashboard.annualRevenue': 'الإيرادات السنوية',
       'dashboard.revenueTrend': 'اتجاه الإيرادات خلال آخر 6 أشهر',
+      'dashboard.totalRevenue': 'إجمالي الإيرادات',
+      'dashboard.last7Days': 'آخر 7 أيام',
+      'dashboard.customerEarned': 'العميل #{{id}} حصل على مكافأة',
+      'dashboard.hoursAgo': 'منذ {{count}} ساعات',
+      'dashboard.pointsEarnedDesc': '+{{points}} نقطة',
 
       // New layout/navigation keys
       'nav.projects': 'المشاريع',

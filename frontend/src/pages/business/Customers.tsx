@@ -278,7 +278,7 @@ export default function CustomersPage() {
         {searchQuery.length > 0 && searchQuery.length < 2 && (
           <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
             <Search className="w-3.5 h-3.5" />
-            Type at least 2 characters to search...
+            {t('customers.typeToSearch')}
           </p>
         )}
       </div>
@@ -289,24 +289,24 @@ export default function CustomersPage() {
           <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center mb-4">
             <Search className="w-10 h-10 text-blue-500 dark:text-blue-400" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Search for Customers</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('customers.searchForCustomers')}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
-            Type a customer's name or phone number in the search box above to find their profile
+            {t('customers.searchTypeHint')}
           </p>
         </div>
       ) : isLoading ? (
         <div className="flex flex-col items-center justify-center py-16">
           <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 mb-4" />
-          <p className="text-sm text-gray-500 dark:text-gray-400">Searching...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('customers.searching')}</p>
         </div>
       ) : !customers || customers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-4">
           <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mb-4">
             <Users className="w-10 h-10 text-gray-400" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No Results Found</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('customers.noResultsFound')}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
-            No customers match "{searchQuery}". Try a different search term.
+            {t('customers.noMatch', { query: searchQuery })}
           </p>
         </div>
       ) : viewMode === 'grid' ? (
